@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Clock, Hourglass } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { standardizeDate, isDateInPast } from "@/lib/countdown-utils"
+import { getUserStorageKey } from "@/lib/user-utils"
 
 // Define colors for past and future events
 const charcoal = "#333333"; // Pantone charcoal for past events
@@ -260,15 +261,16 @@ export default function AddCountdownForm() {
     }
     
     try {
-      // Get existing countdowns from localStorage
-      const existingCountdowns = localStorage.getItem(`countdowns_${values.category}`)
+      // Get existing countdowns from localStorage using user-specific key
+      const storageKey = getUserStorageKey(`countdowns_${values.category}`);
+      const existingCountdowns = localStorage.getItem(storageKey)
       const countdowns = existingCountdowns ? JSON.parse(existingCountdowns) : []
       
       // Add the new countdown to the array
       countdowns.push(newCountdown)
       
       // Save the updated countdowns to localStorage
-      localStorage.setItem(`countdowns_${values.category}`, JSON.stringify(countdowns))
+      localStorage.setItem(storageKey, JSON.stringify(countdowns))
       
       // Show success message
       setShowSuccess(true)

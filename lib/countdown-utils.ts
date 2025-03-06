@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid"
 import type { Countdown, TimeRemaining } from "./types"
+import { getUserStorageKey } from "./user-utils"
 
 // Utility function to standardize date format and handling
 export function standardizeDate(dateInput: string): string {
@@ -147,130 +148,7 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
 
 // Get default countdowns based on category
 export function getDefaultCountdowns(category: string): Countdown[] {
-  const currentYear = new Date().getFullYear()
-  const nextYear = currentYear + 1
-  const lastYear = currentYear - 1
-
-  if (category === "general") {
-    return [
-      // New Year
-      {
-        id: uuidv4(),
-        title: `New Year ${nextYear}`,
-        date: `${nextYear}-01-01`,
-        description: `Countdown to ${nextYear}`,
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      // Canadian Holidays
-      {
-        id: uuidv4(),
-        title: "Canada Day",
-        date: `${currentYear}-07-01`,
-        description: "National Day of Canada",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Thanksgiving (Canada)",
-        date: `${currentYear}-10-09`,
-        description: "Canadian Thanksgiving",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Christmas",
-        date: `${currentYear}-12-25`,
-        description: "Christmas Day",
-        hidden: false,
-        pinned: true,
-        isCountUp: false,
-      },
-      // Korean Holidays
-      {
-        id: uuidv4(),
-        title: "Seollal (Korean New Year)",
-        date: `${currentYear}-02-10`,
-        description: "Korean Lunar New Year",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Chuseok (Korean Thanksgiving)",
-        date: `${currentYear}-09-17`,
-        description: "Korean Harvest Festival",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-    ]
-  } else if (category === "personal") {
-    return [
-      {
-        id: uuidv4(),
-        title: "My Birthday",
-        date: `${currentYear}-06-15`,
-        description: "Add your actual birth date",
-        hidden: false,
-        pinned: true,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Mom's Birthday",
-        date: `${currentYear}-03-20`,
-        description: "Add your mom's actual birth date",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Dad's Birthday",
-        date: `${currentYear}-09-05`,
-        description: "Add your dad's actual birth date",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      {
-        id: uuidv4(),
-        title: "Best Friend's Birthday",
-        date: `${currentYear}-11-12`,
-        description: "Add your friend's actual birth date",
-        hidden: false,
-        pinned: false,
-        isCountUp: false,
-      },
-      // Countup examples
-      {
-        id: uuidv4(),
-        title: "First Job Anniversary",
-        date: `${lastYear}-03-15`,
-        description: "Time since starting my first job",
-        hidden: false,
-        pinned: false,
-        isCountUp: true,
-      },
-      {
-        id: uuidv4(),
-        title: "Relationship Anniversary",
-        date: `${lastYear}-08-22`,
-        description: "Time since we started dating",
-        hidden: false,
-        pinned: true,
-        isCountUp: true,
-      },
-    ]
-  }
-
+  // Return empty arrays for all categories
   return []
 }
 
@@ -280,17 +158,15 @@ export function getCountdowns(category: string): Countdown[] {
     return []
   }
 
-  const storedCountdowns = localStorage.getItem(`countdowns_${category}`)
+  const storageKey = getUserStorageKey(`countdowns_${category}`)
+  const storedCountdowns = localStorage.getItem(storageKey)
 
   if (storedCountdowns) {
     return JSON.parse(storedCountdowns)
   }
 
-  // If no stored countdowns, get defaults and save them
-  const defaultCountdowns = getDefaultCountdowns(category)
-  localStorage.setItem(`countdowns_${category}`, JSON.stringify(defaultCountdowns))
-
-  return defaultCountdowns
+  // If no stored countdowns, just return an empty array
+  return []
 }
 
 // Get all pinned countdowns from all categories
@@ -303,7 +179,8 @@ export function getAllPinnedCountdowns(): Countdown[] {
   let pinnedCountdowns: Countdown[] = []
 
   categories.forEach((category) => {
-    const storedCountdowns = localStorage.getItem(`countdowns_${category}`) || "[]"
+    const storageKey = getUserStorageKey(`countdowns_${category}`)
+    const storedCountdowns = localStorage.getItem(storageKey) || "[]"
     try {
       const countdowns: Countdown[] = JSON.parse(storedCountdowns)
       const pinnedFromCategory = countdowns

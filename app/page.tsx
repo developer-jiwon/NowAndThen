@@ -3,6 +3,7 @@ import CountdownGrid from "@/components/countdown-grid"
 import AddCountdownForm from "@/components/add-countdown-form"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
+import UserIdentifier from "@/components/user-identifier"
 
 export default function Home() {
   return (
@@ -12,14 +13,16 @@ export default function Home() {
           <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal">Now & Then</h1>
           <Clock />
         </div>
+        
+        <UserIdentifier />
 
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-xs sm:text-sm">
-            <TabsTrigger value="pinned" data-value="pinned">Pinned</TabsTrigger>
-            <TabsTrigger value="general" data-value="general">General</TabsTrigger>
-            <TabsTrigger value="personal" data-value="personal">Personal</TabsTrigger>
-            <TabsTrigger value="custom" data-value="custom">Custom</TabsTrigger>
-            <TabsTrigger value="hidden" data-value="hidden">Hidden</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-6 text-[10px] sm:text-xs h-8">
+            <TabsTrigger value="pinned" data-value="pinned" className="px-2 py-1">Pinned</TabsTrigger>
+            <TabsTrigger value="general" data-value="general" className="px-2 py-1">General</TabsTrigger>
+            <TabsTrigger value="personal" data-value="personal" className="px-2 py-1">Personal</TabsTrigger>
+            <TabsTrigger value="custom" data-value="custom" className="px-2 py-1">Custom</TabsTrigger>
+            <TabsTrigger value="hidden" data-value="hidden" className="px-2 py-1">Hidden</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pinned">

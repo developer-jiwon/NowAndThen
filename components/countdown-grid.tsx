@@ -25,6 +25,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { getUserStorageKey } from "@/lib/user-utils"
 
 interface SortableCardProps {
   countdown: Countdown
@@ -102,7 +103,8 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       // For the hidden tab, collect all hidden countdowns from all categories
       const categories = ["general", "personal", "custom"];
       categories.forEach(cat => {
-        const catCountdowns = JSON.parse(localStorage.getItem(`countdowns_${cat}`) || "[]");
+        const storageKey = getUserStorageKey(`countdowns_${cat}`);
+        const catCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]");
         const hiddenCountdowns = catCountdowns.filter((c: Countdown) => c.hidden);
         // Add original category info to each countdown
         hiddenCountdowns.forEach((c: Countdown) => {
@@ -126,9 +128,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       const countdownToRemove = countdowns.find((c) => c.id === id)
       if (countdownToRemove && countdownToRemove.originalCategory) {
         const originalCategory = countdownToRemove.originalCategory
-        const originalCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]")
+        const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+        const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
         const updatedOriginalCountdowns = originalCountdowns.filter((c: Countdown) => c.id !== id)
-        localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns))
+        localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
       }
     }
 
@@ -137,7 +140,8 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
 
     // Update localStorage for the current category
     if (category !== "pinned") {
-      localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCountdowns))
+      const storageKey = getUserStorageKey(`countdowns_${category}`);
+      localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
     }
   }
 
@@ -153,11 +157,12 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       const originalCategory = countdownToToggle.originalCategory || "custom";
       
       // Update the countdown in its original category
-      const originalCategoryCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]");
+      const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+      const originalCategoryCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]");
       const updatedOriginalCountdowns = originalCategoryCountdowns.map((c: Countdown) =>
         c.id === id ? { ...c, hidden: false } : c
       );
-      localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns));
+      localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns));
       
       // Remove from the current view (hidden tab)
       setCountdowns((prev) => prev.filter((c) => c.id !== id));
@@ -185,14 +190,16 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       const countdownToUpdate = countdowns.find((c) => c.id === id)
       if (countdownToUpdate && countdownToUpdate.originalCategory) {
         const originalCategory = countdownToUpdate.originalCategory
-        const originalCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]")
+        const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+        const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
         const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
           c.id === id ? { ...c, hidden: !countdownToUpdate.hidden } : c,
         )
-        localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns))
+        localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
       }
     } else {
-      localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCountdowns))
+      const storageKey = getUserStorageKey(`countdowns_${category}`);
+      localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
     }
   }
 
@@ -218,11 +225,12 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
     const originalCategory = category === "pinned" ? countdownToToggle.originalCategory : category
 
     if (originalCategory) {
-      const originalCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]")
+      const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+      const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
       const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
         c.id === id ? { ...c, pinned: !isPinned } : c,
       )
-      localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns))
+      localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
     }
   }
 
@@ -242,11 +250,13 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       setCountdowns(updatedCurrentCategoryCountdowns)
       
       if (category !== "pinned") {
-        localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCurrentCategoryCountdowns))
+        const currentStorageKey = getUserStorageKey(`countdowns_${category}`);
+        localStorage.setItem(currentStorageKey, JSON.stringify(updatedCurrentCategoryCountdowns))
       }
 
       // Add to new category
-      const targetCategoryCountdowns = JSON.parse(localStorage.getItem(`countdowns_${newCategory}`) || "[]")
+      const newStorageKey = getUserStorageKey(`countdowns_${newCategory}`);
+      const targetCategoryCountdowns = JSON.parse(localStorage.getItem(newStorageKey) || "[]")
       const updatedCountdown = {
         ...countdownToUpdate,
         ...updatedData,
@@ -255,7 +265,7 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       
       // Ensure we're at the beginning of the array for better visibility
       const updatedTargetCategoryCountdowns = [updatedCountdown, ...targetCategoryCountdowns]
-      localStorage.setItem(`countdowns_${newCategory}`, JSON.stringify(updatedTargetCategoryCountdowns))
+      localStorage.setItem(newStorageKey, JSON.stringify(updatedTargetCategoryCountdowns))
       
       // If we're in the pinned category and the countdown is pinned, update it there too
       if (countdownToUpdate.pinned && category !== "pinned") {
@@ -286,14 +296,16 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       const countdownToUpdate = countdowns.find((c) => c.id === id)
       if (countdownToUpdate && countdownToUpdate.originalCategory) {
         const originalCategory = countdownToUpdate.originalCategory
-        const originalCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]")
+        const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+        const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
         const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
           c.id === id ? { ...c, ...updatedData } : c
         )
-        localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns))
+        localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
       }
     } else {
-      localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCountdowns))
+      const storageKey = getUserStorageKey(`countdowns_${category}`);
+      localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
     }
 
     // Close the edit form
@@ -320,7 +332,8 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
 
         // Save the new order to localStorage
         if (category !== "pinned") {
-          localStorage.setItem(`countdowns_${category}`, JSON.stringify(reorderedItems))
+          const storageKey = getUserStorageKey(`countdowns_${category}`);
+          localStorage.setItem(storageKey, JSON.stringify(reorderedItems))
         } else {
           // For pinned items, we need to update the order in the pinned view
           // but we don't change the order in their original categories
