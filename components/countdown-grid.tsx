@@ -55,15 +55,14 @@ function SortableCard({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group w-full max-w-sm">
-      <div
-        className="absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center cursor-grab z-10 bg-gradient-to-r from-gray-100/80 to-transparent"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-6 w-6 text-gray-400" />
-      </div>
-      <div className="pl-6">
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className="relative group w-full max-w-sm cursor-grab active:cursor-grabbing"
+      {...attributes}
+      {...listeners}
+    >
+      <div>
         <CountdownCard
           countdown={countdown}
           onRemove={onRemove}
@@ -381,8 +380,7 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
   return (
     <>
       <div className="mb-4 text-sm text-gray-500 flex items-center justify-center">
-        <GripVertical className="h-4 w-4 mr-1" />
-        <span>Drag the handle on the left side of each card to reorder</span>
+        <span>Drag cards to reorder</span>
       </div>
 
       <DndContext

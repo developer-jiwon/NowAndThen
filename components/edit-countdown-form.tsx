@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2 } from "lucide-react"
 import type { Countdown } from "@/lib/types"
 import { CountdownForm, CountdownFormValues } from "./add-countdown-form"
+import { standardizeDate, isDateInPast } from "@/lib/countdown-utils"
 
 interface EditCountdownFormProps {
   countdown: Countdown
@@ -16,8 +17,8 @@ interface EditCountdownFormProps {
 export default function EditCountdownForm({ countdown, onSave, onCancel }: EditCountdownFormProps) {
   const [success, setSuccess] = useState(false)
 
-  // Format the date for the form (YYYY-MM-DD)
-  const formattedDate = new Date(countdown.date).toISOString().split('T')[0]
+  // Format the date for the form (YYYY-MM-DD) using our utility function
+  const formattedDate = standardizeDate(countdown.date)
 
   // Determine the current category
   const currentCategory = countdown.originalCategory || "custom"
@@ -32,27 +33,26 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     date: formattedDate,
     description: countdown.description || "",
     category: validCategory,
+    isCountUp: countdown.isCountUp
   }
 
   function onSubmit(values: CountdownFormValues) {
-    // Create a date object with time set to midnight
-    const dateObj = new Date(values.date);
-    dateObj.setHours(0, 0, 0, 0);
+    // Standardize the date format
+    const standardizedDate = standardizeDate(values.date)
     
-    // Determine if this is a count up event (past date)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const isCountUp = dateObj < today;
+    // Determine if this is a count up event (past date) using our utility function
+    const isCountUp = isDateInPast(standardizedDate)
     
-    // Create updated countdown
+    console.log("Edit form - Standardized date:", standardizedDate)
+    console.log("Edit form - isCountUp:", isCountUp)
+    
+    // Create updated countdown with the standardized date
     const updatedCountdown: Partial<Countdown> = {
       title: values.title,
-      date: dateObj.toISOString(), // Ensure we're using ISO string format
+      date: standardizedDate, // Use the standardized date
       description: values.description || "",
-      isCountUp: isCountUp, // Make sure isCountUp is explicitly set
+      isCountUp: isCountUp,
     }
-
-    console.log("Saving countdown with date:", dateObj.toISOString(), "isCountUp:", isCountUp);
 
     // Call the onSave callback with the updated countdown and new category if changed
     const newCategory = values.category !== validCategory ? values.category : undefined
