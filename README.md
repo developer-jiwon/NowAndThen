@@ -1,3 +1,7 @@
+# Now & Then
+
+A countdown timer application built with Next.js that helps you keep track of important dates and events.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
