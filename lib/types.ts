@@ -5,7 +5,7 @@ export interface Countdown {
   description?: string
   hidden: boolean
   pinned?: boolean
-  originalCategory?: string
+  originalCategory?: "custom" | "general" | "personal" // "custom" is deprecated but kept for backward compatibility
   isCountUp?: boolean
 }
 

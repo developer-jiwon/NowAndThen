@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import CountdownCard from "./countdown-card"
+import EditCountdownForm from "./edit-countdown-form"
 import { getCountdowns, getAllPinnedCountdowns } from "@/lib/countdown-utils"
 import type { Countdown } from "@/lib/types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -30,6 +31,7 @@ interface SortableCardProps {
   onRemove: (id: string) => void
   onToggleVisibility: (id: string) => void
   onTogglePin?: (id: string) => void
+  onEdit?: (id: string) => void
   category: string
   isDragging: boolean
 }
@@ -39,6 +41,7 @@ function SortableCard({
   onRemove,
   onToggleVisibility,
   onTogglePin,
+  onEdit,
   category,
   isDragging,
 }: SortableCardProps) {
@@ -52,7 +55,7 @@ function SortableCard({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
+    <div ref={setNodeRef} style={style} className="relative group w-full max-w-sm">
       <div
         className="absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center cursor-grab z-10 bg-gradient-to-r from-gray-100/80 to-transparent"
         {...attributes}
@@ -66,6 +69,7 @@ function SortableCard({
           onRemove={onRemove}
           onToggleVisibility={onToggleVisibility}
           onTogglePin={onTogglePin}
+          onEdit={onEdit}
           category={category}
         />
       </div>
@@ -73,10 +77,11 @@ function SortableCard({
   )
 }
 
-export default function CountdownGrid({ category }: { category: string }) {
+export default function CountdownGrid({ category, showHidden = false }: { category: string, showHidden?: boolean }) {
   const [countdowns, setCountdowns] = useState<Countdown[]>([])
   const [loading, setLoading] = useState(true)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -94,7 +99,19 @@ export default function CountdownGrid({ category }: { category: string }) {
     // Load countdowns from localStorage or default ones
     let loadedCountdowns: Countdown[] = []
 
-    if (category === "pinned") {
+    if (category === "hidden") {
+      // For the hidden tab, collect all hidden countdowns from all categories
+      const categories = ["general", "personal", "custom"];
+      categories.forEach(cat => {
+        const catCountdowns = JSON.parse(localStorage.getItem(`countdowns_${cat}`) || "[]");
+        const hiddenCountdowns = catCountdowns.filter((c: Countdown) => c.hidden);
+        // Add original category info to each countdown
+        hiddenCountdowns.forEach((c: Countdown) => {
+          c.originalCategory = cat as "general" | "personal" | "custom";
+        });
+        loadedCountdowns = [...loadedCountdowns, ...hiddenCountdowns];
+      });
+    } else if (category === "pinned") {
       loadedCountdowns = getAllPinnedCountdowns()
     } else {
       loadedCountdowns = getCountdowns(category)
@@ -126,6 +143,38 @@ export default function CountdownGrid({ category }: { category: string }) {
   }
 
   const handleToggleVisibility = (id: string) => {
+    const countdownToToggle = countdowns.find((c) => c.id === id);
+    if (!countdownToToggle) return;
+
+    const isCurrentlyHidden = countdownToToggle.hidden;
+    
+    // If we're in the hidden tab and unhiding a countdown
+    if (category === "hidden" && isCurrentlyHidden) {
+      // Get the original category
+      const originalCategory = countdownToToggle.originalCategory || "custom";
+      
+      // Update the countdown in its original category
+      const originalCategoryCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]");
+      const updatedOriginalCountdowns = originalCategoryCountdowns.map((c: Countdown) =>
+        c.id === id ? { ...c, hidden: false } : c
+      );
+      localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns));
+      
+      // Remove from the current view (hidden tab)
+      setCountdowns((prev) => prev.filter((c) => c.id !== id));
+      
+      // Redirect to the original category tab (using client-side navigation)
+      const tabLinks = document.querySelectorAll('[role="tab"]');
+      tabLinks.forEach((tab) => {
+        if ((tab as HTMLElement).getAttribute('data-state') !== 'active' && 
+            (tab as HTMLElement).getAttribute('data-value') === originalCategory) {
+          (tab as HTMLElement).click();
+        }
+      });
+      
+      return;
+    }
+
     const updatedCountdowns = countdowns.map((countdown) =>
       countdown.id === id ? { ...countdown, hidden: !countdown.hidden } : countdown,
     )
@@ -178,6 +227,84 @@ export default function CountdownGrid({ category }: { category: string }) {
     }
   }
 
+  const handleEdit = (id: string) => {
+    setEditingCountdownId(id)
+  }
+
+  const handleSaveEdit = (id: string, updatedData: Partial<Countdown>, newCategory?: string) => {
+    // Get the countdown to update
+    const countdownToUpdate = countdowns.find((c) => c.id === id)
+    if (!countdownToUpdate) return
+
+    // If category is changing, we need to move the countdown to the new category
+    if (newCategory && newCategory !== category) {
+      // Remove from current category
+      const updatedCurrentCategoryCountdowns = countdowns.filter((c) => c.id !== id)
+      setCountdowns(updatedCurrentCategoryCountdowns)
+      
+      if (category !== "pinned") {
+        localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCurrentCategoryCountdowns))
+      }
+
+      // Add to new category
+      const targetCategoryCountdowns = JSON.parse(localStorage.getItem(`countdowns_${newCategory}`) || "[]")
+      const updatedCountdown = {
+        ...countdownToUpdate,
+        ...updatedData,
+        originalCategory: category === "pinned" ? countdownToUpdate.originalCategory : undefined
+      }
+      
+      // Ensure we're at the beginning of the array for better visibility
+      const updatedTargetCategoryCountdowns = [updatedCountdown, ...targetCategoryCountdowns]
+      localStorage.setItem(`countdowns_${newCategory}`, JSON.stringify(updatedTargetCategoryCountdowns))
+      
+      // If we're in the pinned category and the countdown is pinned, update it there too
+      if (countdownToUpdate.pinned && category !== "pinned") {
+        const pinnedCountdowns = getAllPinnedCountdowns()
+        const updatedPinnedCountdowns = pinnedCountdowns.map((c) => 
+          c.id === id 
+            ? { ...c, ...updatedData, originalCategory: newCategory } 
+            : c
+        )
+        // We don't directly save pinned countdowns as they're derived from other categories
+      }
+      
+      // Close the edit form
+      setEditingCountdownId(null)
+      return
+    }
+
+    // Update the countdown in the current list
+    const updatedCountdowns = countdowns.map((countdown) =>
+      countdown.id === id ? { ...countdown, ...updatedData } : countdown
+    )
+    
+    setCountdowns(updatedCountdowns)
+
+    // Update in localStorage
+    if (category === "pinned") {
+      // For pinned countdowns, we need to find the original category and update there
+      const countdownToUpdate = countdowns.find((c) => c.id === id)
+      if (countdownToUpdate && countdownToUpdate.originalCategory) {
+        const originalCategory = countdownToUpdate.originalCategory
+        const originalCountdowns = JSON.parse(localStorage.getItem(`countdowns_${originalCategory}`) || "[]")
+        const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
+          c.id === id ? { ...c, ...updatedData } : c
+        )
+        localStorage.setItem(`countdowns_${originalCategory}`, JSON.stringify(updatedOriginalCountdowns))
+      }
+    } else {
+      localStorage.setItem(`countdowns_${category}`, JSON.stringify(updatedCountdowns))
+    }
+
+    // Close the edit form
+    setEditingCountdownId(null)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingCountdownId(null)
+  }
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
   }
@@ -218,6 +345,20 @@ export default function CountdownGrid({ category }: { category: string }) {
     return <div className="text-center py-12">Loading timers...</div>
   }
 
+  // If we're editing a countdown, show the edit form
+  if (editingCountdownId) {
+    const countdownToEdit = countdowns.find((c) => c.id === editingCountdownId)
+    if (countdownToEdit) {
+      return (
+        <EditCountdownForm
+          countdown={countdownToEdit}
+          onSave={handleSaveEdit}
+          onCancel={handleCancelEdit}
+        />
+      )
+    }
+  }
+
   if (countdowns.length === 0) {
     return (
       <Alert className="bg-gray-50 border-gray-200">
@@ -225,17 +366,21 @@ export default function CountdownGrid({ category }: { category: string }) {
         <AlertDescription>
           {category === "pinned"
             ? "No pinned timers found. Pin your favorite timers from other categories to see them here."
-            : `No timers found in this category. ${category === "custom" ? "Add a custom timer using the form above." : ""}`}
+            : category === "custom" 
+              ? "Use the form above to create custom timers."
+              : "No timers found in this category."}
         </AlertDescription>
       </Alert>
     )
   }
 
-  const visibleCountdowns = countdowns.filter((countdown) => !countdown.hidden)
+  const visibleCountdowns = showHidden 
+    ? countdowns // In the hidden tab, show all countdowns (which are all hidden)
+    : countdowns.filter((countdown) => !countdown.hidden)
 
   return (
     <>
-      <div className="mb-4 text-sm text-gray-500 flex items-center">
+      <div className="mb-4 text-sm text-gray-500 flex items-center justify-center">
         <GripVertical className="h-4 w-4 mr-1" />
         <span>Drag the handle on the left side of each card to reorder</span>
       </div>
@@ -247,7 +392,7 @@ export default function CountdownGrid({ category }: { category: string }) {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={visibleCountdowns.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 justify-items-center mx-auto">
             {visibleCountdowns.map((countdown) => (
               <SortableCard
                 key={countdown.id}
@@ -255,6 +400,7 @@ export default function CountdownGrid({ category }: { category: string }) {
                 onRemove={handleRemove}
                 onToggleVisibility={handleToggleVisibility}
                 onTogglePin={handleTogglePin}
+                onEdit={handleEdit}
                 category={category}
                 isDragging={activeId === countdown.id}
               />
