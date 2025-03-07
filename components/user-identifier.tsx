@@ -41,37 +41,6 @@ export default function UserIdentifier() {
         .then(() => {
           console.log("UserIdentifier: URL copied to clipboard");
           setCopied(true);
-          
-          // Show a notification that the URL was copied
-          if (typeof document !== "undefined") {
-            const notification = document.createElement("div");
-            notification.style.position = "fixed";
-            notification.style.bottom = "60px";
-            notification.style.left = "50%";
-            notification.style.transform = "translateX(-50%)";
-            notification.style.backgroundColor = "rgba(54, 69, 79, 0.95)";
-            notification.style.color = "white";
-            notification.style.padding = "12px 20px";
-            notification.style.borderRadius = "8px";
-            notification.style.fontSize = "14px";
-            notification.style.fontWeight = "bold";
-            notification.style.zIndex = "1000";
-            notification.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-            notification.style.maxWidth = "90%";
-            notification.style.textAlign = "center";
-            notification.textContent = "✅ Shareable link copied to clipboard!";
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-              notification.style.opacity = "0";
-              notification.style.transition = "opacity 0.5s ease";
-              setTimeout(() => {
-                document.body.removeChild(notification);
-              }, 500);
-            }, 2000);
-          }
-          
           setTimeout(() => setCopied(false), 2000);
         })
         .catch(err => {

@@ -107,35 +107,9 @@ export function processUrlParameters(): void {
       // Import the data
       importCountdownsFromSharedData(sharedData, userId);
       
-      // Show a notification that data was imported
-      if (typeof document !== "undefined") {
-        const notification = document.createElement("div");
-        notification.style.position = "fixed";
-        notification.style.bottom = "20px";
-        notification.style.left = "50%";
-        notification.style.transform = "translateX(-50%)";
-        notification.style.backgroundColor = "rgba(54, 69, 79, 0.95)";
-        notification.style.color = "white";
-        notification.style.padding = "12px 20px";
-        notification.style.borderRadius = "8px";
-        notification.style.fontSize = "14px";
-        notification.style.fontWeight = "bold";
-        notification.style.zIndex = "1000";
-        notification.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-        notification.style.maxWidth = "90%";
-        notification.style.textAlign = "center";
-        notification.textContent = "✅ Countdowns imported successfully!";
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-          notification.style.opacity = "0";
-          notification.style.transition = "opacity 0.5s ease";
-          setTimeout(() => {
-            document.body.removeChild(notification);
-          }, 500);
-        }, 4000);
-      }
+      console.log("Data imported successfully");
+      
+      // No notification popup - removed as requested
     } catch (error) {
       console.error("Error importing shared data:", error);
     }
@@ -304,18 +278,7 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
     // Set a flag to indicate data has been imported
     localStorage.setItem(DATA_IMPORTED_KEY, 'true');
     
-    // Force a page reload to ensure the UI reflects the imported data
-    if (importedCount > 0) {
-      console.log("Reloading page to reflect imported data...");
-      setTimeout(() => {
-        // Preserve the data parameter in the URL when reloading
-        const url = new URL(window.location.href);
-        if (!url.searchParams.has('data')) {
-          url.searchParams.set('data', sharedData);
-        }
-        window.location.href = url.toString();
-      }, 1500); // Delay to allow the notification to be seen
-    }
+    // No page reload or notification - removed as requested
   } catch (error) {
     console.error("Error importing shared data:", error);
   }

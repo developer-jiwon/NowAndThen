@@ -240,11 +240,11 @@ export default function CountdownCard({
 
   // Illustrative border style
   const borderStyle = {
-    borderWidth: '4px',
+    borderWidth: '2px',
     borderStyle: 'solid',
-    borderColor: charcoalColor,
+    borderColor: 'rgba(54, 69, 79, 0.25)', // 75% transparent charcoal
     borderRadius: '16px',
-    boxShadow: `4px 4px 0 ${charcoalColor}`,
+    boxShadow: `3px 3px 0 rgba(54, 69, 79, 0.25)`, // 75% transparent charcoal shadow
     background: isCountUp 
       ? 'rgba(241, 192, 192, 0.25)' // Countup background
       : (category === "custom" 
