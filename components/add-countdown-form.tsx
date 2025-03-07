@@ -25,12 +25,12 @@ const countDownColor = "#8BCFBE"; // Mint green for count down (matching the car
 
 export const formSchema = z.object({
   title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
+    message: "Title too short",
   }).max(30, {
-    message: "Title cannot exceed 30 characters."
+    message: "Title too long"
   }),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Please enter a valid date",
+    message: "Need a valid date",
   }),
   category: z.enum(["general", "personal"]).default("general"),
   isCountUp: z.boolean().optional(),
@@ -125,6 +125,18 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
     resetForm();
   }
 
+  // Custom error message component with proper typing
+  const CustomFormMessage = ({ name }: { name: keyof CountdownFormValues }) => {
+    const error = form.formState.errors[name];
+    if (!error) return null;
+    
+    return (
+      <div className="text-xs text-[#36454F]/70 mt-1 font-medium animate-fade-in-out">
+        {error.message as string}
+      </div>
+    );
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
@@ -137,7 +149,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
               <FormControl>
                 <Input placeholder="Enter title" {...field} maxLength={30} className="h-8" />
               </FormControl>
-              <FormMessage />
+              <CustomFormMessage name="title" />
             </FormItem>
           )}
         />
@@ -189,7 +201,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   </div>
                 )}
               </div>
-              <FormMessage />
+              <CustomFormMessage name="date" />
             </FormItem>
           )}
         />
@@ -214,7 +226,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   <SelectItem value="personal">Personal</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <CustomFormMessage name="category" />
             </FormItem>
           )}
         />
