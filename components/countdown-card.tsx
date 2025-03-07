@@ -272,7 +272,7 @@ export default function CountdownCard({
       <AnimatePresence>
         {showDeleteConfirm && (
           <motion.div 
-            className="fixed inset-0 bg-black/15 backdrop-blur-[1px] z-50 flex items-center justify-center px-4"
+            className="absolute inset-0 bg-black/15 backdrop-blur-[1px] z-50 flex items-center justify-center px-4 rounded-[16px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
