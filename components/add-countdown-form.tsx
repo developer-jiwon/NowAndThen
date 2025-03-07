@@ -53,11 +53,10 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues || {
       title: "",
-      date: new Date().toISOString().split("T")[0],
+      date: "",
       category: "general",
-      isCountUp: false,
     },
-  });
+  })
 
   // Initialize the count up/down status based on the default date
   useEffect(() => {
@@ -76,6 +75,15 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
       console.log("Initial date check:", standardizedDate, "isCountUp:", isPastDate)
     }
   }, [form, defaultValues])
+
+  // Add a reset function that we can call after submission
+  const resetForm = () => {
+    form.reset({
+      title: "",
+      date: "",
+      category: "general",
+    });
+  };
 
   // Helper function to handle date input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
@@ -98,23 +106,23 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
 
   // Function to handle form submission with isCountUp value
   const handleSubmit = (values: CountdownFormValues) => {
-    console.log("Form values before submission:", values);
-    
     // Get the exact date value from the form
     const exactDate = values.date;
-    console.log("Exact date for submission:", exactDate);
+    console.log("Exact date from form:", exactDate);
     
     // Determine if this is a count up event (past date)
     const isPastDate = isDateInPast(exactDate);
-    
-    console.log("Submitting form with date:", exactDate);
     console.log("isCountUp:", isPastDate);
     
+    // Pass all values to the parent component
     onSubmit({
       ...values,
       date: exactDate, // Use the exact date value
       isCountUp: isPastDate // Explicitly pass isCountUp to the parent component
     });
+    
+    // Reset the form after submission
+    resetForm();
   }
 
   return (
@@ -221,7 +229,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
 
 export default function AddCountdownForm() {
   const [showSuccess, setShowSuccess] = useState(false)
-
+  
   function onSubmit(values: CountdownFormValues) {
     console.log("AddCountdownForm received values:", values);
     
@@ -263,13 +271,12 @@ export default function AddCountdownForm() {
         detail: { category: values.category }
       }))
       
-      // Show success message
+      // Show success message with minimal design
       setShowSuccess(true)
       
-      // Hide success message after 3 seconds
+      // Hide success message after 2 seconds
       setTimeout(() => {
         setShowSuccess(false)
-        // Don't reload the page, let React handle the UI update
       }, 2000)
     } catch (error) {
       console.error("Error saving countdown:", error)
@@ -284,8 +291,8 @@ export default function AddCountdownForm() {
       </CardHeader>
       <CardContent className="pt-2 px-4">
         {showSuccess && (
-          <div className="mb-3 bg-[#36454F] border border-[#36454F] rounded-lg p-3 flex items-center">
-            <div className="text-sm text-white">Timer added successfully!</div>
+          <div className="mb-2 py-1 text-xs text-center text-[#36454F]/70 animate-fade-in-out">
+            Timer added
           </div>
         )}
         <CountdownForm onSubmit={onSubmit} />

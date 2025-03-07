@@ -61,6 +61,17 @@ module.exports = {
       fontFamily: {
         merriweather: ["var(--font-merriweather)"],
       },
+      keyframes: {
+        "fade-in-out": {
+          "0%": { opacity: 0 },
+          "20%": { opacity: 1 },
+          "80%": { opacity: 1 },
+          "100%": { opacity: 0 },
+        },
+      },
+      animation: {
+        "fade-in-out": "fade-in-out 2s ease-in-out",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
