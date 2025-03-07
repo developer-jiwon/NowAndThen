@@ -98,83 +98,167 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
   useEffect(() => {
     // Load countdowns from localStorage or default ones
     const loadCountdowns = () => {
-      let loadedCountdowns: Countdown[] = []
+      console.log(`Loading countdowns for category: ${category}`);
+      let loadedCountdowns: Countdown[] = [];
 
-      if (category === "hidden") {
-        // For the hidden tab, collect all hidden countdowns from all categories
-        const categories = ["general", "personal", "custom"];
-        categories.forEach(cat => {
-          const storageKey = getUserStorageKey(`countdowns_${cat}`);
-          const catCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]");
-          const hiddenCountdowns = catCountdowns.filter((c: Countdown) => c.hidden);
-          // Add original category info to each countdown
-          hiddenCountdowns.forEach((c: Countdown) => {
-            c.originalCategory = cat as "general" | "personal" | "custom";
+      try {
+        if (category === "hidden") {
+          // For the hidden tab, collect all hidden countdowns from all categories
+          const categories = ["general", "personal", "custom"];
+          categories.forEach(cat => {
+            const storageKey = getUserStorageKey(`countdowns_${cat}`);
+            const storedData = localStorage.getItem(storageKey);
+            if (!storedData) return;
+            
+            try {
+              const catCountdowns = JSON.parse(storedData);
+              const hiddenCountdowns = catCountdowns.filter((c: Countdown) => c.hidden);
+              // Add original category info to each countdown
+              hiddenCountdowns.forEach((c: Countdown) => {
+                c.originalCategory = cat as "general" | "personal" | "custom";
+              });
+              loadedCountdowns = [...loadedCountdowns, ...hiddenCountdowns];
+            } catch (error) {
+              console.error(`Error parsing countdowns for category ${cat}:`, error);
+            }
           });
-          loadedCountdowns = [...loadedCountdowns, ...hiddenCountdowns];
-        });
-      } else if (category === "pinned") {
-        loadedCountdowns = getAllPinnedCountdowns()
-      } else {
-        loadedCountdowns = getCountdowns(category)
+        } else if (category === "pinned") {
+          loadedCountdowns = getAllPinnedCountdowns();
+        } else {
+          const storageKey = getUserStorageKey(`countdowns_${category}`);
+          const storedData = localStorage.getItem(storageKey);
+          if (storedData) {
+            try {
+              loadedCountdowns = JSON.parse(storedData);
+            } catch (error) {
+              console.error(`Error parsing countdowns for category ${category}:`, error);
+              loadedCountdowns = [];
+            }
+          } else {
+            loadedCountdowns = [];
+          }
+        }
+
+        console.log(`Loaded ${loadedCountdowns.length} countdowns for category: ${category}`);
+        setCountdowns(loadedCountdowns);
+        setLoading(false);
+      } catch (error) {
+        console.error(`Error loading countdowns for category ${category}:`, error);
+        setCountdowns([]);
+        setLoading(false);
       }
+    };
 
-      setCountdowns(loadedCountdowns)
-      setLoading(false)
-    }
-
-    loadCountdowns()
+    loadCountdowns();
 
     // Set up a storage event listener to refresh data when localStorage changes
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key && event.key.includes('countdowns_')) {
-        loadCountdowns()
+        console.log(`Storage changed for key: ${event.key}, reloading countdowns`);
+        loadCountdowns();
       }
-    }
+    };
 
     // Set up a custom event listener for countdown updates
     const handleCountdownsUpdated = (event: Event) => {
-      const customEvent = event as CustomEvent
+      const customEvent = event as CustomEvent;
       if (customEvent.detail && 
           (customEvent.detail.category === category || 
            category === 'pinned' || 
            category === 'hidden')) {
-        loadCountdowns()
+        console.log(`Received countdownsUpdated event for category: ${customEvent.detail.category}, reloading countdowns`);
+        loadCountdowns();
       }
-    }
+    };
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('countdownsUpdated', handleCountdownsUpdated)
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('countdownsUpdated', handleCountdownsUpdated);
 
     // Clean up the event listeners
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('countdownsUpdated', handleCountdownsUpdated)
-    }
-  }, [category])
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('countdownsUpdated', handleCountdownsUpdated);
+    };
+  }, [category]);
 
   const handleRemove = (id: string) => {
-    if (category === "pinned") {
-      // For pinned countdowns, we need to find the original category and update there
-      const countdownToRemove = countdowns.find((c) => c.id === id)
-      if (countdownToRemove && countdownToRemove.originalCategory) {
-        const originalCategory = countdownToRemove.originalCategory
-        const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
-        const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
-        const updatedOriginalCountdowns = originalCountdowns.filter((c: Countdown) => c.id !== id)
-        localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
+    console.log(`Deleting countdown with ID: ${id} from category: ${category}`);
+    
+    try {
+      // Find the countdown to be removed
+      const countdownToRemove = countdowns.find(c => c.id === id);
+      if (!countdownToRemove) {
+        console.error(`Countdown with ID ${id} not found in category ${category}`);
+        return;
       }
+      
+      // First, update the UI by removing the countdown from the current view
+      setCountdowns(prevCountdowns => prevCountdowns.filter(c => c.id !== id));
+      
+      // Determine which storage key to update based on the category
+      if (category === "pinned" || category === "hidden") {
+        // For pinned or hidden countdowns, we need to update the original category
+        if (countdownToRemove.originalCategory) {
+          const originalCategory = countdownToRemove.originalCategory;
+          const originalStorageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+          
+          // Get the countdowns from the original category
+          const originalCountdownsStr = localStorage.getItem(originalStorageKey);
+          if (originalCountdownsStr) {
+            const originalCountdowns = JSON.parse(originalCountdownsStr);
+            
+            // Remove the countdown from the original category
+            const updatedOriginalCountdowns = originalCountdowns.filter(
+              (c: Countdown) => c.id !== id
+            );
+            
+            // Save the updated countdowns back to localStorage
+            localStorage.setItem(originalStorageKey, JSON.stringify(updatedOriginalCountdowns));
+            console.log(`Removed countdown from original category: ${originalCategory}`);
+            
+            // Notify components about the update to the original category
+            window.dispatchEvent(
+              new CustomEvent("countdownsUpdated", {
+                detail: { category: originalCategory }
+              })
+            );
+          }
+        }
+      } else {
+        // For regular categories (general, personal, custom), update the current category
+        const storageKey = getUserStorageKey(`countdowns_${category}`);
+        
+        // Get the current countdowns
+        const currentCountdownsStr = localStorage.getItem(storageKey);
+        if (currentCountdownsStr) {
+          const currentCountdowns = JSON.parse(currentCountdownsStr);
+          
+          // Remove the countdown
+          const updatedCountdowns = currentCountdowns.filter(
+            (c: Countdown) => c.id !== id
+          );
+          
+          // Save the updated countdowns back to localStorage
+          localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns));
+          console.log(`Removed countdown from category: ${category}`);
+        }
+      }
+      
+      // Force a reload of all tabs to ensure consistency
+      const categories = ["general", "personal", "custom", "pinned", "hidden"];
+      categories.forEach(cat => {
+        window.dispatchEvent(
+          new CustomEvent("countdownsUpdated", {
+            detail: { category: cat }
+          })
+        );
+      });
+      
+      console.log("Countdown deletion completed successfully");
+    } catch (error) {
+      console.error("Error deleting countdown:", error);
     }
-
-    const updatedCountdowns = countdowns.filter((countdown) => countdown.id !== id)
-    setCountdowns(updatedCountdowns)
-
-    // Update localStorage for the current category
-    if (category !== "pinned") {
-      const storageKey = getUserStorageKey(`countdowns_${category}`);
-      localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
-    }
-  }
+  };
 
   const handleToggleVisibility = (id: string) => {
     const countdownToToggle = countdowns.find((c) => c.id === id);
