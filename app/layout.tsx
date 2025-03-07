@@ -10,8 +10,13 @@ const merriweather = Merriweather({
 })
 
 export const metadata: Metadata = {
-  title: "Countdown Cards",
+  title: "Now & Then",
   description: "Track important dates with customizable countdown cards",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
 }
 
 export default function RootLayout({
@@ -21,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+      </head>
       <body className={`${merriweather.variable}`}>{children}</body>
     </html>
   )
