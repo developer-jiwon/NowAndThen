@@ -284,10 +284,9 @@ export default function AddCountdownForm() {
       </CardHeader>
       <CardContent className="pt-2 px-4">
         {showSuccess && (
-          <Alert className="mb-3 bg-green-50 text-green-800 border-green-200 py-2">
-            <CheckCircle2 className="h-4 w-4 mr-2" />
-            <AlertDescription>Timer added successfully!</AlertDescription>
-          </Alert>
+          <div className="mb-3 bg-[#36454F] border border-[#36454F] rounded-lg p-3 flex items-center">
+            <div className="text-sm text-white">Timer added successfully!</div>
+          </div>
         )}
         <CountdownForm onSubmit={onSubmit} />
       </CardContent>
