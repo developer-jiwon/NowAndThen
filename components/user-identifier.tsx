@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react"
 import { getUserId, exportCountdownsToShareableString, processUrlParameters } from "@/lib/user-utils"
 import { Button } from "@/components/ui/button"
-import { Copy, Check, Share2, Info } from "lucide-react"
+import { Check, Share2 } from "lucide-react"
 
 export default function UserIdentifier() {
   const [userId, setUserId] = useState<string>("")
   const [shareableUrl, setShareableUrl] = useState<string>("")
   const [copied, setCopied] = useState(false)
-  const [showInfo, setShowInfo] = useState(false)
   
   // Function to update the shareable URL with the latest data
   const updateShareableUrl = () => {
@@ -74,46 +73,23 @@ export default function UserIdentifier() {
   
   return (
     <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-      <div className="flex items-center justify-center gap-2 flex-wrap">
+      <div className="flex items-center justify-center gap-2">
         <span>ID: {userId}</span>
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm" 
-          className="h-7 px-3 text-xs bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+          className="h-6 px-2 text-[10px] border border-gray-200 hover:bg-gray-50"
           onClick={copyToClipboard}
         >
           {copied ? (
-            <>
-              <Check className="h-3 w-3 mr-1" />
-              <span>Copied!</span>
-            </>
+            <Check className="h-3 w-3 mr-1 text-green-500" />
           ) : (
-            <>
-              <Share2 className="h-3 w-3 mr-1" />
-              <span>Share with Data</span>
-            </>
+            <Share2 className="h-3 w-3 mr-1" />
           )}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0 text-gray-400 hover:text-gray-600"
-          onClick={() => setShowInfo(!showInfo)}
-        >
-          <Info className="h-3 w-3" />
+          <span>{copied ? "Copied!" : "Share"}</span>
         </Button>
       </div>
-      {showInfo && (
-        <div className="mt-2 p-2 bg-gray-50 rounded-md text-[10px] text-left max-w-xs mx-auto">
-          <p className="mb-1"><strong>How to use across devices:</strong></p>
-          <ol className="list-decimal pl-4 space-y-1">
-            <li>Click "Share with Data" to copy a link with your current data</li>
-            <li>Open this link on any device or browser</li>
-            <li>Your countdowns will be automatically imported</li>
-          </ol>
-        </div>
-      )}
-      <p className="text-[10px] mt-1">Share this link to access your countdowns on any device</p>
+      <p className="text-[10px] mt-1">Share this link to access your countdowns on any device or browser</p>
     </div>
   )
 } 
