@@ -20,12 +20,42 @@ export default function Home() {
         <UserIdentifier />
         
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-6 text-[10px] sm:text-xs h-8">
-            <TabsTrigger value="pinned" data-value="pinned" className="px-2 py-1">Pinned</TabsTrigger>
-            <TabsTrigger value="general" data-value="general" className="px-2 py-1">General</TabsTrigger>
-            <TabsTrigger value="personal" data-value="personal" className="px-2 py-1">Personal</TabsTrigger>
-            <TabsTrigger value="custom" data-value="custom" className="px-2 py-1">Custom</TabsTrigger>
-            <TabsTrigger value="hidden" data-value="hidden" className="px-2 py-1">Hidden</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-[10px] sm:text-xs h-10 bg-gray-50/80 backdrop-blur-[2px] rounded-xl p-1.5 border border-gray-200 shadow-sm">
+            <TabsTrigger 
+              value="pinned" 
+              data-value="pinned" 
+              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+            >
+              Pinned
+            </TabsTrigger>
+            <TabsTrigger 
+              value="general" 
+              data-value="general" 
+              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+            >
+              General
+            </TabsTrigger>
+            <TabsTrigger 
+              value="personal" 
+              data-value="personal" 
+              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+            >
+              Personal
+            </TabsTrigger>
+            <TabsTrigger 
+              value="custom" 
+              data-value="custom" 
+              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+            >
+              Custom
+            </TabsTrigger>
+            <TabsTrigger 
+              value="hidden" 
+              data-value="hidden" 
+              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+            >
+              Hidden
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pinned">

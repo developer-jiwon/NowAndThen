@@ -364,7 +364,7 @@ export default function CountdownCard({
         <div className="w-full mb-3">
           <div className="flex items-center justify-center gap-2 mb-2">
             {isPinned && <Pin className="h-5 w-5 text-gray-600" />}
-            <h3 className="text-lg font-medium text-gray-800 font-serif text-center max-w-[160px] truncate">
+            <h3 className="text-lg font-medium text-gray-800 font-serif text-center">
               {headerTitle}
             </h3>
           </div>
