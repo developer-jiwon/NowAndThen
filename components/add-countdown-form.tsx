@@ -5,6 +5,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { v4 as uuidv4 } from "uuid"
+import { CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -303,10 +304,10 @@ export default function AddCountdownForm() {
         detail: { category: values.category }
       }))
       
-      // Update the URL with the latest data
+      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
-        updateUrlWithUserId(userId, true); // true to include data
+        updateUrlWithUserId(userId, false);
       }
       
       // Show success message with minimal design

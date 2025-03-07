@@ -46,6 +46,7 @@ function getOrCreateUserId(): string {
 /**
  * Creates a shareable URL that includes both the user ID and all countdown data
  * This URL can be opened on any device to access the same countdowns
+ * For sharing purposes, we include the data parameter
  */
 export function createShareableUrl(): string {
   if (typeof window === "undefined") return "";
@@ -61,9 +62,13 @@ export function createShareableUrl(): string {
     // Use absolute URL to ensure it works across different domains
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set('uid', userId);
-    url.searchParams.set('data', dataString);
     
-    console.log("Created shareable URL with data");
+    // For sharing purposes, we include the data parameter
+    if (dataString) {
+      url.searchParams.set('data', dataString);
+    }
+    
+    console.log("Created shareable URL with data for sharing purposes");
     return url.toString();
   } catch (error) {
     console.error("Error creating shareable URL:", error);
@@ -94,24 +99,33 @@ export function processUrlParameters(): void {
     // Ensure the ID is not too long
     const shortUrlUserId = urlUserId.length > 8 ? urlUserId.substring(0, 8) : urlUserId;
     localStorage.setItem(USER_ID_KEY, shortUrlUserId);
-  }
-  
-  // Process shared data if present
-  if (sharedData) {
-    console.log("Found shared data in URL, importing...");
     
-    try {
-      // Use the URL user ID if available, otherwise use the existing/generated one
-      const userId = urlUserId || getOrCreateUserId();
+    // Check if we already have data in localStorage for this user
+    const hasLocalData = checkForLocalData(shortUrlUserId);
+    
+    // Process shared data if present and we don't have local data
+    if (sharedData && !hasLocalData) {
+      console.log("Found shared data in URL and no local data, importing...");
       
-      // Import the data
-      importCountdownsFromSharedData(sharedData, userId);
+      try {
+        // Import the data
+        importCountdownsFromSharedData(sharedData, shortUrlUserId);
+        
+        console.log("Data imported successfully from URL");
+        
+        // Set a flag to indicate that we've processed the URL data
+        localStorage.setItem(URL_DATA_PROCESSED_KEY, 'true');
+        
+        // Clean up the URL by removing the data parameter
+        updateUrlWithUserId(shortUrlUserId, false);
+      } catch (error) {
+        console.error("Error importing shared data from URL:", error);
+      }
+    } else if (sharedData && hasLocalData) {
+      console.log("Found shared data in URL but local data exists, using local data");
       
-      console.log("Data imported successfully");
-      
-      // No notification popup - removed as requested
-    } catch (error) {
-      console.error("Error importing shared data:", error);
+      // Clean up the URL by removing the data parameter
+      updateUrlWithUserId(shortUrlUserId, false);
     }
   }
 }
@@ -141,26 +155,30 @@ export function getUserId(): string {
 
 /**
  * Updates the URL with the user ID as a query parameter without reloading the page
- * Optionally includes the countdown data for sharing across devices
+ * No longer includes the data parameter to keep URLs shorter
  */
 export function updateUrlWithUserId(userId: string, includeData: boolean = false): void {
   if (typeof window === "undefined") return;
   
-  const url = new URL(window.location.href);
+  console.log("Updating URL with user ID:", userId);
   
-  // Set the user ID parameter
-  url.searchParams.set('uid', userId);
-  
-  // Include countdown data if requested
-  if (includeData) {
-    const shareableData = exportCountdownsToShareableString();
-    if (shareableData) {
-      url.searchParams.set('data', shareableData);
+  try {
+    const url = new URL(window.location.href);
+    
+    // Set the user ID parameter
+    url.searchParams.set('uid', userId);
+    
+    // Remove any existing data parameter to keep the URL clean
+    if (url.searchParams.has('data')) {
+      url.searchParams.delete('data');
     }
+    
+    // Update the URL without reloading the page
+    window.history.replaceState({}, '', url.toString());
+    console.log("URL updated successfully with only user ID");
+  } catch (error) {
+    console.error("Error updating URL:", error);
   }
-  
-  // Update the URL without reloading the page
-  window.history.replaceState({}, '', url.toString());
 }
 
 /**
@@ -282,4 +300,29 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
   } catch (error) {
     console.error("Error importing shared data:", error);
   }
+}
+
+/**
+ * Checks if there is any data in localStorage for the given user ID
+ */
+function checkForLocalData(userId: string): boolean {
+  const categories = ["general", "personal", "custom", "hidden"];
+  
+  for (const category of categories) {
+    const storageKey = getUserStorageKey(`countdowns_${category}`, userId);
+    const storedData = localStorage.getItem(storageKey);
+    
+    if (storedData) {
+      try {
+        const countdowns = JSON.parse(storedData);
+        if (countdowns && Array.isArray(countdowns) && countdowns.length > 0) {
+          return true;
+        }
+      } catch (error) {
+        console.error(`Error parsing ${category} countdowns:`, error);
+      }
+    }
+  }
+  
+  return false;
 } 

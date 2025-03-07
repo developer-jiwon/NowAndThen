@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { processUrlParameters } from "@/lib/user-utils"
+import { processUrlParameters, updateUrlWithUserId } from "@/lib/user-utils"
 
 /**
  * This component processes URL parameters as soon as the page loads.
@@ -12,20 +12,26 @@ export default function UrlProcessor() {
     // Process URL parameters on component mount
     console.log("UrlProcessor: Processing URL parameters on mount");
     try {
-      // Check if we have data in the URL
+      // Check if we have the uid parameter in the URL
       const urlParams = new URLSearchParams(window.location.search);
+      const hasUid = urlParams.has('uid');
       const hasData = urlParams.has('data');
       
-      console.log("UrlProcessor: URL has data parameter:", hasData);
+      console.log("UrlProcessor: URL parameters", { hasUid, hasData });
       
-      // Process URL parameters
-      processUrlParameters();
-      
-      // If we don't have data in the URL but we have a uid, try to get data from localStorage
-      if (!hasData && urlParams.has('uid')) {
-        console.log("UrlProcessor: URL has uid but no data, checking localStorage");
+      if (hasUid) {
+        // Process URL parameters
+        processUrlParameters();
+        console.log("UrlProcessor: Processed URL parameters");
         
-        // This will be handled by the processUrlParameters function
+        // If there's data in the URL, clean it up after processing
+        if (hasData) {
+          const userId = urlParams.get('uid') || "";
+          setTimeout(() => {
+            updateUrlWithUserId(userId, false);
+            console.log("UrlProcessor: Cleaned up URL by removing data parameter");
+          }, 1000); // Delay to ensure data is processed first
+        }
       }
     } catch (error) {
       console.error("Error processing URL parameters:", error);

@@ -263,10 +263,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         }
       });
       
-      // Update the URL with the latest data
+      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
-        updateUrlWithUserId(userId, true); // true to include data
+        updateUrlWithUserId(userId, false);
       }
       
       console.log("Countdown deletion completed successfully");
@@ -348,10 +348,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         );
       });
       
-      // Update the URL with the latest data
+      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
-        updateUrlWithUserId(userId, true); // true to include data
+        updateUrlWithUserId(userId, false);
       }
       
       console.log("Visibility toggle completed successfully");
@@ -433,10 +433,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         );
       });
       
-      // Update the URL with the latest data
+      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
-        updateUrlWithUserId(userId, true); // true to include data
+        updateUrlWithUserId(userId, false);
       }
       
       console.log("Pin toggle completed successfully");
@@ -501,10 +501,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         })
       );
       
-      // Update the URL with the latest data
+      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
-        updateUrlWithUserId(userId, true); // true to include data
+        updateUrlWithUserId(userId, false);
       }
       
       // Close the edit form
@@ -544,10 +544,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       })
     );
     
-    // Update the URL with the latest data
+    // Update the URL with just the user ID
     const userId = localStorage.getItem("now_then_user_id");
     if (userId) {
-      updateUrlWithUserId(userId, true); // true to include data
+      updateUrlWithUserId(userId, false);
     }
 
     // Close the edit form
@@ -577,10 +577,10 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
           const storageKey = getUserStorageKey(`countdowns_${category}`);
           localStorage.setItem(storageKey, JSON.stringify(reorderedItems))
           
-          // Update the URL with the latest data
+          // Update the URL with just the user ID
           const userId = localStorage.getItem("now_then_user_id");
           if (userId) {
-            updateUrlWithUserId(userId, true); // true to include data
+            updateUrlWithUserId(userId, false);
           }
         }
         
