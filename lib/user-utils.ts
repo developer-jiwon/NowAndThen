@@ -44,41 +44,100 @@ function getOrCreateUserId(): string {
 }
 
 /**
+ * Creates a shareable URL that includes both the user ID and all countdown data
+ * This URL can be opened on any device to access the same countdowns
+ */
+export function createShareableUrl(): string {
+  if (typeof window === "undefined") return "";
+  
+  try {
+    // Get the current user ID
+    const userId = getOrCreateUserId();
+    
+    // Export all countdown data
+    const dataString = exportCountdownsToShareableString();
+    
+    // Create a URL with both the user ID and data
+    // Use absolute URL to ensure it works across different domains
+    const url = new URL(window.location.origin + window.location.pathname);
+    url.searchParams.set('uid', userId);
+    url.searchParams.set('data', dataString);
+    
+    console.log("Created shareable URL with data");
+    return url.toString();
+  } catch (error) {
+    console.error("Error creating shareable URL:", error);
+    return window.location.href;
+  }
+}
+
+/**
  * Checks for and processes URL parameters (uid and data)
  * This should be called once when the application loads
  */
 export function processUrlParameters(): void {
   if (typeof window === "undefined") return;
   
+  console.log("Processing URL parameters...");
+  
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const urlUserId = urlParams.get('uid');
   const sharedData = urlParams.get('data');
   
-  // If we have a user ID in the URL, use it
+  console.log("URL parameters:", { urlUserId, hasSharedData: !!sharedData });
+  
+  // Process the user ID from URL if present
   if (urlUserId) {
     console.log("Setting user ID from URL:", urlUserId);
     
     // Ensure the ID is not too long
     const shortUrlUserId = urlUserId.length > 8 ? urlUserId.substring(0, 8) : urlUserId;
     localStorage.setItem(USER_ID_KEY, shortUrlUserId);
+  }
+  
+  // Process shared data if present
+  if (sharedData) {
+    console.log("Found shared data in URL, importing...");
     
-    // If we also have shared data, import it
-    if (sharedData) {
-      console.log("Importing shared data from URL");
-      try {
-        // Always import the data when it's present in the URL
-        importCountdownsFromSharedData(sharedData, shortUrlUserId);
+    try {
+      // Use the URL user ID if available, otherwise use the existing/generated one
+      const userId = urlUserId || getOrCreateUserId();
+      
+      // Import the data
+      importCountdownsFromSharedData(sharedData, userId);
+      
+      // Show a notification that data was imported
+      if (typeof document !== "undefined") {
+        const notification = document.createElement("div");
+        notification.style.position = "fixed";
+        notification.style.bottom = "20px";
+        notification.style.left = "50%";
+        notification.style.transform = "translateX(-50%)";
+        notification.style.backgroundColor = "rgba(54, 69, 79, 0.95)";
+        notification.style.color = "white";
+        notification.style.padding = "12px 20px";
+        notification.style.borderRadius = "8px";
+        notification.style.fontSize = "14px";
+        notification.style.fontWeight = "bold";
+        notification.style.zIndex = "1000";
+        notification.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+        notification.style.maxWidth = "90%";
+        notification.style.textAlign = "center";
+        notification.textContent = "✅ Countdowns imported successfully!";
         
-        // Remove the data parameter from the URL to avoid reimporting
-        const url = new URL(window.location.href);
-        url.searchParams.delete('data');
-        window.history.replaceState({}, '', url.toString());
+        document.body.appendChild(notification);
         
-        console.log("Data imported successfully");
-      } catch (error) {
-        console.error("Error importing shared data:", error);
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          notification.style.transition = "opacity 0.5s ease";
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 4000);
       }
+    } catch (error) {
+      console.error("Error importing shared data:", error);
     }
   }
 }
@@ -179,15 +238,28 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
   if (typeof window === "undefined") return;
   
   try {
+    console.log("Starting import of shared data...");
+    
     // Decode the base64 string and parse the JSON
     const jsonString = atob(sharedData);
     const importData = JSON.parse(jsonString) as Record<string, Countdown[]>;
     
     // Get the user ID (either provided or from localStorage/new)
     const userId = specificUserId || getOrCreateUserId();
+    console.log("Importing data for user ID:", userId);
+    
+    // Track if we've imported any countdowns
+    let importedCount = 0;
     
     // Import countdowns for each category
     Object.entries(importData).forEach(([category, countdowns]) => {
+      if (!countdowns || !Array.isArray(countdowns) || countdowns.length === 0) {
+        console.log(`No countdowns to import for category: ${category}`);
+        return;
+      }
+      
+      console.log(`Importing ${countdowns.length} countdowns for category: ${category}`);
+      
       const storageKey = getUserStorageKey(`countdowns_${category}`, userId);
       
       // Check if we already have data for this category
@@ -205,23 +277,45 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
           countdowns.forEach(countdown => {
             if (!existingMap.has(countdown.id)) {
               existingCountdowns.push(countdown);
+              importedCount++;
             }
           });
           
           // Save the merged data
           localStorage.setItem(storageKey, JSON.stringify(existingCountdowns));
+          console.log(`Merged ${importedCount} countdowns for category: ${category}`);
         } catch (error) {
           console.error(`Error merging ${category} countdowns:`, error);
           // If there's an error, just overwrite with the imported data
           localStorage.setItem(storageKey, JSON.stringify(countdowns));
+          importedCount += countdowns.length;
+          console.log(`Overwrote with ${countdowns.length} countdowns for category: ${category}`);
         }
       } else {
         // No existing data, just save the imported data
         localStorage.setItem(storageKey, JSON.stringify(countdowns));
+        importedCount += countdowns.length;
+        console.log(`Saved ${countdowns.length} new countdowns for category: ${category}`);
       }
     });
     
-    console.log("Successfully imported shared countdowns");
+    console.log(`Successfully imported ${importedCount} shared countdowns`);
+    
+    // Set a flag to indicate data has been imported
+    localStorage.setItem(DATA_IMPORTED_KEY, 'true');
+    
+    // Force a page reload to ensure the UI reflects the imported data
+    if (importedCount > 0) {
+      console.log("Reloading page to reflect imported data...");
+      setTimeout(() => {
+        // Preserve the data parameter in the URL when reloading
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('data')) {
+          url.searchParams.set('data', sharedData);
+        }
+        window.location.href = url.toString();
+      }, 1500); // Delay to allow the notification to be seen
+    }
   } catch (error) {
     console.error("Error importing shared data:", error);
   }

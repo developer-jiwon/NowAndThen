@@ -1,42 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getUserId, exportCountdownsToShareableString, processUrlParameters } from "@/lib/user-utils"
+import { getUserId, createShareableUrl, processUrlParameters } from "@/lib/user-utils"
 import { Button } from "@/components/ui/button"
 import { Check, Share2 } from "lucide-react"
 
 export default function UserIdentifier() {
   const [userId, setUserId] = useState<string>("")
-  const [shareableUrl, setShareableUrl] = useState<string>("")
   const [copied, setCopied] = useState(false)
-  
-  // Function to update the shareable URL with the latest data
-  const updateShareableUrl = () => {
-    if (typeof window === "undefined" || !userId) return;
-    
-    try {
-      // Always include the latest data in the URL
-      const dataString = exportCountdownsToShareableString();
-      const url = new URL(window.location.href);
-      url.searchParams.set('uid', userId);
-      url.searchParams.set('data', dataString);
-      setShareableUrl(url.toString());
-    } catch (error) {
-      console.error("Error creating shareable URL:", error);
-      
-      // Fallback to just ID if data export fails
-      const url = new URL(window.location.href);
-      url.searchParams.set('uid', userId);
-      setShareableUrl(url.toString());
-    }
-  };
+  const [shareableUrl, setShareableUrl] = useState<string>("")
   
   useEffect(() => {
     // Process URL parameters first
+    console.log("UserIdentifier: Processing URL parameters");
     processUrlParameters();
     
     // Get the user ID
     const id = getUserId();
+    console.log("UserIdentifier: Got user ID:", id);
     
     // Set the user ID directly (no need to truncate since it's already short)
     if (id && id.length > 0) {
@@ -46,21 +27,51 @@ export default function UserIdentifier() {
     }
   }, []);
   
-  // Update the shareable URL whenever userId changes
-  useEffect(() => {
-    if (userId && userId !== "No ID found") {
-      updateShareableUrl();
-    }
-  }, [userId]);
-  
   const copyToClipboard = () => {
-    // Always update the URL with the latest data before copying
-    updateShareableUrl();
+    // Generate a shareable URL with the latest data
+    console.log("UserIdentifier: Creating shareable URL");
+    const url = createShareableUrl();
+    console.log("UserIdentifier: Shareable URL created:", url);
     
-    if (navigator.clipboard && shareableUrl) {
-      navigator.clipboard.writeText(shareableUrl)
+    // Store the URL for debugging
+    setShareableUrl(url);
+    
+    if (navigator.clipboard && url) {
+      navigator.clipboard.writeText(url)
         .then(() => {
+          console.log("UserIdentifier: URL copied to clipboard");
           setCopied(true);
+          
+          // Show a notification that the URL was copied
+          if (typeof document !== "undefined") {
+            const notification = document.createElement("div");
+            notification.style.position = "fixed";
+            notification.style.bottom = "60px";
+            notification.style.left = "50%";
+            notification.style.transform = "translateX(-50%)";
+            notification.style.backgroundColor = "rgba(54, 69, 79, 0.95)";
+            notification.style.color = "white";
+            notification.style.padding = "12px 20px";
+            notification.style.borderRadius = "8px";
+            notification.style.fontSize = "14px";
+            notification.style.fontWeight = "bold";
+            notification.style.zIndex = "1000";
+            notification.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+            notification.style.maxWidth = "90%";
+            notification.style.textAlign = "center";
+            notification.textContent = "✅ Shareable link copied to clipboard!";
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+              notification.style.opacity = "0";
+              notification.style.transition = "opacity 0.5s ease";
+              setTimeout(() => {
+                document.body.removeChild(notification);
+              }, 500);
+            }, 2000);
+          }
+          
           setTimeout(() => setCopied(false), 2000);
         })
         .catch(err => {

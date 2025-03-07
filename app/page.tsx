@@ -5,11 +5,13 @@ import UserIdentifier from "@/components/user-identifier"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
 import UrlProcessor from "@/components/url-processor"
+import CrossBrowserDataHandler from "@/components/cross-browser-data-handler"
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <UrlProcessor />
+      <CrossBrowserDataHandler />
       
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
         <div className="flex items-center justify-center mb-4 sm:mb-6">
