@@ -251,8 +251,10 @@ export default function CountdownCard({
          ? 'rgba(100, 149, 237, 0.25)' // Custom tab countdown background (Cornflower Blue)
          : 'rgba(139, 207, 190, 0.25)'), // Regular countdown background
     position: 'relative' as 'relative',
-    width: '350px',
-    height: '250px',
+    width: '100%',
+    maxWidth: '350px',
+    minHeight: '200px',
+    height: 'auto',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column' as 'column'
@@ -260,7 +262,7 @@ export default function CountdownCard({
 
   return (
     <motion.div 
-      className="mb-6 mx-auto relative"
+      className="mb-6 mx-auto relative w-full max-w-[350px]"
       initial="hidden"
       animate="visible"
       whileHover="hover"
@@ -270,31 +272,27 @@ export default function CountdownCard({
       <AnimatePresence>
         {showDeleteConfirm && (
           <motion.div 
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/15 backdrop-blur-[1px] z-50 flex items-center justify-center px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white p-5 rounded-lg shadow-sm text-center max-w-[80%] border border-gray-200">
-              <p className="text-gray-700 mb-4 text-base font-medium">Delete this timer?</p>
-              <div className="flex justify-center gap-4">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="h-9 px-4 text-sm"
+            <div className="bg-white/90 p-2.5 rounded-md shadow-sm text-center w-full max-w-[200px] border border-gray-200/30">
+              <p className="text-gray-700 mb-2 text-xs font-normal">Delete this timer?</p>
+              <div className="flex justify-center gap-2">
+                <button 
+                  className="text-xs py-1 px-2 bg-transparent border border-gray-300/50 rounded hover:bg-gray-100/50 transition-colors"
                   onClick={cancelDelete}
                 >
-                  <X className="h-4 w-4 mr-2" /> Cancel
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="destructive" 
-                  className="h-9 px-4 text-sm"
+                  Cancel
+                </button>
+                <button 
+                  className="text-xs py-1 px-2 bg-red-500/50 hover:bg-red-600/50 text-white border-none rounded transition-colors"
                   onClick={confirmDelete}
                 >
-                  <Check className="h-4 w-4 mr-2" /> Delete
-                </Button>
+                  Delete
+                </button>
               </div>
             </div>
           </motion.div>
@@ -302,17 +300,17 @@ export default function CountdownCard({
       </AnimatePresence>
       
       {/* Action dots positioned outside the card */}
-      <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 flex flex-col gap-3 z-10">
+      <div className="absolute -left-3 sm:-left-3 -left-2 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 sm:gap-3 z-10">
         {onTogglePin && (
           <motion.div
             custom={0}
             variants={iconDotVariants}
             whileHover="hover"
             whileTap="tap"
-            className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
+            className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
             onClick={() => onTogglePin(countdown.id)}
           >
-            {isPinned ? <PinOff className="h-3 w-3 text-[#F5F5F5]" /> : <Pin className="h-3 w-3 text-[#2D2926]" />}
+            {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
           </motion.div>
         )}
         
@@ -321,10 +319,10 @@ export default function CountdownCard({
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${countdown.hidden ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
+          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${countdown.hidden ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
-          {category === "hidden" ? <Eye className="h-3 w-3 text-[#F5F5F5]" /> : (countdown.hidden ? <Eye className="h-3 w-3 text-[#F5F5F5]" /> : <EyeOff className="h-3 w-3 text-[#2D2926]" />)}
+          {category === "hidden" ? <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : (countdown.hidden ? <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <EyeOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />)}
         </motion.div>
         
         {onEdit && (
@@ -333,10 +331,10 @@ export default function CountdownCard({
             variants={iconDotVariants}
             whileHover="hover"
             whileTap="tap"
-            className="w-6 h-6 rounded-full bg-[#8E8E8E] flex items-center justify-center cursor-pointer shadow-md"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#8E8E8E] flex items-center justify-center cursor-pointer shadow-md"
             onClick={() => onEdit(countdown.id)}
           >
-            <Edit className="h-3 w-3 text-[#F5F5F5]" />
+            <Edit className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" />
           </motion.div>
         )}
         
@@ -345,10 +343,10 @@ export default function CountdownCard({
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className="w-6 h-6 rounded-full bg-[#2D2926] flex items-center justify-center cursor-pointer shadow-md"
+          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#2D2926] flex items-center justify-center cursor-pointer shadow-md"
           onClick={handleDeleteClick}
         >
-          <Trash2 className="h-3 w-3 text-[#F5F5F5]" />
+          <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" />
         </motion.div>
       </div>
       
