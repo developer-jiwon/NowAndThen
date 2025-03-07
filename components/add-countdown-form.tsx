@@ -5,11 +5,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { v4 as uuidv4 } from "uuid"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
   Card,
   CardContent,
@@ -28,11 +24,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -40,10 +31,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { Countdown } from "@/lib/types"
-import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
-import { isDateInPast, standardizeDate, handleHtmlDateInput } from "@/lib/countdown-utils"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Clock, Hourglass } from "lucide-react"
+import { standardizeDate, isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
+import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
 
 // Define colors for past and future events
 const charcoal = "#333333"; // Pantone charcoal for past events
