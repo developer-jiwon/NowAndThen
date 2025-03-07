@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, Trash2, Pin, PinOff, Clock, Edit, X, Check } from "lucide-react"
 import type { Countdown, TimeRemaining } from "@/lib/types"
-import { calculateTimeRemaining, isDateInPast, standardizeDate } from "@/lib/countdown-utils"
+import { calculateTimeRemaining, isDateInPast, standardizeDate, formatDateString } from "@/lib/countdown-utils"
 
 // Define colors for past and future events
 const countUpColor = "#E5E1E6"; // Light lavender for count up
@@ -28,16 +28,17 @@ export default function CountdownCard({
   onEdit,
   category,
 }: CountdownCardProps) {
-  // Standardize the date format for consistency
-  const standardizedDate = standardizeDate(countdown.date);
+  // Use the exact date from the countdown
+  const exactDate = countdown.date;
+  console.log("CountdownCard using exact date:", exactDate);
   
   // Determine if the date is in the past using our utility function
-  const isPastDate = isDateInPast(standardizedDate);
+  const isPastDate = isDateInPast(exactDate);
   
   // Check if the date is today
   const checkIsToday = () => {
     const today = new Date();
-    const targetDate = new Date(standardizedDate);
+    const targetDate = new Date(exactDate);
     return today.getFullYear() === targetDate.getFullYear() &&
            today.getMonth() === targetDate.getMonth() &&
            today.getDate() === targetDate.getDate();
@@ -49,7 +50,7 @@ export default function CountdownCard({
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     
-    const targetDate = new Date(standardizedDate);
+    const targetDate = new Date(exactDate);
     return tomorrow.getFullYear() === targetDate.getFullYear() &&
            tomorrow.getMonth() === targetDate.getMonth() &&
            tomorrow.getDate() === targetDate.getDate();
@@ -79,7 +80,7 @@ export default function CountdownCard({
   useEffect(() => {
     // Calculate initial time
     const updateTime = () => {
-      const newTimeRemaining = calculateTimeRemaining(standardizedDate, isCountUp);
+      const newTimeRemaining = calculateTimeRemaining(exactDate, isCountUp);
       console.log("Time remaining for", countdown.title, ":", newTimeRemaining);
       
       // The tomorrow check is now handled directly in calculateTimeRemaining
@@ -96,7 +97,7 @@ export default function CountdownCard({
     
     // Clean up interval on unmount
     return () => clearInterval(timer);
-  }, [standardizedDate, isCountUp, countdown.date, countdown.title, isTomorrow]);
+  }, [exactDate, isCountUp, countdown.date, countdown.title, isTomorrow]);
   
   const isCustom = category === "custom" || (category === "pinned" && countdown.originalCategory === "custom");
   const isPinned = countdown.pinned || false;
@@ -217,7 +218,7 @@ export default function CountdownCard({
         <div className="font-merriweather text-charcoal">
           <div className="flex flex-col items-center justify-center text-center">
             <span className="text-5xl sm:text-6xl md:text-7xl font-bold">
-              {timeRemaining.isCountUp ? "+" : "-"}{timeRemaining.days}
+              {timeRemaining.days}
             </span>
             <span className="text-sm sm:text-base uppercase mt-2 font-semibold tracking-wider">{timeRemaining.isCountUp ? "Days Since" : "Days Until"}</span>
           </div>
@@ -231,7 +232,7 @@ export default function CountdownCard({
             </p>
           )}
           <p className="text-xs text-gray-500">
-            {new Date(standardizedDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+            {formatDateString(exactDate)}
           </p>
         </div>
       </CardFooter>

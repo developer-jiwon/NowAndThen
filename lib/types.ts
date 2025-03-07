@@ -16,5 +16,7 @@ export interface TimeRemaining {
   minutes: number
   seconds: number
   isCountUp?: boolean
+  isToday?: boolean
+  isTomorrow?: boolean
 }
 

@@ -14,7 +14,7 @@ import type { Countdown } from "@/lib/types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Clock, Hourglass } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { standardizeDate, isDateInPast } from "@/lib/countdown-utils"
+import { standardizeDate, isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
 import { getUserStorageKey } from "@/lib/user-utils"
 
 // Define colors for past and future events
@@ -81,41 +81,44 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
     }
   }, [form, defaultValues])
 
-  // Helper function to ensure we only get the date part
+  // Helper function to handle date input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    // Get only the date part (YYYY-MM-DD)
-    const dateValue = e.target.value.split('T')[0]
-    onChange(dateValue)
+    // Get the exact date value from the input
+    const exactDate = e.target.value;
+    console.log("Exact date from input:", exactDate);
     
-    // Standardize the date format
-    const standardizedDate = standardizeDate(dateValue)
+    // Pass the exact value to the form
+    onChange(exactDate);
     
     // Determine if this is a count up event (past date)
-    const isPastDate = isDateInPast(standardizedDate)
+    const isPastDate = isDateInPast(exactDate);
     
-    setIsCountUp(isPastDate)
-    setDateChanged(true)
-    setAnimationActive(true)
+    setIsCountUp(isPastDate);
+    setDateChanged(true);
+    setAnimationActive(true);
     
-    console.log("Date changed:", standardizedDate, "isCountUp:", isPastDate)
+    console.log("Date changed to:", exactDate, "isCountUp:", isPastDate);
   }
 
   // Function to handle form submission with isCountUp value
   const handleSubmit = (values: CountdownFormValues) => {
-    // Standardize the date format
-    const standardizedDate = standardizeDate(values.date)
+    console.log("Form values before submission:", values);
+    
+    // Get the exact date value from the form
+    const exactDate = values.date;
+    console.log("Exact date for submission:", exactDate);
     
     // Determine if this is a count up event (past date)
-    const isPastDate = isDateInPast(standardizedDate)
+    const isPastDate = isDateInPast(exactDate);
     
-    console.log("Submitting form with date:", standardizedDate)
-    console.log("isCountUp:", isPastDate)
+    console.log("Submitting form with date:", exactDate);
+    console.log("isCountUp:", isPastDate);
     
     onSubmit({
       ...values,
-      date: standardizedDate, // Use the standardized date
+      date: exactDate, // Use the exact date value
       isCountUp: isPastDate // Explicitly pass isCountUp to the parent component
-    })
+    });
   }
 
   return (
@@ -146,7 +149,10 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   <Input
                     type="date"
                     {...field}
-                    onChange={(e) => handleDateChange(e, field.onChange)}
+                    onChange={(e) => {
+                      console.log("Date input raw value:", e.target.value);
+                      handleDateChange(e, field.onChange);
+                    }}
                     className="h-8"
                   />
                 </FormControl>
@@ -239,26 +245,29 @@ export default function AddCountdownForm() {
   const [showSuccess, setShowSuccess] = useState(false)
 
   function onSubmit(values: CountdownFormValues) {
-    // Standardize the date format
-    const standardizedDate = standardizeDate(values.date);
+    console.log("AddCountdownForm received values:", values);
+    
+    // Get the exact date value from the form
+    const exactDate = values.date;
+    console.log("Exact date from form:", exactDate);
     
     // Determine if this is a count up event (past date)
-    const isPastDate = isDateInPast(standardizedDate);
-    
-    console.log("Adding countdown with date:", standardizedDate);
-    console.log("isCountUp:", isPastDate);
+    // We'll still use isDateInPast for this, but we won't modify the date
+    const isPastDate = isDateInPast(exactDate);
     
     // Create a new countdown with the form values
     const newCountdown: Countdown = {
       id: uuidv4(),
       title: values.title,
-      date: standardizedDate, // Use the standardized date format (YYYY-MM-DD)
+      date: exactDate, // Use the exact date value
       description: values.description || "",
       isCountUp: isPastDate,
       hidden: false,
       pinned: false,
       originalCategory: values.category,
     }
+    
+    console.log("Saving countdown with exact date:", newCountdown.date);
     
     try {
       // Get existing countdowns from localStorage using user-specific key
