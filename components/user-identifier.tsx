@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getUserId } from "@/lib/user-utils"
+import { getUserId, exportCountdownsToShareableString, processUrlParameters } from "@/lib/user-utils"
 import { Button } from "@/components/ui/button"
 import { Copy, Check } from "lucide-react"
 
@@ -10,26 +10,52 @@ export default function UserIdentifier() {
   const [shareableUrl, setShareableUrl] = useState<string>("")
   const [copied, setCopied] = useState(false)
   
+  // Function to update the shareable URL with the latest data
+  const updateShareableUrl = () => {
+    if (typeof window === "undefined" || !userId) return;
+    
+    try {
+      const dataString = exportCountdownsToShareableString();
+      const url = new URL(window.location.href);
+      url.searchParams.set('uid', userId);
+      url.searchParams.set('data', dataString);
+      setShareableUrl(url.toString());
+    } catch (error) {
+      console.error("Error creating shareable URL:", error);
+      
+      // Fallback to just ID if data export fails
+      const url = new URL(window.location.href);
+      url.searchParams.set('uid', userId);
+      setShareableUrl(url.toString());
+    }
+  };
+  
   useEffect(() => {
+    // Process URL parameters first
+    processUrlParameters();
+    
     // Get the user ID
     const id = getUserId();
     
     // Set the user ID directly (no need to truncate since it's already short)
     if (id && id.length > 0) {
       setUserId(id);
-      
-      // Create shareable URL
-      if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        url.searchParams.set('uid', id);
-        setShareableUrl(url.toString());
-      }
     } else {
       setUserId("No ID found");
     }
-  }, [])
+  }, []);
+  
+  // Update the shareable URL whenever userId changes
+  useEffect(() => {
+    if (userId && userId !== "No ID found") {
+      updateShareableUrl();
+    }
+  }, [userId]);
   
   const copyToClipboard = () => {
+    // Always update the URL with the latest data before copying
+    updateShareableUrl();
+    
     if (navigator.clipboard && shareableUrl) {
       navigator.clipboard.writeText(shareableUrl)
         .then(() => {
@@ -58,7 +84,7 @@ export default function UserIdentifier() {
           {copied ? "Copied!" : "Copy Link"}
         </Button>
       </div>
-      <p className="text-[10px] mt-1">Countdowns are stored with this ID and can be shared via URL</p>
+      <p className="text-[10px] mt-1">Share this link to access your countdowns on any device</p>
     </div>
   )
 } 

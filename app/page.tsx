@@ -4,10 +4,13 @@ import AddCountdownForm from "@/components/add-countdown-form"
 import UserIdentifier from "@/components/user-identifier"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
+import UrlProcessor from "@/components/url-processor"
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
+      <UrlProcessor />
+      
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
         <div className="flex items-center justify-center mb-4 sm:mb-6">
           <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal">Now & Then</h1>
