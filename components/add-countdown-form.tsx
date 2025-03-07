@@ -281,14 +281,18 @@ export default function AddCountdownForm() {
       // Save the updated countdowns to localStorage
       localStorage.setItem(storageKey, JSON.stringify(countdowns))
       
+      // Dispatch a custom event to notify other components
+      window.dispatchEvent(new CustomEvent('countdownsUpdated', {
+        detail: { category: values.category }
+      }))
+      
       // Show success message
       setShowSuccess(true)
       
       // Hide success message after 3 seconds
       setTimeout(() => {
         setShowSuccess(false)
-        // Refresh the page to show the new countdown
-        window.location.reload()
+        // Don't reload the page, let React handle the UI update
       }, 2000)
     } catch (error) {
       console.error("Error saving countdown:", error)

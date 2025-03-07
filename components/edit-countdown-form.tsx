@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2 } from "lucide-react"
 import type { Countdown } from "@/lib/types"
 import { CountdownForm, CountdownFormValues } from "./add-countdown-form"
-import { standardizeDate, isDateInPast } from "@/lib/countdown-utils"
+import { isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
 
 interface EditCountdownFormProps {
   countdown: Countdown
@@ -17,8 +17,8 @@ interface EditCountdownFormProps {
 export default function EditCountdownForm({ countdown, onSave, onCancel }: EditCountdownFormProps) {
   const [success, setSuccess] = useState(false)
 
-  // Format the date for the form (YYYY-MM-DD) using our utility function
-  const formattedDate = standardizeDate(countdown.date)
+  // Use the exact date from the countdown
+  const exactDate = countdown.date
 
   // Determine the current category
   const currentCategory = countdown.originalCategory || "custom"
@@ -30,26 +30,25 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
 
   const defaultValues: CountdownFormValues = {
     title: countdown.title,
-    date: formattedDate,
+    date: exactDate,
     description: countdown.description || "",
     category: validCategory,
     isCountUp: countdown.isCountUp
   }
 
   function onSubmit(values: CountdownFormValues) {
-    // Standardize the date format
-    const standardizedDate = standardizeDate(values.date)
+    // Use the exact date value from the form
+    const exactDate = values.date
+    console.log("Edit form - Exact date:", exactDate)
     
-    // Determine if this is a count up event (past date) using our utility function
-    const isCountUp = isDateInPast(standardizedDate)
-    
-    console.log("Edit form - Standardized date:", standardizedDate)
+    // Determine if this is a count up event (past date)
+    const isCountUp = isDateInPast(exactDate)
     console.log("Edit form - isCountUp:", isCountUp)
     
-    // Create updated countdown with the standardized date
+    // Create updated countdown with the exact date
     const updatedCountdown: Partial<Countdown> = {
       title: values.title,
-      date: standardizedDate, // Use the standardized date
+      date: exactDate, // Use the exact date value
       description: values.description || "",
       isCountUp: isCountUp,
     }
@@ -57,6 +56,14 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     // Call the onSave callback with the updated countdown and new category if changed
     const newCategory = values.category !== validCategory ? values.category : undefined
     onSave(countdown.id, updatedCountdown, newCategory)
+
+    // Dispatch a custom event to notify other components
+    window.dispatchEvent(new CustomEvent('countdownsUpdated', {
+      detail: { 
+        category: newCategory || validCategory,
+        originalCategory: validCategory
+      }
+    }))
 
     // Show success message
     setSuccess(true)

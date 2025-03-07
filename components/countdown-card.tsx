@@ -218,7 +218,7 @@ export default function CountdownCard({
         <div className="font-merriweather text-charcoal">
           <div className="flex flex-col items-center justify-center text-center">
             <span className="text-5xl sm:text-6xl md:text-7xl font-bold">
-              {timeRemaining.days}
+              {timeRemaining.isCountUp ? "+" : "-"}{timeRemaining.days}
             </span>
             <span className="text-sm sm:text-base uppercase mt-2 font-semibold tracking-wider">{timeRemaining.isCountUp ? "Days Since" : "Days Until"}</span>
           </div>
