@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CountdownGrid from "@/components/countdown-grid"
 import AddCountdownForm from "@/components/add-countdown-form"
+import UserIdentifier from "@/components/user-identifier"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
 
@@ -8,14 +9,12 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
-        <div className="flex items-center justify-center mb-4 sm:mb-8">
+        <div className="flex items-center justify-center mb-4 sm:mb-6">
           <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal">Now & Then</h1>
           <Clock />
         </div>
         
-        <div className="text-xs text-gray-400 text-center mb-4">
-          <p>Your countdowns are automatically saved on this device</p>
-        </div>
+        <UserIdentifier />
         
         <Tabs defaultValue="pinned" className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-6 text-[10px] sm:text-xs h-8">

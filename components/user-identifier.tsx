@@ -2,34 +2,63 @@
 
 import { useState, useEffect } from "react"
 import { getUserId } from "@/lib/user-utils"
+import { Button } from "@/components/ui/button"
+import { Copy, Check } from "lucide-react"
 
 export default function UserIdentifier() {
   const [userId, setUserId] = useState<string>("")
-  const [fullId, setFullId] = useState<string>("")
+  const [shareableUrl, setShareableUrl] = useState<string>("")
+  const [copied, setCopied] = useState(false)
   
   useEffect(() => {
-    // Get the full user ID
+    // Get the user ID
     const id = getUserId();
-    console.log("Full user ID:", id); // Debug log
     
-    // Store both the full ID and the truncated version
-    setFullId(id);
-    
-    // Only truncate if we have an ID
+    // Set the user ID directly (no need to truncate since it's already short)
     if (id && id.length > 0) {
-      setUserId(id.substring(0, 8) + "...");
+      setUserId(id);
+      
+      // Create shareable URL
+      if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        url.searchParams.set('uid', id);
+        setShareableUrl(url.toString());
+      }
     } else {
       setUserId("No ID found");
     }
   }, [])
   
+  const copyToClipboard = () => {
+    if (navigator.clipboard && shareableUrl) {
+      navigator.clipboard.writeText(shareableUrl)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+    }
+  };
+  
   if (!userId) return null
   
   return (
     <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-      <p>Your unique ID: {userId}</p>
-      <p className="text-[10px] mt-1">Your countdowns are stored locally with this ID</p>
-      <p className="text-[10px] mt-1">Full ID: {fullId}</p>
+      <div className="flex items-center justify-center gap-2">
+        <span>ID: {userId}</span>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-6 px-2 text-[10px]"
+          onClick={copyToClipboard}
+        >
+          {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+          {copied ? "Copied!" : "Copy Link"}
+        </Button>
+      </div>
+      <p className="text-[10px] mt-1">Countdowns are stored with this ID and can be shared via URL</p>
     </div>
   )
 } 
