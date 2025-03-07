@@ -34,6 +34,10 @@ function getOrCreateUserId(): string {
     userId = generateShortId();
     console.log("Generated new userId:", userId);
     localStorage.setItem(USER_ID_KEY, userId);
+  } else if (userId.length > 8) {
+    // If the ID is too long (from a previous version or deployment), truncate it
+    userId = userId.substring(0, 8);
+    localStorage.setItem(USER_ID_KEY, userId);
   }
   
   return userId;
@@ -54,25 +58,26 @@ export function processUrlParameters(): void {
   // If we have a user ID in the URL, use it
   if (urlUserId) {
     console.log("Setting user ID from URL:", urlUserId);
-    localStorage.setItem(USER_ID_KEY, urlUserId);
+    
+    // Ensure the ID is not too long
+    const shortUrlUserId = urlUserId.length > 8 ? urlUserId.substring(0, 8) : urlUserId;
+    localStorage.setItem(USER_ID_KEY, shortUrlUserId);
     
     // If we also have shared data, import it
     if (sharedData) {
-      // Check if we've already imported this data in this browser
-      const dataImported = localStorage.getItem(`${DATA_IMPORTED_KEY}_${sharedData.substring(0, 10)}`);
-      
-      if (!dataImported) {
-        console.log("Importing shared data from URL");
-        try {
-          importCountdownsFromSharedData(sharedData, urlUserId);
-          
-          // Mark this data as imported to avoid reimporting
-          localStorage.setItem(`${DATA_IMPORTED_KEY}_${sharedData.substring(0, 10)}`, "true");
-        } catch (error) {
-          console.error("Error importing shared data:", error);
-        }
-      } else {
-        console.log("Data already imported, skipping import");
+      console.log("Importing shared data from URL");
+      try {
+        // Always import the data when it's present in the URL
+        importCountdownsFromSharedData(sharedData, shortUrlUserId);
+        
+        // Remove the data parameter from the URL to avoid reimporting
+        const url = new URL(window.location.href);
+        url.searchParams.delete('data');
+        window.history.replaceState({}, '', url.toString());
+        
+        console.log("Data imported successfully");
+      } catch (error) {
+        console.error("Error importing shared data:", error);
       }
     }
   }
@@ -103,19 +108,26 @@ export function getUserId(): string {
 
 /**
  * Updates the URL with the user ID as a query parameter without reloading the page
+ * Optionally includes the countdown data for sharing across devices
  */
-export function updateUrlWithUserId(userId: string): void {
+export function updateUrlWithUserId(userId: string, includeData: boolean = false): void {
   if (typeof window === "undefined") return;
   
   const url = new URL(window.location.href);
   
-  // Only update if the uid parameter is different or missing
-  if (url.searchParams.get('uid') !== userId) {
-    url.searchParams.set('uid', userId);
-    
-    // Update the URL without reloading the page
-    window.history.replaceState({}, '', url.toString());
+  // Set the user ID parameter
+  url.searchParams.set('uid', userId);
+  
+  // Include countdown data if requested
+  if (includeData) {
+    const shareableData = exportCountdownsToShareableString();
+    if (shareableData) {
+      url.searchParams.set('data', shareableData);
+    }
   }
+  
+  // Update the URL without reloading the page
+  window.history.replaceState({}, '', url.toString());
 }
 
 /**
