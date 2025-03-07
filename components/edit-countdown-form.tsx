@@ -31,7 +31,6 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
   const defaultValues: CountdownFormValues = {
     title: countdown.title,
     date: exactDate,
-    description: countdown.description || "",
     category: validCategory,
     isCountUp: countdown.isCountUp
   }
@@ -49,7 +48,6 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     const updatedCountdown: Partial<Countdown> = {
       title: values.title,
       date: exactDate, // Use the exact date value
-      description: values.description || "",
       isCountUp: isCountUp,
     }
 

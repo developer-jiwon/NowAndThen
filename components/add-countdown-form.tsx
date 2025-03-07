@@ -20,21 +20,18 @@ import { getUserStorageKey } from "@/lib/user-utils"
 // Define colors for past and future events
 const charcoal = "#333333"; // Pantone charcoal for past events
 const skyBlue = "#87CEEB"; // Sky blue for future events
-const countUpColor = "#E5E1E6"; // Light lavender for count up
-const countDownColor = "#87CEEB"; // Sky blue for count down
+const countUpColor = "#f1c0c0"; // Soft pink/light coral for count up (matching the card color)
+const countDownColor = "#8BCFBE"; // Mint green for count down (matching the card background)
 
 export const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
-  }).max(50, {
-    message: "Title cannot exceed 50 characters."
+  }).max(30, {
+    message: "Title cannot exceed 30 characters."
   }),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Please enter a valid date",
   }),
-  description: z.string().max(200, {
-    message: "Description cannot exceed 200 characters."
-  }).optional(),
   category: z.enum(["general", "personal"]).default("general"),
   isCountUp: z.boolean().optional(),
 })
@@ -57,7 +54,6 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
     defaultValues: defaultValues || {
       title: "",
       date: new Date().toISOString().split("T")[0],
-      description: "",
       category: "general",
       isCountUp: false,
     },
@@ -131,7 +127,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter title" {...field} maxLength={50} className="h-8" />
+                <Input placeholder="Enter title" {...field} maxLength={30} className="h-8" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,11 +156,13 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   <div 
                     className={`absolute right-0 top-0 h-full flex items-center justify-center pr-3 text-xs font-medium rounded-r-md transition-all duration-500 ${
                       isCountUp 
-                        ? 'bg-opacity-90 text-amber-900' 
-                        : 'bg-opacity-90 text-indigo-900'
+                        ? 'bg-opacity-90 text-black' 
+                        : 'bg-opacity-90 text-black'
                     }`}
                     style={{ 
-                      backgroundColor: isCountUp ? countUpColor : countDownColor,
+                      backgroundColor: isCountUp 
+                        ? 'rgba(241, 192, 192, 0.25)' // 25% transparent soft pink for count up (matching card)
+                        : 'rgba(139, 207, 190, 0.25)', // 25% transparent mint green for count down
                       width: '120px',
                       boxShadow: '0 0 5px rgba(0,0,0,0.1)',
                     }}
@@ -183,26 +181,6 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   </div>
                 )}
               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel className="text-sm">Description (Optional)</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Enter description" 
-                  className="resize-none h-16 text-sm" 
-                  {...field} 
-                  maxLength={200}
-                />
-              </FormControl>
-              <div className="text-xs text-right text-gray-500">{field.value?.length || 0}/200</div>
               <FormMessage />
             </FormItem>
           )}
@@ -260,7 +238,6 @@ export default function AddCountdownForm() {
       id: uuidv4(),
       title: values.title,
       date: exactDate, // Use the exact date value
-      description: values.description || "",
       isCountUp: isPastDate,
       hidden: false,
       pinned: false,
