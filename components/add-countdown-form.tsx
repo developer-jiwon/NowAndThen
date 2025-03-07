@@ -5,17 +5,45 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { v4 as uuidv4 } from "uuid"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { Countdown } from "@/lib/types"
+import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
+import { isDateInPast, standardizeDate, handleHtmlDateInput } from "@/lib/countdown-utils"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Clock, Hourglass } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { standardizeDate, isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
-import { getUserStorageKey } from "@/lib/user-utils"
 
 // Define colors for past and future events
 const charcoal = "#333333"; // Pantone charcoal for past events
@@ -23,6 +51,7 @@ const skyBlue = "#87CEEB"; // Sky blue for future events
 const countUpColor = "#f1c0c0"; // Soft pink/light coral for count up (matching the card color)
 const countDownColor = "#8BCFBE"; // Mint green for count down (matching the card background)
 
+// Define the form schema with validation
 export const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title too short",
@@ -282,6 +311,12 @@ export default function AddCountdownForm() {
       window.dispatchEvent(new CustomEvent('countdownsUpdated', {
         detail: { category: values.category }
       }))
+      
+      // Update the URL with the latest data
+      const userId = localStorage.getItem("now_then_user_id");
+      if (userId) {
+        updateUrlWithUserId(userId, true); // true to include data
+      }
       
       // Show success message with minimal design
       setShowSuccess(true)

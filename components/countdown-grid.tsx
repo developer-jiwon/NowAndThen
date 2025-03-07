@@ -25,7 +25,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { getUserStorageKey } from "@/lib/user-utils"
+import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
 
 interface SortableCardProps {
   countdown: Countdown
@@ -241,6 +241,100 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
           // Save the updated countdowns back to localStorage
           localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns));
           console.log(`Removed countdown from category: ${category}`);
+          
+          // Notify components about the update to the current category
+          window.dispatchEvent(
+            new CustomEvent("countdownsUpdated", {
+              detail: { category: category }
+            })
+          );
+        }
+      }
+      
+      // Force a reload of all tabs to ensure consistency
+      const categories = ["general", "personal", "custom", "pinned", "hidden"];
+      categories.forEach(cat => {
+        if (cat !== category) { // Skip the category we already updated
+          window.dispatchEvent(
+            new CustomEvent("countdownsUpdated", {
+              detail: { category: cat }
+            })
+          );
+        }
+      });
+      
+      // Update the URL with the latest data
+      const userId = localStorage.getItem("now_then_user_id");
+      if (userId) {
+        updateUrlWithUserId(userId, true); // true to include data
+      }
+      
+      console.log("Countdown deletion completed successfully");
+    } catch (error) {
+      console.error("Error deleting countdown:", error);
+    }
+  };
+
+  const handleToggleVisibility = (id: string) => {
+    console.log(`Toggling visibility for countdown with ID: ${id} in category: ${category}`);
+    
+    try {
+      // Find the countdown to toggle
+      const countdownToToggle = countdowns.find(c => c.id === id);
+      if (!countdownToToggle) {
+        console.error(`Countdown with ID ${id} not found in category ${category}`);
+        return;
+      }
+      
+      // Get the current hidden state
+      const isHidden = countdownToToggle.hidden || false;
+      
+      // Update the UI first
+      setCountdowns(prevCountdowns => 
+        prevCountdowns.map(c => 
+          c.id === id ? { ...c, hidden: !isHidden } : c
+        )
+      );
+      
+      // Determine which storage key to update based on the category
+      if (category === "pinned" || category === "hidden") {
+        // For pinned or hidden countdowns, we need to update the original category
+        if (countdownToToggle.originalCategory) {
+          const originalCategory = countdownToToggle.originalCategory;
+          const originalStorageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+          
+          // Get the countdowns from the original category
+          const originalCountdownsStr = localStorage.getItem(originalStorageKey);
+          if (originalCountdownsStr) {
+            const originalCountdowns = JSON.parse(originalCountdownsStr);
+            
+            // Update the countdown in the original category
+            const updatedOriginalCountdowns = originalCountdowns.map(
+              (c: Countdown) => c.id === id ? { ...c, hidden: !isHidden } : c
+            );
+            
+            // Save the updated countdowns back to localStorage
+            localStorage.setItem(originalStorageKey, JSON.stringify(updatedOriginalCountdowns));
+            console.log(`Updated visibility in original category: ${originalCategory}`);
+          }
+        }
+      } else {
+        // For regular categories (general, personal, custom), update the current category
+        const storageKey = getUserStorageKey(`countdowns_${category}`);
+        
+        // Get the current countdowns
+        const currentCountdownsStr = localStorage.getItem(storageKey);
+        if (currentCountdownsStr) {
+          const currentCountdowns = JSON.parse(currentCountdownsStr);
+          
+          // Update the countdown
+          const updatedCountdowns = currentCountdowns.map(
+            (c: Countdown) => c.id === id ? { ...c, hidden: !isHidden } : c
+          );
+          
+          // Save the updated countdowns back to localStorage
+          localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns));
+          console.log(`Updated visibility in category: ${category}`);
         }
       }
       
@@ -254,100 +348,102 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         );
       });
       
-      console.log("Countdown deletion completed successfully");
+      // Update the URL with the latest data
+      const userId = localStorage.getItem("now_then_user_id");
+      if (userId) {
+        updateUrlWithUserId(userId, true); // true to include data
+      }
+      
+      console.log("Visibility toggle completed successfully");
     } catch (error) {
-      console.error("Error deleting countdown:", error);
+      console.error("Error toggling visibility:", error);
     }
   };
 
-  const handleToggleVisibility = (id: string) => {
-    const countdownToToggle = countdowns.find((c) => c.id === id);
-    if (!countdownToToggle) return;
-
-    const isCurrentlyHidden = countdownToToggle.hidden;
+  const handleTogglePin = (id: string) => {
+    console.log(`Toggling pin for countdown with ID: ${id} in category: ${category}`);
     
-    // If we're in the hidden tab and unhiding a countdown
-    if (category === "hidden" && isCurrentlyHidden) {
-      // Get the original category
-      const originalCategory = countdownToToggle.originalCategory || "custom";
+    try {
+      // Find the countdown to toggle
+      const countdownToToggle = countdowns.find(c => c.id === id);
+      if (!countdownToToggle) {
+        console.error(`Countdown with ID ${id} not found in category ${category}`);
+        return;
+      }
       
-      // Update the countdown in its original category
-      const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
-      const originalCategoryCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const updatedOriginalCountdowns = originalCategoryCountdowns.map((c: Countdown) =>
-        c.id === id ? { ...c, hidden: false } : c
+      // Get the current pinned state
+      const isPinned = countdownToToggle.pinned || false;
+      
+      // Update the UI first
+      setCountdowns(prevCountdowns => 
+        prevCountdowns.map(c => 
+          c.id === id ? { ...c, pinned: !isPinned } : c
+        )
       );
-      localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns));
       
-      // Remove from the current view (hidden tab)
-      setCountdowns((prev) => prev.filter((c) => c.id !== id));
-      
-      // Redirect to the original category tab (using client-side navigation)
-      const tabLinks = document.querySelectorAll('[role="tab"]');
-      tabLinks.forEach((tab) => {
-        if ((tab as HTMLElement).getAttribute('data-state') !== 'active' && 
-            (tab as HTMLElement).getAttribute('data-value') === originalCategory) {
-          (tab as HTMLElement).click();
+      // Determine which storage key to update based on the category
+      if (category === "pinned") {
+        // For pinned countdowns, we need to update the original category
+        if (countdownToToggle.originalCategory) {
+          const originalCategory = countdownToToggle.originalCategory;
+          const originalStorageKey = getUserStorageKey(`countdowns_${originalCategory}`);
+          
+          // Get the countdowns from the original category
+          const originalCountdownsStr = localStorage.getItem(originalStorageKey);
+          if (originalCountdownsStr) {
+            const originalCountdowns = JSON.parse(originalCountdownsStr);
+            
+            // Update the countdown in the original category
+            const updatedOriginalCountdowns = originalCountdowns.map(
+              (c: Countdown) => c.id === id ? { ...c, pinned: !isPinned } : c
+            );
+            
+            // Save the updated countdowns back to localStorage
+            localStorage.setItem(originalStorageKey, JSON.stringify(updatedOriginalCountdowns));
+            console.log(`Updated pin status in original category: ${originalCategory}`);
+          }
         }
+      } else {
+        // For regular categories (general, personal, custom), update the current category
+        const storageKey = getUserStorageKey(`countdowns_${category}`);
+        
+        // Get the current countdowns
+        const currentCountdownsStr = localStorage.getItem(storageKey);
+        if (currentCountdownsStr) {
+          const currentCountdowns = JSON.parse(currentCountdownsStr);
+          
+          // Update the countdown
+          const updatedCountdowns = currentCountdowns.map(
+            (c: Countdown) => c.id === id ? { ...c, pinned: !isPinned } : c
+          );
+          
+          // Save the updated countdowns back to localStorage
+          localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns));
+          console.log(`Updated pin status in category: ${category}`);
+        }
+      }
+      
+      // Force a reload of all tabs to ensure consistency
+      const categories = ["general", "personal", "custom", "pinned", "hidden"];
+      categories.forEach(cat => {
+        window.dispatchEvent(
+          new CustomEvent("countdownsUpdated", {
+            detail: { category: cat }
+          })
+        );
       });
       
-      return;
-    }
-
-    const updatedCountdowns = countdowns.map((countdown) =>
-      countdown.id === id ? { ...countdown, hidden: !countdown.hidden } : countdown,
-    )
-    setCountdowns(updatedCountdowns)
-
-    // Update localStorage
-    if (category === "pinned") {
-      // For pinned countdowns, we need to find the original category and update there
-      const countdownToUpdate = countdowns.find((c) => c.id === id)
-      if (countdownToUpdate && countdownToUpdate.originalCategory) {
-        const originalCategory = countdownToUpdate.originalCategory
-        const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
-        const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
-        const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
-          c.id === id ? { ...c, hidden: !countdownToUpdate.hidden } : c,
-        )
-        localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
+      // Update the URL with the latest data
+      const userId = localStorage.getItem("now_then_user_id");
+      if (userId) {
+        updateUrlWithUserId(userId, true); // true to include data
       }
-    } else {
-      const storageKey = getUserStorageKey(`countdowns_${category}`);
-      localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
+      
+      console.log("Pin toggle completed successfully");
+    } catch (error) {
+      console.error("Error toggling pin status:", error);
     }
-  }
-
-  const handleTogglePin = (id: string) => {
-    const countdownToToggle = countdowns.find((c) => c.id === id)
-    if (!countdownToToggle) return
-
-    const isPinned = countdownToToggle.pinned || false
-
-    // Update the current list
-    const updatedCountdowns = countdowns.map((countdown) =>
-      countdown.id === id ? { ...countdown, pinned: !isPinned } : countdown,
-    )
-
-    setCountdowns(updatedCountdowns)
-
-    // If we're in the pinned category and unpinning, remove from the list
-    if (category === "pinned" && isPinned) {
-      setCountdowns((prev) => prev.filter((c) => c.id !== id))
-    }
-
-    // Update in the original category's storage
-    const originalCategory = category === "pinned" ? countdownToToggle.originalCategory : category
-
-    if (originalCategory) {
-      const storageKey = getUserStorageKey(`countdowns_${originalCategory}`);
-      const originalCountdowns = JSON.parse(localStorage.getItem(storageKey) || "[]")
-      const updatedOriginalCountdowns = originalCountdowns.map((c: Countdown) =>
-        c.id === id ? { ...c, pinned: !isPinned } : c,
-      )
-      localStorage.setItem(storageKey, JSON.stringify(updatedOriginalCountdowns))
-    }
-  }
+  };
 
   const handleEdit = (id: string) => {
     setEditingCountdownId(id)
@@ -393,6 +489,24 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         // We don't directly save pinned countdowns as they're derived from other categories
       }
       
+      // Notify components about the updates
+      window.dispatchEvent(
+        new CustomEvent("countdownsUpdated", {
+          detail: { category: category }
+        })
+      );
+      window.dispatchEvent(
+        new CustomEvent("countdownsUpdated", {
+          detail: { category: newCategory }
+        })
+      );
+      
+      // Update the URL with the latest data
+      const userId = localStorage.getItem("now_then_user_id");
+      if (userId) {
+        updateUrlWithUserId(userId, true); // true to include data
+      }
+      
       // Close the edit form
       setEditingCountdownId(null)
       return
@@ -422,6 +536,19 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
       const storageKey = getUserStorageKey(`countdowns_${category}`);
       localStorage.setItem(storageKey, JSON.stringify(updatedCountdowns))
     }
+    
+    // Notify components about the update
+    window.dispatchEvent(
+      new CustomEvent("countdownsUpdated", {
+        detail: { category: category }
+      })
+    );
+    
+    // Update the URL with the latest data
+    const userId = localStorage.getItem("now_then_user_id");
+    if (userId) {
+      updateUrlWithUserId(userId, true); // true to include data
+    }
 
     // Close the edit form
     setEditingCountdownId(null)
@@ -444,23 +571,19 @@ export default function CountdownGrid({ category, showHidden = false }: { catego
         const newIndex = items.findIndex((item) => item.id === over.id)
 
         const reorderedItems = arrayMove(items, oldIndex, newIndex)
-
-        // Save the new order to localStorage
-        if (category !== "pinned") {
+        
+        // Save the reordered items to localStorage
+        if (category !== "pinned" && category !== "hidden") {
           const storageKey = getUserStorageKey(`countdowns_${category}`);
           localStorage.setItem(storageKey, JSON.stringify(reorderedItems))
-        } else {
-          // For pinned items, we need to update the order in the pinned view
-          // but we don't change the order in their original categories
-          const pinnedItems = reorderedItems.map((item) => ({
-            ...item,
-            originalCategory: item.originalCategory,
-          }))
-
-          // We don't save pinned order to localStorage as it's derived from other categories
-          // But we could if we wanted to maintain a separate pinned order
+          
+          // Update the URL with the latest data
+          const userId = localStorage.getItem("now_then_user_id");
+          if (userId) {
+            updateUrlWithUserId(userId, true); // true to include data
+          }
         }
-
+        
         return reorderedItems
       })
     }
