@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
+import dynamic from "next/dynamic"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
   },
 }
 
+const LoginButton = dynamic(() => import("@/components/login-button"), { ssr: false })
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +32,14 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
       </head>
-      <body className={`${merriweather.variable}`}>{children}</body>
+      <body className={`${merriweather.variable}`}>
+        <div className="relative min-h-screen">
+          <div className="absolute top-4 right-6 z-50">
+            <LoginButton />
+          </div>
+          {children}
+        </div>
+      </body>
     </html>
   )
 }
