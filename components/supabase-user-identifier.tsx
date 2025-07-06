@@ -9,6 +9,9 @@ export default function SupabaseUserIdentifier() {
   const { user, loading } = useAnonymousAuth();
   const [copied, setCopied] = useState(false);
   
+  // Check if user is anonymous (Supabase)
+  const isAnonymous = user && user.user_metadata && user.user_metadata.provider === 'anonymous';
+
   const copyToClipboard = () => {
     if (!user) return;
     
@@ -33,7 +36,7 @@ export default function SupabaseUserIdentifier() {
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
         <div className="flex items-center justify-center gap-2">
           <Loader2 className="h-3 w-3 animate-spin" />
-          <span>Connecting...</span>
+          <span>Please wait...</span>
         </div>
       </div>
     );
@@ -42,17 +45,40 @@ export default function SupabaseUserIdentifier() {
   if (!user) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-        <div className="flex items-center justify-center gap-2">
-          <span>Connection failed</span>
-        </div>
+        <span>You are not signed in. Using a guest account.</span>
       </div>
     );
   }
   
+  if (isAnonymous) {
+    return (
+      <div className="text-xs text-gray-400 text-center mt-2 mb-4">
+        <div className="flex items-center justify-center gap-2">
+          <span>You are using a guest account.</span>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-6 px-2 text-[10px] border border-gray-200 hover:bg-gray-50"
+            onClick={copyToClipboard}
+          >
+            {copied ? (
+              <Check className="h-3 w-3 mr-1 text-green-500" />
+            ) : (
+              <Share2 className="h-3 w-3 mr-1" />
+            )}
+            <span>{copied ? "Copied!" : "Share"}</span>
+          </Button>
+        </div>
+        <p className="text-[10px] mt-1">Sign in to sync your data across devices.</p>
+      </div>
+    );
+  }
+  
+  // Signed-in (third-party) user
   return (
     <div className="text-xs text-gray-400 text-center mt-2 mb-4">
       <div className="flex items-center justify-center gap-2">
-        <span>Connected: {user.id.substring(0, 8)}...</span>
+        <span>Signed in: {user.id.substring(0, 8)}...</span>
         <Button 
           variant="ghost" 
           size="sm" 
@@ -67,7 +93,7 @@ export default function SupabaseUserIdentifier() {
           <span>{copied ? "Copied!" : "Share"}</span>
         </Button>
       </div>
-      <p className="text-[10px] mt-1">Your data is automatically synced across devices</p>
+      <p className="text-[10px] mt-1">Your data is automatically synced across devices.</p>
     </div>
   )
 } 

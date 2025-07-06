@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
 import dynamic from "next/dynamic"
+import SupabaseProvider from "@/components/SupabaseProvider"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -33,12 +34,14 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
       </head>
       <body className={`${merriweather.variable}`}>
-        <div className="relative min-h-screen">
-          <div className="absolute top-4 right-6 z-50">
-            <LoginButton />
+        <SupabaseProvider>
+          <div className="relative min-h-screen">
+            <div className="absolute top-4 right-6 z-50">
+              <LoginButton />
+            </div>
+            {children}
           </div>
-          {children}
-        </div>
+        </SupabaseProvider>
       </body>
     </html>
   )

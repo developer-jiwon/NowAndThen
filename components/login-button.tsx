@@ -13,25 +13,17 @@ export default function LoginButton() {
   const [open, setOpen] = useState(false);
   const supabaseClient = useSupabaseClient();
 
+  // Check if user is anonymous (Supabase)
+  const isAnonymous = user && user.user_metadata && user.user_metadata.provider === 'anonymous';
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    window.location.reload(); // Force reload to clear session and trigger anonymous login
   };
 
   return (
     <div className="flex items-center gap-2">
-      {user ? (
-        <>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4 mr-1" />
-            로그아웃
-          </Button>
-        </>
-      ) : (
+      {!user || isAnonymous ? (
         <>
           <Button
             variant="ghost"
@@ -40,7 +32,7 @@ export default function LoginButton() {
             onClick={() => setOpen(true)}
           >
             <LogIn className="h-4 w-4 mr-1" />
-            Sign in to sync
+            Sign in
           </Button>
           {open && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -52,18 +44,34 @@ export default function LoginButton() {
                   <span className="sr-only">Close</span>
                   ×
                 </button>
+                <h2 className="text-xl font-semibold text-center mb-4 text-gray-900">Sign in</h2>
                 <Auth
                   supabaseClient={supabaseClient}
                   appearance={{ theme: ThemeSupa }}
-                  providers={["google", "github"]}
+                  providers={["google", "apple"]}
                   theme="light"
                   showLinks={false}
-                  onlyThirdPartyProviders={false}
+                  onlyThirdPartyProviders={true}
                 />
               </div>
             </div>
           )}
         </>
+      ) : (
+        <div className="flex items-center gap-3">
+          {user.email && (
+            <span className="text-gray-700 text-xs font-medium">{user.email}</span>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-1" />
+            Sign out
+          </Button>
+        </div>
       )}
     </div>
   );
