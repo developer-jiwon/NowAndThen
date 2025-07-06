@@ -51,20 +51,10 @@ export default function SupabaseUserIdentifier() {
     );
   }
   
-  // Anonymous or no user: show sign in button and sync prompt
+  // Only show for authenticated users
   if (!isAuthenticated) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-        <div className="flex items-center justify-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-6 px-2 text-[10px] border border-gray-200 hover:bg-gray-50"
-            onClick={() => window.dispatchEvent(new CustomEvent('openSignInModal'))}
-          >
-            Sign in
-          </Button>
-        </div>
         <p className="text-[10px] mt-1">Sign in to sync your data across devices.</p>
       </div>
     );
