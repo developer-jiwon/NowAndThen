@@ -13,8 +13,8 @@ export default function LoginButton() {
   const [open, setOpen] = useState(false);
   const supabaseClient = useSupabaseClient();
 
-  // Check if user is anonymous (Supabase)
-  const isAnonymous = user && user.user_metadata && user.user_metadata.provider === 'anonymous';
+  // More robust anonymous user detection
+  const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -23,7 +23,7 @@ export default function LoginButton() {
 
   return (
     <div className="flex items-center gap-2">
-      {!user || isAnonymous ? (
+      {isAnonymous ? (
         <>
           <Button
             variant="ghost"
