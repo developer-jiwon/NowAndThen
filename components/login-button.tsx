@@ -28,7 +28,7 @@ export default function LoginButton() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50"
+            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
             onClick={() => setOpen(true)}
           >
             <LogIn className="h-4 w-4 mr-1" />
@@ -48,7 +48,7 @@ export default function LoginButton() {
                 <Auth
                   supabaseClient={supabaseClient}
                   appearance={{ theme: ThemeSupa }}
-                  providers={["google", "apple"]}
+                  providers={["google"]}
                   theme="light"
                   showLinks={false}
                   onlyThirdPartyProviders={true}
