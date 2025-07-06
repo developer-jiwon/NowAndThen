@@ -18,7 +18,7 @@ export default function LoginButton() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.reload(); // Force reload to clear session and trigger anonymous login
+    window.location.href = '/'; // Redirect to homepage for reliable logout on mobile
   };
 
   return (

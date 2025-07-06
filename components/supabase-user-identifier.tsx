@@ -9,8 +9,17 @@ export default function SupabaseUserIdentifier() {
   const { user, loading } = useAnonymousAuth();
   const [copied, setCopied] = useState(false);
   
-  // Check if user is anonymous (Supabase)
-  const isAnonymous = user && user.user_metadata && user.user_metadata.provider === 'anonymous';
+  // Debug: Log user object structure
+  useEffect(() => {
+    console.log("SupabaseUserIdentifier - user:", user);
+    console.log("SupabaseUserIdentifier - user_metadata:", user?.user_metadata);
+    console.log("SupabaseUserIdentifier - provider:", user?.user_metadata?.provider);
+    console.log("SupabaseUserIdentifier - email:", user?.email);
+    console.log("SupabaseUserIdentifier - app_metadata:", user?.app_metadata);
+  }, [user]);
+  
+  // Simplified check: authenticated users have an email, anonymous users don't
+  const isAuthenticated = user && user.email && user.email.length > 0;
 
   const copyToClipboard = () => {
     if (!user) return;
@@ -42,11 +51,11 @@ export default function SupabaseUserIdentifier() {
     );
   }
   
-  if (!user || isAnonymous) {
+  // Anonymous or no user: show sign in button and sync prompt
+  if (!isAuthenticated) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
         <div className="flex items-center justify-center gap-2">
-          <span>You are using a guest account.</span>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -61,25 +70,9 @@ export default function SupabaseUserIdentifier() {
     );
   }
   
-  // Signed-in (third-party) user
+  // Authenticated user: only show sync message
   return (
     <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-      <div className="flex items-center justify-center gap-2">
-        <span>Signed in: {user.id.substring(0, 8)}...</span>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-6 px-2 text-[10px] border border-gray-200 hover:bg-gray-50"
-          onClick={copyToClipboard}
-        >
-          {copied ? (
-            <Check className="h-3 w-3 mr-1 text-green-500" />
-          ) : (
-            <Share2 className="h-3 w-3 mr-1" />
-          )}
-          <span>{copied ? "Copied!" : "Share"}</span>
-        </Button>
-      </div>
       <p className="text-[10px] mt-1">Your data is automatically synced across devices.</p>
     </div>
   )

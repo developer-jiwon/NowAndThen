@@ -195,16 +195,6 @@ export default function SupabaseCountdownGrid({
                 : `No ${category} countdowns`
             }
           </p>
-          {category === 'custom' && !showAddForm && (
-            <Button 
-              onClick={() => setShowAddForm(true)}
-              variant="outline"
-              className="mt-4"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add your first countdown
-            </Button>
-          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
