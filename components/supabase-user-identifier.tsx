@@ -42,15 +42,7 @@ export default function SupabaseUserIdentifier() {
     );
   }
   
-  if (!user) {
-    return (
-      <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-        <span>You are not signed in. Using a guest account.</span>
-      </div>
-    );
-  }
-  
-  if (isAnonymous) {
+  if (!user || isAnonymous) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
         <div className="flex items-center justify-center gap-2">
@@ -59,14 +51,9 @@ export default function SupabaseUserIdentifier() {
             variant="ghost" 
             size="sm" 
             className="h-6 px-2 text-[10px] border border-gray-200 hover:bg-gray-50"
-            onClick={copyToClipboard}
+            onClick={() => window.dispatchEvent(new CustomEvent('openSignInModal'))}
           >
-            {copied ? (
-              <Check className="h-3 w-3 mr-1 text-green-500" />
-            ) : (
-              <Share2 className="h-3 w-3 mr-1" />
-            )}
-            <span>{copied ? "Copied!" : "Share"}</span>
+            Sign in
           </Button>
         </div>
         <p className="text-[10px] mt-1">Sign in to sync your data across devices.</p>
