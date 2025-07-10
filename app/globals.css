@@ -111,3 +111,8 @@
   animation: fadeIn 0.3s ease-in-out forwards;
 }
 
+/* Merriweather for Supabase Auth modal title */
+.sbui-auth-modal h2, .sbui-modal h2, .sbui-auth-content h2 {
+  font-family: 'Merriweather', serif !important;
+}
+

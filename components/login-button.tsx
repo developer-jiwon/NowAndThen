@@ -44,10 +44,21 @@ export default function LoginButton() {
                   <span className="sr-only">Close</span>
                   ×
                 </button>
-                <h2 className="text-xl font-semibold text-center mb-4 text-gray-900">Sign in</h2>
+                <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 font-merriweather">Sign in</h2>
                 <Auth
                   supabaseClient={supabaseClient}
-                  appearance={{ theme: ThemeSupa }}
+                  appearance={{
+                    theme: ThemeSupa,
+                    style: {
+                      button: { fontFamily: 'Merriweather, serif' },
+                      label: { fontFamily: 'Merriweather, serif' },
+                      input: { fontFamily: 'Merriweather, serif' },
+                      anchor: { fontFamily: 'Merriweather, serif' },
+                      message: { fontFamily: 'Merriweather, serif' },
+                      container: { fontFamily: 'Merriweather, serif' },
+                      loader: { fontFamily: 'Merriweather, serif' },
+                    },
+                  }}
                   providers={["google"]}
                   theme="light"
                   showLinks={false}
@@ -65,7 +76,7 @@ export default function LoginButton() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50"
+            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4 mr-1" />
