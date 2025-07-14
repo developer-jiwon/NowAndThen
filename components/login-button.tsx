@@ -23,7 +23,7 @@ export default function LoginButton() {
 
   // 회원 탈퇴(계정 및 데이터 삭제)
   const handleDeleteAccount = async () => {
-    if (!window.confirm("정말로 회원 탈퇴 및 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    if (!window.confirm("Are you sure you want to delete your account and all your data? This action cannot be undone.")) return;
     try {
       // 1. countdown 데이터 삭제
       if (user?.id) {
@@ -32,14 +32,14 @@ export default function LoginButton() {
       // 2. 계정 삭제
       const { error } = await supabase.auth.admin.deleteUser(user.id);
       if (error) {
-        alert('계정 삭제 중 오류가 발생했습니다: ' + error.message);
+        alert('An error occurred while deleting your account: ' + error.message);
         return;
       }
       // 3. 로그아웃 및 메인 이동
       await supabase.auth.signOut();
       window.location.href = '/';
     } catch (err) {
-      alert('계정 삭제 중 오류가 발생했습니다.');
+      alert('An error occurred while deleting your account.');
       console.error(err);
     }
   };
@@ -112,7 +112,7 @@ export default function LoginButton() {
            onClick={handleDeleteAccount}
          >
            <Trash2 className="h-4 w-4 mr-1" />
-           회원 탈퇴
+           Delete Account
          </Button>
         </div>
       )}
