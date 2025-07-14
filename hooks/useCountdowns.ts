@@ -39,21 +39,44 @@ export function useCountdowns(category: string) {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
-        .from('countdowns')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('category', category)
-        .order('created_at', { ascending: false });
+      if (category === "pinned") {
+        // pinned 탭일 때: 모든 카테고리에서 pinned:true인 것만 모아서 보여줌
+        const categories = ["general", "personal", "custom"];
+        let allPinned: Countdown[] = [];
+        for (const cat of categories) {
+          const { data, error: fetchError } = await supabase
+            .from('countdowns')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('category', cat)
+            .eq('pinned', true)
+            .order('created_at', { ascending: false });
+          if (fetchError) {
+            console.error(`Error fetching pinned countdowns for ${cat}:`, fetchError);
+            continue;
+          }
+          const transformed = data?.map(transformCountdown) || [];
+          allPinned = [...allPinned, ...transformed];
+        }
+        setCountdowns(allPinned);
+      } else {
+        // 기존 카테고리별 로딩
+        const { data, error: fetchError } = await supabase
+          .from('countdowns')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('category', category)
+          .order('created_at', { ascending: false });
 
-      if (fetchError) {
-        console.error('Error fetching countdowns:', fetchError);
-        setError(fetchError.message);
-        return;
+        if (fetchError) {
+          console.error('Error fetching countdowns:', fetchError);
+          setError(fetchError.message);
+          return;
+        }
+
+        const transformedCountdowns = data?.map(transformCountdown) || [];
+        setCountdowns(transformedCountdowns);
       }
-
-      const transformedCountdowns = data?.map(transformCountdown) || [];
-      setCountdowns(transformedCountdowns);
     } catch (err) {
       console.error('Error in loadCountdowns:', err);
       setError('Failed to load countdowns');

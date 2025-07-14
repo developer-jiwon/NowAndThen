@@ -301,18 +301,23 @@ export default function CountdownCard({
       
       {/* Action dots positioned outside the card */}
       <div className="absolute -left-3 sm:-left-3 -left-2 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 sm:gap-3 z-10">
-        {onTogglePin && (
-          <motion.div
-            custom={0}
-            variants={iconDotVariants}
-            whileHover="hover"
-            whileTap="tap"
-            className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
-            onClick={() => onTogglePin(countdown.id)}
-          >
-            {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
-          </motion.div>
-        )}
+        <motion.div
+          custom={0}
+          variants={iconDotVariants}
+          whileHover="hover"
+          whileTap="tap"
+          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
+          onClick={() => {
+            console.warn("🚨🚨🚨 PIN BUTTON CLICKED! ID:", countdown.id, "🚨🚨🚨");
+            if (onTogglePin) {
+              onTogglePin(countdown.id);
+            } else {
+              console.error("❌❌❌ onTogglePin prop is missing! ❌❌❌");
+            }
+          }}
+        >
+          {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
+        </motion.div>
         
         <motion.div
           custom={1}

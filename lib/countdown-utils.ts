@@ -216,33 +216,33 @@ export function getCountdowns(category: string): Countdown[] {
 }
 
 // Get all pinned countdowns from all categories
-export function getAllPinnedCountdowns(): Countdown[] {
+export function getAllPinnedCountdowns(specificUserId?: string): Countdown[] {
   if (typeof window === "undefined") {
-    return []
+    return [];
   }
 
-  const categories = ["general", "personal", "custom"]
-  let pinnedCountdowns: Countdown[] = []
+  const categories = ["general", "personal", "custom"];
+  let pinnedCountdowns: Countdown[] = [];
 
   categories.forEach((category) => {
-    const storageKey = getUserStorageKey(`countdowns_${category}`)
-    const storedCountdowns = localStorage.getItem(storageKey) || "[]"
+    const storageKey = getUserStorageKey(`countdowns_${category}`, specificUserId);
+    const storedCountdowns = localStorage.getItem(storageKey) || "[]";
     try {
-      const countdowns: Countdown[] = JSON.parse(storedCountdowns)
+      const countdowns: Countdown[] = JSON.parse(storedCountdowns);
       const pinnedFromCategory = countdowns
         .filter((countdown) => countdown.pinned)
         .map((countdown) => ({
           ...countdown,
-          originalCategory: category as "general" | "personal" | "custom"
-        }))
+          originalCategory: category as "general" | "personal" | "custom",
+        }));
 
-      pinnedCountdowns = [...pinnedCountdowns, ...pinnedFromCategory]
+      pinnedCountdowns = [...pinnedCountdowns, ...pinnedFromCategory];
     } catch (error) {
-      console.error(`Error parsing countdowns for category ${category}:`, error)
+      console.error(`Error parsing countdowns for category ${category}:`, error);
     }
-  })
+  });
 
-  return pinnedCountdowns
+  return pinnedCountdowns;
 }
 
 // Utility function specifically for handling HTML date input values
