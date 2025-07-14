@@ -5,7 +5,7 @@ import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, User } from "lucide-react";
+import { LogIn, LogOut, User, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginButton() {
@@ -19,6 +19,29 @@ export default function LoginButton() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = '/'; // Redirect to homepage for reliable logout on mobile
+  };
+
+  // 회원 탈퇴(계정 및 데이터 삭제)
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("정말로 회원 탈퇴 및 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    try {
+      // 1. countdown 데이터 삭제
+      if (user?.id) {
+        await supabase.from('countdowns').delete().eq('user_id', user.id);
+      }
+      // 2. 계정 삭제
+      const { error } = await supabase.auth.admin.deleteUser(user.id);
+      if (error) {
+        alert('계정 삭제 중 오류가 발생했습니다: ' + error.message);
+        return;
+      }
+      // 3. 로그아웃 및 메인 이동
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    } catch (err) {
+      alert('계정 삭제 중 오류가 발생했습니다.');
+      console.error(err);
+    }
   };
 
   return (
@@ -82,6 +105,15 @@ export default function LoginButton() {
             <LogOut className="h-4 w-4 mr-1" />
             Sign out
           </Button>
+         <Button
+           variant="destructive"
+           size="sm"
+           className="h-8 px-3 text-xs border border-red-200 hover:bg-red-50 font-merriweather"
+           onClick={handleDeleteAccount}
+         >
+           <Trash2 className="h-4 w-4 mr-1" />
+           회원 탈퇴
+         </Button>
         </div>
       )}
     </div>
