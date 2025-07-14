@@ -9,6 +9,7 @@ import { Plus, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
+import EditCountdownForm from "@/components/edit-countdown-form";
 
 interface SupabaseCountdownGridProps {
   category: string;
@@ -31,6 +32,7 @@ export default function SupabaseCountdownGrid({
   } = useCountdowns(category);
   
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
 
   // 사용자가 로드되면 카운트다운 데이터 로드
   useEffect(() => {
@@ -93,9 +95,37 @@ export default function SupabaseCountdownGrid({
     }
   };
 
-  const handleEdit = async (id: string) => {
-    // Edit functionality will be implemented later
-    console.log('Edit countdown:', id);
+  const handleEdit = (id: string) => {
+    setEditingCountdownId(id);
+  };
+
+  const handleSaveEdit = async (id: string, updatedData: Partial<Countdown>, newCategory?: string) => {
+    if (!user) return;
+    const countdownToUpdate = countdowns.find((c) => c.id === id);
+    if (!countdownToUpdate) return;
+    // 카테고리 변경 시 이동
+    if (newCategory && newCategory !== category) {
+      // 기존 카테고리에서 제거
+      await deleteCountdown(id, user.id);
+      // 새 카테고리에 추가
+      const newCountdown: Countdown = {
+        ...countdownToUpdate,
+        ...updatedData,
+        originalCategory: newCategory,
+      };
+      await addCountdown(newCountdown, user.id);
+      setEditingCountdownId(null);
+      await loadCountdowns(user.id);
+      return;
+    }
+    // 카테고리 변경 없으면 업데이트
+    await updateCountdown({ ...countdownToUpdate, ...updatedData }, user.id);
+    setEditingCountdownId(null);
+    await loadCountdowns(user.id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCountdownId(null);
   };
 
   const handleAddCountdown = async (values: any) => {
@@ -108,7 +138,7 @@ export default function SupabaseCountdownGrid({
       isCountUp: values.isCountUp || false,
       hidden: false,
       pinned: false,
-      originalCategory: values.category, // 사용자가 선택한 general/personal
+      originalCategory: (values.category === 'general' || values.category === 'personal') ? values.category : undefined,
     };
     try {
       await addCountdown(newCountdown, user.id);
@@ -151,6 +181,24 @@ export default function SupabaseCountdownGrid({
         <p className="text-gray-500">Please wait while we connect...</p>
       </div>
     );
+  }
+
+  // Edit 모드일 때 EditCountdownForm 보여주기
+  if (editingCountdownId) {
+    const countdownToEdit = countdowns.find((c) => c.id === editingCountdownId);
+    if (countdownToEdit) {
+      return (
+        <div className="w-full flex justify-center">
+          <div className="max-w-md w-full">
+            <EditCountdownForm
+              countdown={countdownToEdit}
+              onSave={handleSaveEdit}
+              onCancel={handleCancelEdit}
+            />
+          </div>
+        </div>
+      );
+    }
   }
 
   return (
