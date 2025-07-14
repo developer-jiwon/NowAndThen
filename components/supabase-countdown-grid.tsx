@@ -111,7 +111,7 @@ export default function SupabaseCountdownGrid({
       const newCountdown: Countdown = {
         ...countdownToUpdate,
         ...updatedData,
-        originalCategory: newCategory,
+        originalCategory: (newCategory === 'general' || newCategory === 'personal') ? newCategory : undefined,
       };
       await addCountdown(newCountdown, user.id);
       setEditingCountdownId(null);

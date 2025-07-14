@@ -23,10 +23,15 @@ export default function LoginButton() {
 
   // 회원 탈퇴(계정 및 데이터 삭제)
   const handleDeleteAccount = async () => {
+    if (!user) {
+      alert('No user found. Please sign in first.');
+      return;
+    }
+    
     if (!window.confirm("Are you sure you want to delete your account and all your data? This action cannot be undone.")) return;
     try {
       // 1. countdown 데이터 삭제
-      if (user?.id) {
+      if (user.id) {
         await supabase.from('countdowns').delete().eq('user_id', user.id);
       }
       // 2. 계정 삭제
