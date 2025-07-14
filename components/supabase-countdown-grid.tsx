@@ -100,7 +100,7 @@ export default function SupabaseCountdownGrid({
 
   const handleAddCountdown = async (values: any) => {
     if (!user) return;
-    
+    // category는 values.category(사용자 선택값)로 저장
     const newCountdown: Countdown = {
       id: values.id || crypto.randomUUID(),
       title: values.title,
@@ -108,12 +108,15 @@ export default function SupabaseCountdownGrid({
       isCountUp: values.isCountUp || false,
       hidden: false,
       pinned: false,
-      originalCategory: values.category,
+      originalCategory: values.category, // 사용자가 선택한 general/personal
     };
-    
     try {
       await addCountdown(newCountdown, user.id);
       setShowAddForm(false);
+      // custom 탭에서 추가한 경우, custom 탭을 즉시 새로고침해서 방금 만든 게 안 보이게
+      if (category === 'custom') {
+        await loadCountdowns(user.id);
+      }
     } catch (error) {
       console.error('Error adding countdown:', error);
     }
@@ -154,8 +157,8 @@ export default function SupabaseCountdownGrid({
     <div className="w-full">
       {/* Add Form */}
       {showAddForm && (
-        <div className="mb-6">
-          <div className="max-w-sm mx-auto">
+        <div className="mb-6 flex justify-center">
+          <div className="max-w-sm mx-auto w-full">
             <CountdownForm 
               onSubmit={handleAddCountdown}
               submitButtonText="Add Timer"
@@ -173,7 +176,7 @@ export default function SupabaseCountdownGrid({
 
       {/* Add Button */}
       {!showAddForm && category === 'custom' && (
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <Button 
             onClick={() => setShowAddForm(true)}
             className="w-full sm:w-auto"
@@ -185,31 +188,31 @@ export default function SupabaseCountdownGrid({
       )}
 
       {/* Countdowns Grid */}
-      {sortedCountdowns.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500">
-            {showHidden 
-              ? "No hidden countdowns" 
-              : category === 'custom' 
-                ? "No custom countdowns yet" 
+      {category === 'custom' ? null : (
+        sortedCountdowns.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">
+              {showHidden 
+                ? "No hidden countdowns" 
                 : `No ${category} countdowns`
-            }
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {sortedCountdowns.map((countdown) => (
-            <CountdownCard
-              key={countdown.id}
-              countdown={countdown}
-              onRemove={handleRemove}
-              onToggleVisibility={handleToggleVisibility}
-              onTogglePin={handleTogglePin}
-              onEdit={handleEdit}
-              category={category}
-            />
-          ))}
-        </div>
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {sortedCountdowns.map((countdown) => (
+              <CountdownCard
+                key={countdown.id}
+                countdown={countdown}
+                onRemove={handleRemove}
+                onToggleVisibility={handleToggleVisibility}
+                onTogglePin={handleTogglePin}
+                onEdit={handleEdit}
+                category={category}
+              />
+            ))}
+          </div>
+        )
       )}
     </div>
   );

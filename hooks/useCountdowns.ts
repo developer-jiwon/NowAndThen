@@ -59,6 +59,26 @@ export function useCountdowns(category: string) {
           allPinned = [...allPinned, ...transformed];
         }
         setCountdowns(allPinned);
+      } else if (category === "hidden") {
+        // hidden 탭일 때: 모든 카테고리에서 hidden:true인 것만 모아서 보여줌
+        const categories = ["general", "personal", "custom"];
+        let allHidden: Countdown[] = [];
+        for (const cat of categories) {
+          const { data, error: fetchError } = await supabase
+            .from('countdowns')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('category', cat)
+            .eq('hidden', true)
+            .order('created_at', { ascending: false });
+          if (fetchError) {
+            console.error(`Error fetching hidden countdowns for ${cat}:`, fetchError);
+            continue;
+          }
+          const transformed = data?.map(transformCountdown) || [];
+          allHidden = [...allHidden, ...transformed];
+        }
+        setCountdowns(allHidden);
       } else {
         // 기존 카테고리별 로딩
         const { data, error: fetchError } = await supabase

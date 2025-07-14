@@ -306,9 +306,9 @@ export default function CountdownCard({
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
+          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
-            console.warn("🚨🚨🚨 PIN BUTTON CLICKED! ID:", countdown.id, "🚨🚨🚨");
+            if (category === 'hidden') return; // hidden 탭에서는 동작하지 않음
             if (onTogglePin) {
               onTogglePin(countdown.id);
             } else {
