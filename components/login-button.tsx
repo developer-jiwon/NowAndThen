@@ -27,17 +27,21 @@ export default function LoginButton() {
       alert('No user found. Please sign in first.');
       return;
     }
-    
     if (!window.confirm("Are you sure you want to delete your account and all your data? This action cannot be undone.")) return;
     try {
       // 1. countdown 데이터 삭제
       if (user.id) {
         await supabase.from('countdowns').delete().eq('user_id', user.id);
       }
-      // 2. 계정 삭제
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
-      if (error) {
-        alert('An error occurred while deleting your account: ' + error.message);
+      // 2. 계정 삭제 (API Route 호출)
+      const res = await fetch('/api/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        alert('An error occurred while deleting your account: ' + (data.error || res.statusText));
         return;
       }
       // 3. 로그아웃 및 메인 이동
