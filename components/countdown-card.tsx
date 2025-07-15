@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, Trash2, Pin, PinOff, Edit, X, Check, Calendar } from "lucide-react"
 import type { Countdown, TimeRemaining } from "@/lib/types"
 import { calculateTimeRemaining, isDateInPast, standardizeDate, formatDateString } from "@/lib/countdown-utils"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, easeOut } from "framer-motion"
 
 // Define colors for past and future events
 const countUpColor = "#f1c0c0"; // Soft pink/light coral for count up
@@ -27,14 +27,14 @@ const countdownCardVariants = {
     y: 0,
     transition: { 
       duration: 0.3,
-      ease: "easeOut"
+      ease: easeOut
     }
   },
   hover: {
     y: -2,
     transition: { 
       duration: 0.2,
-      ease: "easeOut"
+      ease: easeOut
     }
   }
 };
@@ -47,14 +47,14 @@ const countupCardVariants = {
     scale: 1,
     transition: { 
       duration: 0.3,
-      ease: "easeOut"
+      ease: easeOut
     }
   },
   hover: {
     scale: 1.02,
     transition: { 
       duration: 0.2,
-      ease: "easeOut"
+      ease: easeOut
     }
   }
 };
@@ -68,14 +68,14 @@ const iconDotVariants = {
     transition: {
       delay: i * 0.1,
       duration: 0.3,
-      ease: "easeOut"
+      ease: easeOut
     }
   }),
   hover: {
     scale: 1.1,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
+      ease: easeOut
     }
   },
   tap: {
@@ -94,7 +94,7 @@ const countdownNumberVariants = {
     y: 0,
     transition: { 
       duration: 0.3,
-      ease: "easeOut"
+      ease: easeOut
     }
   },
   exit: {
@@ -114,7 +114,7 @@ const countupNumberVariants = {
     scale: 1,
     transition: { 
       duration: 0.3,
-      ease: "easeOut"
+      ease: easeOut
     }
   },
   exit: {

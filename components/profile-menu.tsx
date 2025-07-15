@@ -58,11 +58,11 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
     <>
       <span
         className={`rounded-full border border-gray-200 bg-black flex items-center justify-center cursor-pointer ${btnSize}`}
-        onClick={() => setOpen('main')}
+        onClick={() => setOpen(isAnonymous ? 'signin' : 'main')}
       >
         <User className={`${iconSize} text-white`} />
       </span>
-      {open === 'main' && (
+      {open === 'main' && !isAnonymous && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-4 max-w-[270px] w-full relative flex flex-col items-center">
             <button
@@ -72,33 +72,19 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
               <span className="sr-only">Close</span>
               ×
             </button>
-            {isAnonymous ? (
-              <>
-                <button
-                  className="flex items-center gap-2 px-3 py-1.5 mt-2 mb-1 w-full justify-center rounded bg-black text-white text-xs hover:bg-gray-900"
-                  onClick={() => setOpen('signin')}
-                >
-                  <LogIn className="h-4 w-4" /> Sign in
-                </button>
-                {/* Sign in modal handled below */}
-              </>
-            ) : (
-              <>
-                <div className="px-2 py-1 text-xs text-gray-700 break-all max-w-[180px] truncate mb-2 text-center">{user.email}</div>
-                <button
-                  className="flex items-center gap-2 px-3 py-1.5 mb-2 w-full justify-center rounded bg-black text-white text-xs hover:bg-gray-900"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="h-4 w-4" /> Sign out
-                </button>
-                <button
-                  className="flex items-center gap-2 px-3 py-1.5 w-full justify-center rounded bg-red-500 text-white text-xs hover:bg-red-600"
-                  onClick={handleDeleteAccount}
-                >
-                  <Trash2 className="h-4 w-4" /> Delete Account
-                </button>
-              </>
-            )}
+            <div className="px-2 py-1 text-xs text-gray-700 break-all max-w-[180px] truncate mb-2 text-center">{user.email}</div>
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 mb-2 w-full justify-center rounded bg-black text-white text-xs hover:bg-gray-900"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </button>
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 w-full justify-center rounded bg-red-500 text-white text-xs hover:bg-red-600"
+              onClick={handleDeleteAccount}
+            >
+              <Trash2 className="h-4 w-4" /> Delete Account
+            </button>
           </div>
         </div>
       )}
@@ -107,7 +93,7 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
           <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-4 max-w-[270px] w-full relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-              onClick={() => setOpen('main')}
+              onClick={() => setOpen('none')}
             >
               <span className="sr-only">Close</span>
               ×

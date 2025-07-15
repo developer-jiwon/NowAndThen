@@ -1,14 +1,17 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SupabaseCountdownGrid from "@/components/supabase-countdown-grid"
 import SupabaseUserIdentifier from "@/components/supabase-user-identifier"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
-import dynamic from "next/dynamic"
 import ProfileMenu from "@/components/profile-menu";
-
-const LoginButton = dynamic(() => import("@/components/login-button"), { ssr: false })
+import { useUser } from "@supabase/auth-helpers-react";
+import LoginButton from "@/components/login-button";
 
 export default function Home() {
+  const user = useUser();
+  const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
   return (
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
@@ -19,7 +22,16 @@ export default function Home() {
           </div>
           <div className="flex items-center justify-center gap-2 mt-2">
             <ProfileMenu size="sm" />
-            <span className="text-gray-600 text-sm sm:text-base">Sign in to save and sync your timers.<br /><span className="text-xs text-gray-400">Without sign in, data may be lost.</span></span>
+            {isAnonymous ? (
+              <span className="text-gray-600 text-sm sm:text-base text-center">
+                Sign in to save and sync your timers.<br />
+                <span className="text-xs text-gray-400">Without sign in, data may be lost.</span>
+              </span>
+            ) : (
+              <span className="text-gray-600 text-sm sm:text-base text-center">
+                All your timers are securely synced to your account.
+              </span>
+            )}
           </div>
           <LoginButton />
         </div>
