@@ -366,7 +366,7 @@ export default function CountdownCard({
         {/* Title section */}
         <div className="w-full mb-1">
           <div className="relative flex items-center justify-center gap-1 mb-1">
-            <h3 className="text-sm sm:text-base font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
+            <h3 className="text-xs sm:text-sm font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
