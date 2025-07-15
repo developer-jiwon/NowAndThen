@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
-        <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
+        <div className="flex flex-col items-center w-full mb-1 sm:mb-1">
           <div className="flex items-center justify-center gap-1 sm:gap-2">
             <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal whitespace-nowrap">Now & Then</h1>
             <Clock size="sm" />
@@ -26,7 +26,7 @@ export default function Home() {
         {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
+          <TabsList className="grid w-full grid-cols-5 mb-1 sm:mb-1 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
             <TabsTrigger 
               value="pinned" 
               data-value="pinned" 
