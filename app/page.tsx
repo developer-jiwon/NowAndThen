@@ -35,42 +35,39 @@ export default function Home() {
           </div>
           <LoginButton />
         </div>
+        {/* Add spacing below the status message and above the tabs */}
+        <div className="mt-4" />
         {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-4 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
+          <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-4 h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
             <TabsTrigger 
               value="pinned" 
-              data-value="pinned" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
+              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-xs h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Pinned
             </TabsTrigger>
             <TabsTrigger 
               value="general" 
-              data-value="general" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
+              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-xs h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               General
             </TabsTrigger>
             <TabsTrigger 
               value="personal" 
-              data-value="personal" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
+              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-xs h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Personal
             </TabsTrigger>
             <TabsTrigger 
               value="custom" 
-              data-value="custom" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
+              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-xs h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Custom
             </TabsTrigger>
             <TabsTrigger 
               value="hidden" 
-              data-value="hidden" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
+              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-xs h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Hidden
             </TabsTrigger>
