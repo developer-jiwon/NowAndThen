@@ -40,16 +40,16 @@ export default function RootLayout({
           <div className="relative min-h-screen">
             {children}
           </div>
-          <footer className="w-full border-t border-gray-100 py-3 mt-4 bg-white text-center text-sm text-gray-500">
-            <div className="mb-1 sm:mb-2">Track your important moments with Now & Then.</div>
-            <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <footer className="w-full border-t border-gray-100 py-2 mt-2 bg-white text-center text-[11px] text-gray-500">
+            <div className="mb-0">Track your important moments with Now & Then.</div>
+            <div className="flex flex-nowrap justify-center gap-x-1 gap-y-0">
               <a href="/terms-of-service" className="hover:underline">Terms of Service</a>
               <span className="text-gray-300">|</span>
               <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
               <span className="text-gray-300">|</span>
               <a href="/cookie-policy" className="hover:underline">Cookie Policy</a>
               <span className="text-gray-300">|</span>
-              Contact: <a href="mailto:dev.jiwonnie@gmail.com" className="hover:underline">dev.jiwonnie@gmail.com</a>
+              Contact: <a href="mailto:dev.jiwonnie@gmail.com" className="hover:underline break-all">dev.jiwonnie@gmail.com</a>
             </div>
           </footer>
         </SupabaseProvider>
