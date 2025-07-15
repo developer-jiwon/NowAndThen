@@ -79,7 +79,7 @@ export default function LoginButton() {
             </Button>
           </div>
           {/* 안내문구는 여기서만 한 번만 렌더링 */}
-          <div className="text-xs text-gray-400 text-center w-full mt-0.5">Your data is automatically synced across devices.</div>
+          <div className="text-xs text-gray-400 text-center w-full mt-0">Your data is automatically synced across devices.</div>
         </>
       ) :
         <>

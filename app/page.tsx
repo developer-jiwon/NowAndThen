@@ -24,39 +24,39 @@ export default function Home() {
         {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-[9px] sm:text-xs h-10 bg-gray-50/80 backdrop-blur-[2px] rounded-xl p-1.5 border border-gray-200 shadow-sm">
+          <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
             <TabsTrigger 
               value="pinned" 
               data-value="pinned" 
-              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Pinned
             </TabsTrigger>
             <TabsTrigger 
               value="general" 
               data-value="general" 
-              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               General
             </TabsTrigger>
             <TabsTrigger 
               value="personal" 
               data-value="personal" 
-              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Personal
             </TabsTrigger>
             <TabsTrigger 
               value="custom" 
               data-value="custom" 
-              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Custom
             </TabsTrigger>
             <TabsTrigger 
               value="hidden" 
               data-value="hidden" 
-              className="px-2 py-1.5 rounded-lg transition-all duration-300 hover:bg-white/80 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-[#36454F] font-medium"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
             >
               Hidden
             </TabsTrigger>
