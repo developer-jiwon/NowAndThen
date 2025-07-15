@@ -262,7 +262,7 @@ export default function CountdownCard({
 
   return (
     <motion.div 
-      className="mb-6 mx-auto relative w-full max-w-[350px]"
+      className="mb-2 mx-auto relative w-full max-w-[350px]"
       initial="hidden"
       animate="visible"
       whileHover="hover"
