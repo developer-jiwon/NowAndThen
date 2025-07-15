@@ -58,11 +58,11 @@ export default function LoginButton() {
       {!isAnonymous ? (
         <>
           <div className="text-xs text-gray-700 break-all text-center w-full">{user.email}</div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full justify-center mt-1">
+          <div className="flex flex-col gap-2 w-full justify-center mt-1">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 min-w-[100px] max-w-[160px] w-auto px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
+              className="h-8 w-full px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-1" />
@@ -71,7 +71,7 @@ export default function LoginButton() {
             <Button
               variant="destructive"
               size="sm"
-              className="h-8 min-w-[100px] max-w-[160px] w-auto px-3 text-xs border border-red-200 hover:bg-red-50 font-merriweather"
+              className="h-8 w-full px-3 text-xs border border-red-200 hover:bg-red-50 font-merriweather"
               onClick={handleDeleteAccount}
             >
               <Trash2 className="h-4 w-4 mr-1" />
