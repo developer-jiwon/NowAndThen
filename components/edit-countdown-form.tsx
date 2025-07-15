@@ -29,7 +29,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     : "general" // Convert "custom" to "general"
 
   const defaultValues: CountdownFormValues = {
-    title: countdown.title.slice(0, 15),
+    title: countdown.title.slice(0, 20),
     date: exactDate,
     category: validCategory,
     isCountUp: countdown.isCountUp
