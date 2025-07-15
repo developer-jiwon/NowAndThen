@@ -367,7 +367,7 @@ export default function CountdownCard({
         <div className="w-full mb-3">
           <div className="flex items-center justify-center gap-2 mb-2">
             {isPinned && <Pin className="h-5 w-5 text-gray-600" />}
-            <h3 className="text-lg font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight" style={{display: 'block'}}>
+            <h3 className="text-base sm:text-lg font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
@@ -387,7 +387,7 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className="text-6xl font-bold font-serif text-center" style={{ color: cardColor }}>
+              <span className="text-3xl sm:text-6xl font-bold font-serif text-center" style={{ color: cardColor }}>
                 <span className="inline-block mr-2">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
