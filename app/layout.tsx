@@ -33,12 +33,12 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
         {/* 애드센스 광고 스크립트 제거됨 */}
       </head>
-      <body className={`${merriweather.variable}`}>
+      <body className={`${merriweather.variable} min-h-screen flex flex-col justify-between`}>
         <SupabaseProvider>
-          <div className="relative min-h-screen">
+          <div className="relative flex-1 flex flex-col">
             {children}
           </div>
-          <footer className="w-full border-t border-gray-100 py-2 mt-2 bg-white text-center text-[11px] text-gray-500">
+          <footer className="w-full border-t border-gray-100 py-2 mt-0 bg-white text-center text-[11px] text-gray-500">
             <div className="mb-0">Track your important moments with Now & Then.</div>
             <div className="w-full max-w-xs mx-auto flex flex-col items-center">
               <div className="flex flex-row justify-center gap-x-2 w-full mb-0">

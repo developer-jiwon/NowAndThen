@@ -23,9 +23,9 @@ export default function Home() {
           <div className="flex items-center justify-center gap-2 mt-2">
             <ProfileMenu size="sm" />
             {isAnonymous ? (
-              <span className="text-gray-600 text-sm sm:text-base text-center">
+              <span className="text-gray-600 text-xs sm:text-sm text-center">
                 Sign in to save and sync your timers.<br />
-                <span className="text-xs text-gray-400">Without sign in, data may be lost.</span>
+                <span className="text-[11px] text-gray-400">Without sign in, data may be lost.</span>
               </span>
             ) : (
               <span className="text-gray-600 text-sm sm:text-base text-center">
