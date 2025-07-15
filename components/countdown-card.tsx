@@ -262,7 +262,7 @@ export default function CountdownCard({
 
   return (
     <motion.div 
-      className="mb-2 mx-auto relative w-full max-w-[350px]"
+      className="mb-2 mx-auto relative w-full max-w-xs sm:max-w-[350px]"
       initial="hidden"
       animate="visible"
       whileHover="hover"
@@ -356,7 +356,7 @@ export default function CountdownCard({
       </div>
       
       {/* Card with illustrative style */}
-      <div className="p-5 flex flex-col" style={borderStyle}>
+      <div className="p-3 sm:p-5 flex flex-col" style={borderStyle}>
         {/* Decorative corner accents - now inside the card */}
         <div className="absolute top-2 left-2 w-4 h-4 border-t-4 border-l-4 border-[#36454F]"></div>
         <div className="absolute top-2 right-2 w-4 h-4 border-t-4 border-r-4 border-[#36454F]"></div>
@@ -367,7 +367,7 @@ export default function CountdownCard({
         <div className="w-full mb-3">
           <div className="flex items-center justify-center gap-2 mb-2">
             {isPinned && <Pin className="h-5 w-5 text-gray-600" />}
-            <h3 className="text-lg font-medium text-gray-800 font-serif text-center">
+            <h3 className="text-lg font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
