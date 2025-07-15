@@ -29,7 +29,7 @@ export default function Home() {
               </span>
             ) : (
               <span className="text-gray-600 text-sm sm:text-base text-center">
-                All your timers are securely synced to your account.
+                Your timers are synced.
               </span>
             )}
           </div>
