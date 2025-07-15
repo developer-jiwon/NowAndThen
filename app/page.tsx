@@ -28,35 +28,35 @@ export default function Home() {
             <TabsTrigger 
               value="pinned" 
               data-value="pinned" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
             >
               Pinned
             </TabsTrigger>
             <TabsTrigger 
               value="general" 
               data-value="general" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
             >
               General
             </TabsTrigger>
             <TabsTrigger 
               value="personal" 
               data-value="personal" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
             >
               Personal
             </TabsTrigger>
             <TabsTrigger 
               value="custom" 
               data-value="custom" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
             >
               Custom
             </TabsTrigger>
             <TabsTrigger 
               value="hidden" 
               data-value="hidden" 
-              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:bg-white data-[state=active]:text-charcoal data-[state=active]:shadow data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              className="px-2 py-1.5 rounded-xl font-semibold tracking-wide transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:sm:bg-white data-[state=active]:sm:text-charcoal data-[state=active]:sm:shadow data-[state=active]:sm:border-b-2 data-[state=active]:sm:border-primary data-[state=active]:bg-gray-100 data-[state=active]:text-charcoal"
             >
               Hidden
             </TabsTrigger>
