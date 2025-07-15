@@ -11,6 +11,7 @@ import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form";
 import { v4 as uuidv4 } from 'uuid';
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 interface SupabaseCountdownGridProps {
   category: string;
@@ -298,10 +299,10 @@ export default function SupabaseCountdownGrid({
         <div className="mb-3 mt-2 flex justify-center">
           <Button 
             onClick={() => setShowAddForm(true)}
-            className="w-full sm:w-auto"
+            className="w-auto px-5 py-2 mx-auto flex items-center justify-center"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Countdown
+            Add Timer
           </Button>
         </div>
       )}
@@ -318,19 +319,25 @@ export default function SupabaseCountdownGrid({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {sortedCountdowns.map((countdown) => (
-              <CountdownCard
-                key={countdown.id}
-                countdown={countdown}
-                onRemove={handleRemove}
-                onToggleVisibility={handleToggleVisibility}
-                onTogglePin={handleTogglePin}
-                onEdit={handleEdit}
-                category={category}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {sortedCountdowns.map((countdown) => (
+                <CountdownCard
+                  key={countdown.id}
+                  countdown={countdown}
+                  onRemove={handleRemove}
+                  onToggleVisibility={handleToggleVisibility}
+                  onTogglePin={handleTogglePin}
+                  onEdit={handleEdit}
+                  category={category}
+                />
+              ))}
+            </div>
+            {/* Safe AdSense placement: only show with real content */}
+            <div className="flex justify-center mt-4">
+              <AdSenseComponent />
+            </div>
+          </>
         )
       )}
     </div>
