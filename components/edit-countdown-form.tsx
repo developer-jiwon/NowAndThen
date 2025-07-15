@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2 } from "lucide-react"
 import type { Countdown } from "@/lib/types"
-import { CountdownForm, CountdownFormValues } from "./add-countdown-form"
+import { CountdownForm, CountdownFormValues, formSchema } from "./add-countdown-form"
 import { isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
 
 interface EditCountdownFormProps {
@@ -29,7 +29,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     : "general" // Convert "custom" to "general"
 
   const defaultValues: CountdownFormValues = {
-    title: countdown.title,
+    title: countdown.title.slice(0, 15),
     date: exactDate,
     category: validCategory,
     isCountUp: countdown.isCountUp

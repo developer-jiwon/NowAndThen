@@ -47,7 +47,7 @@ const countDownColor = "#8BCFBE"; // Mint green for count down (matching the car
 export const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title too short",
-  }).max(30, {
+  }).max(15, {
     message: "Title too long"
   }),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), {
@@ -168,7 +168,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
             <FormItem className="space-y-1 w-full max-w-sm">
               <FormLabel className="text-sm">Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter title" {...field} maxLength={30} className="h-8 w-full" />
+                <Input placeholder="Enter title (max 15 chars)" {...field} maxLength={15} className="h-8 w-full" />
               </FormControl>
               <CustomFormMessage name="title" />
             </FormItem>

@@ -306,7 +306,7 @@ export default function CountdownCard({
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#14532d]' : 'bg-[#F2EFE9]'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return; // hidden 탭에서는 동작하지 않음
             if (onTogglePin) {
@@ -316,7 +316,7 @@ export default function CountdownCard({
             }
           }}
         >
-          {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
+          {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
         </motion.div>
         
         <motion.div
@@ -364,10 +364,9 @@ export default function CountdownCard({
         <div className="absolute bottom-2 right-2 w-4 h-4 border-b-4 border-r-4 border-[#36454F]"></div>
         
         {/* Title section */}
-        <div className="w-full mb-3">
-          <div className="relative flex items-center justify-center gap-2 mb-2">
-            {isPinned && <Pin className="h-5 w-5 text-gray-600 absolute left-0 top-1" />}
-            <h3 className="text-xs sm:text-sm font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight pl-5" style={{display: 'block'}}>
+        <div className="w-full mb-1">
+          <div className="relative flex items-center justify-center gap-1 mb-1">
+            <h3 className="text-sm sm:text-lg font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
