@@ -83,6 +83,11 @@ export default function LoginButton() {
         </>
       ) :
         <>
+          {/* 비로그인 안내 메시지 */}
+          <div className="text-xs text-gray-500 text-center mb-2 max-w-xs mx-auto">
+            Sign in to securely save and sync your countdowns across devices.<br />
+            <span className="text-gray-400">Without signing in, your data may be lost if you clear your browser or switch devices.</span>
+          </div>
           <Button
             variant="ghost"
             size="sm"
