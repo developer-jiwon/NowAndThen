@@ -188,7 +188,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   onChange={(e) => {
                     handleDateChange(e, field.onChange);
                   }}
-                  className="h-8 w-full"
+                  className="h-8 w-full min-w-0 max-w-full"
                 />
               </FormControl>
               {dateChanged && (
