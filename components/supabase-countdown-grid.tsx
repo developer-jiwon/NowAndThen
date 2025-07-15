@@ -45,7 +45,7 @@ export default function SupabaseCountdownGrid({
   // 예시 타이머 자동 생성 (최초 1회, 해당 카테고리에 아무것도 없을 때만)
   useEffect(() => {
     if (!user || authLoading || dataLoading) return;
-    if (countdowns.length > 0) return;
+    if (category === 'pinned') return;
     // 카테고리별 예시 타이머 정의
     const today = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');
@@ -60,7 +60,7 @@ export default function SupabaseCountdownGrid({
           title: '100 Day Challenge',
           date: new Date(today.getTime() + 100 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
           hidden: false,
-          pinned: false,
+          pinned: true,
           originalCategory: 'general',
         },
         {
@@ -68,7 +68,7 @@ export default function SupabaseCountdownGrid({
           title: 'Birthday',
           date: `${yyyy}-12-25`,
           hidden: false,
-          pinned: false,
+          pinned: true,
           originalCategory: 'general',
         },
       ],
@@ -102,9 +102,12 @@ export default function SupabaseCountdownGrid({
       ],
     };
     const examples = defaultExamples[category] || [];
-    if (examples.length === 0) return;
-    // 예시 타이머를 모두 추가
-    Promise.all(examples.map(example => addCountdown(example, user.id))).then(() => {
+    // 중복 체크: 이미 같은 title/date/pinned 조합이 있으면 생성하지 않음
+    const alreadyExists = (title: string, date: string, pinned: boolean) =>
+      countdowns.some(c => c.title === title && c.date === date && c.pinned === pinned);
+    const toAdd = examples.filter(ex => !alreadyExists(ex.title, ex.date, !!ex.pinned));
+    if (toAdd.length === 0) return;
+    Promise.all(toAdd.map(example => addCountdown(example, user.id))).then(() => {
       loadCountdowns(user.id);
     });
   }, [user, authLoading, dataLoading, countdowns.length, category]);
@@ -270,10 +273,10 @@ export default function SupabaseCountdownGrid({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-3">
       {/* Add Form */}
       {showAddForm && (
-        <div className="mb-6 flex justify-center">
+        <div className="mb-4 mt-2 flex justify-center">
           <div className="max-w-sm mx-auto w-full">
             <CountdownForm 
               onSubmit={handleAddCountdown}
@@ -292,7 +295,7 @@ export default function SupabaseCountdownGrid({
 
       {/* Add Button */}
       {!showAddForm && category === 'custom' && (
-        <div className="mb-6 flex justify-center">
+        <div className="mb-3 mt-2 flex justify-center">
           <Button 
             onClick={() => setShowAddForm(true)}
             className="w-full sm:w-auto"

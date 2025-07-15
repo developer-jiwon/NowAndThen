@@ -38,7 +38,7 @@ export default function Home() {
         {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
         <Tabs defaultValue="pinned" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-1 sm:mb-1 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
+          <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-4 text-[9px] sm:text-xs h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
             <TabsTrigger 
               value="pinned" 
               data-value="pinned" 

@@ -1,63 +1,41 @@
-"use client"
+import Link from "next/link";
 
-export default function PrivacyPolicyPage() {
+export default function PrivacyPolicy() {
   return (
-    <main className="max-w-2xl mx-auto px-4 py-8">
+    <main className="max-w-2xl mx-auto py-8 px-4">
+      <Link href="/" className="inline-block mb-4 text-sm text-gray-500 hover:underline">← Back to Home</Link>
       <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
-      <p className="mb-4">Now & Then ("the Service", "we", "us") values your privacy and complies with applicable laws and regulations. This Privacy Policy explains how we collect, use, and protect your personal information.</p>
-      <ol className="list-decimal pl-5 space-y-2">
-        <li>
-          <strong>Information We Collect</strong>
-          <ul className="list-disc pl-5">
-            <li>Email address (when logging in with Google)</li>
-            <li>Service usage records (countdown data, etc.)</li>
-            <li>Cookies and local storage information</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Purpose of Collection and Use</strong>
-          <ul className="list-disc pl-5">
-            <li>To provide and improve the Service</li>
-            <li>User authentication and security</li>
-            <li>Personalized advertising (Google AdSense)</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Retention and Deletion</strong>
-          <ul className="list-disc pl-5">
-            <li>Immediate deletion upon account withdrawal</li>
-            <li>Retention as required by law</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Cookies and Similar Technologies</strong>
-          <ul className="list-disc pl-5">
-            <li>Used for analytics, advertising, login status, etc.</li>
-            <li>Users can refuse cookies via browser settings</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Third-Party Sharing</strong>
-          <ul className="list-disc pl-5">
-            <li>Google (login, advertising)</li>
-            <li>Supabase (data storage)</li>
-          </ul>
-        </li>
-        <li>
-          <strong>User Rights</strong>
-          <ul className="list-disc pl-5">
-            <li>Access, correction, and deletion of personal data</li>
-            <li>Contact: [your email address]</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Policy Changes</strong>
-          <ul className="list-disc pl-5">
-            <li>This policy may be updated. Changes will be notified within the Service.</li>
-          </ul>
-        </li>
-      </ol>
-      <p className="mt-6 text-xs text-gray-500">Last updated: June 2024</p>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">1. Information We Collect</h2>
+        <p className="mb-2">We collect only the information necessary to provide and improve our service, such as your email address and timer data.</p>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">2. How We Use Your Data</h2>
+        <ul className="list-disc pl-6 space-y-1 text-gray-800">
+          <li>To sync your timers across devices</li>
+          <li>To provide customer support</li>
+          <li>To improve our service and user experience</li>
+        </ul>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">3. Data Sharing</h2>
+        <p className="mb-2">We do not share your personal data with third parties except as required by law or with your explicit consent.</p>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">4. Data Security</h2>
+        <p className="mb-2">We use industry-standard security measures to protect your data. However, no method of transmission over the Internet is 100% secure.</p>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">5. Your Rights</h2>
+        <ul className="list-disc pl-6 space-y-1 text-gray-800">
+          <li>You can access, update, or delete your data at any time</li>
+          <li>You can contact us for any privacy-related questions</li>
+        </ul>
+      </section>
+      <section>
+        <h2 className="text-lg font-semibold mb-2">6. Contact</h2>
+        <p>For privacy concerns, contact <a href="mailto:dev.jiwonnie@gmail.com" className="underline">dev.jiwonnie@gmail.com</a></p>
+      </section>
     </main>
   );
 } 

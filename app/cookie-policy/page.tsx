@@ -1,48 +1,37 @@
 "use client"
 
-export default function CookiePolicyPage() {
+import Link from "next/link";
+
+export default function CookiePolicy() {
   return (
-    <main className="max-w-2xl mx-auto px-4 py-8">
+    <main className="max-w-2xl mx-auto py-8 px-4">
+      <Link href="/" className="inline-block mb-4 text-sm text-gray-500 hover:underline">← Back to Home</Link>
       <h1 className="text-2xl font-bold mb-4">Cookie Policy</h1>
-      <p className="mb-4">Now & Then ("the Service", "we", "us") uses cookies and similar technologies to enhance your experience and improve our Service. This Cookie Policy explains what cookies are, how we use them, and your choices regarding cookies.</p>
-      <ol className="list-decimal pl-5 space-y-2">
-        <li>
-          <strong>What Are Cookies?</strong>
-          <ul className="list-disc pl-5">
-            <li>Cookies are small text files stored on your browser by websites.</li>
-            <li>They are used for service usage analytics, login status, personalized ads, and more.</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Purpose of Cookies</strong>
-          <ul className="list-disc pl-5">
-            <li>Service analytics and improvement</li>
-            <li>User authentication and security</li>
-            <li>Personalized advertising (Google AdSense)</li>
-            <li>Integration with third-party services (Supabase, Google login, etc.)</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Managing and Refusing Cookies</strong>
-          <ul className="list-disc pl-5">
-            <li>You can refuse or delete cookies via your browser settings.</li>
-            <li>Refusing cookies may limit some features of the Service.</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Third-Party Cookies</strong>
-          <ul className="list-disc pl-5">
-            <li>Google (AdSense, login), Supabase, and other third-party providers may use cookies.</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Policy Changes</strong>
-          <ul className="list-disc pl-5">
-            <li>This policy may be updated. Changes will be notified within the Service.</li>
-          </ul>
-        </li>
-      </ol>
-      <p className="mt-6 text-xs text-gray-500">Last updated: June 2024</p>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">1. What Are Cookies?</h2>
+        <p className="mb-2">Cookies are small text files stored on your device to help websites remember your preferences and improve your experience.</p>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">2. How We Use Cookies</h2>
+        <ul className="list-disc pl-6 space-y-1 text-gray-800">
+          <li>To keep you signed in</li>
+          <li>To remember your preferences</li>
+          <li>For analytics and performance</li>
+          <li>To show relevant ads (Google AdSense)</li>
+        </ul>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">3. Third-Party Cookies</h2>
+        <p className="mb-2">We may use third-party cookies (such as Google) for analytics and advertising. These cookies are managed by their respective providers.</p>
+      </section>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">4. Managing Cookies</h2>
+        <p className="mb-2">You can control or delete cookies through your browser settings. Disabling cookies may affect your experience on our site.</p>
+      </section>
+      <section>
+        <h2 className="text-lg font-semibold mb-2">5. Contact</h2>
+        <p>For questions about our cookie policy, contact <a href="mailto:dev.jiwonnie@gmail.com" className="underline">dev.jiwonnie@gmail.com</a></p>
+      </section>
     </main>
   );
 } 

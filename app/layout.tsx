@@ -41,7 +41,13 @@ export default function RootLayout({
           <footer className="w-full border-t border-gray-100 py-2 mt-0 bg-white text-center text-[11px] text-gray-500">
             <div className="mb-0">Track your important moments with Now & Then.</div>
             <div className="w-full max-w-xs mx-auto flex flex-col items-center">
-              <div className="flex flex-row justify-center gap-x-2 w-full mb-0">
+              <div className="flex flex-row flex-wrap justify-center gap-x-2 w-full mb-0">
+                <a href="/about" className="hover:underline">About</a>
+                <span className="text-gray-300">|</span>
+                <a href="/guide" className="hover:underline">Guide</a>
+                <span className="text-gray-300">|</span>
+                <a href="/faq" className="hover:underline">FAQ</a>
+                <span className="text-gray-300">|</span>
                 <a href="/terms-of-service" className="hover:underline">Terms of Service</a>
                 <span className="text-gray-300">|</span>
                 <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
