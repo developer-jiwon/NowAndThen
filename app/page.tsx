@@ -21,7 +21,7 @@ export default function Home() {
             <LoginButton />
           </div>
         </div>
-        <SupabaseUserIdentifier />
+        {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
         <Tabs defaultValue="pinned" className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-8 text-[10px] sm:text-xs h-10 bg-gray-50/80 backdrop-blur-[2px] rounded-xl p-1.5 border border-gray-200 shadow-sm">
