@@ -54,36 +54,31 @@ export default function LoginButton() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+    <div className="w-full flex flex-col items-center gap-2 mt-4 mb-4 px-2">
       {!isAnonymous ? (
         <>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
-            <div className="flex flex-row gap-2 order-2 sm:order-1 w-full sm:w-auto justify-center sm:justify-start">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
-                onClick={handleLogout}
-              >
-                <LogOut className="h-4 w-4 mr-1" />
-                Sign out
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="h-8 px-3 text-xs border border-red-200 hover:bg-red-50 font-merriweather"
-                onClick={handleDeleteAccount}
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Delete Account
-              </Button>
-            </div>
-            {user.email && (
-              <span className="order-1 sm:order-2 text-gray-700 text-xs font-medium mt-2 sm:mt-0 w-full text-center sm:text-left break-all">
-                {user.email}
-              </span>
-            )}
+          <div className="text-xs text-gray-700 break-all text-center w-full">{user.email}</div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full justify-center mt-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-full block text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4 mr-1" />
+              Sign out
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="h-8 w-full block text-xs border border-red-200 hover:bg-red-50 font-merriweather"
+              onClick={handleDeleteAccount}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete Account
+            </Button>
           </div>
+          <div className="text-xs text-gray-400 text-center w-full mt-1">Your data is automatically synced across devices.</div>
         </>
       ) : (
         <>

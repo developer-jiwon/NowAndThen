@@ -38,9 +38,6 @@ export default function RootLayout({
       <body className={`${merriweather.variable}`}>
         <SupabaseProvider>
           <div className="relative min-h-screen">
-            <div className="absolute top-4 right-6 z-50">
-              <LoginButton />
-            </div>
             {children}
           </div>
           <footer className="w-full border-t border-gray-100 py-6 mt-12 bg-white text-center text-sm text-gray-500">
