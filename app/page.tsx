@@ -43,31 +43,31 @@ export default function Home() {
           <TabsList className="grid w-full grid-cols-5 mb-3 sm:mb-4 h-10 bg-white border border-gray-200/70 shadow-md rounded-2xl px-2 py-1">
             <TabsTrigger 
               value="pinned" 
-              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
+              className="px-3 py-1.5 font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:rounded-none data-[state=active]:rounded-b-md sm:rounded-xl sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
             >
               Pinned
             </TabsTrigger>
             <TabsTrigger 
               value="general" 
-              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
+              className="px-3 py-1.5 font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:rounded-none data-[state=active]:rounded-b-md sm:rounded-xl sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
             >
               General
             </TabsTrigger>
             <TabsTrigger 
               value="personal" 
-              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
+              className="px-3 py-1.5 font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:rounded-none data-[state=active]:rounded-b-md sm:rounded-xl sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
             >
               Personal
             </TabsTrigger>
             <TabsTrigger 
               value="custom" 
-              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
+              className="px-3 py-1.5 font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:rounded-none data-[state=active]:rounded-b-md sm:rounded-xl sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
             >
               Custom
             </TabsTrigger>
             <TabsTrigger 
               value="hidden" 
-              className="px-3 py-1.5 rounded-xl font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
+              className="px-3 py-1.5 font-semibold tracking-wide text-[11px] h-9 transition-colors duration-200 hover:bg-gray-50/80 data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:rounded-none data-[state=active]:rounded-b-md sm:rounded-xl sm:data-[state=active]:bg-white sm:data-[state=active]:text-charcoal sm:data-[state=active]:shadow sm:data-[state=active]:border-primary"
             >
               Hidden
             </TabsTrigger>
