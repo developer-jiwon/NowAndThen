@@ -54,7 +54,7 @@ export default function LoginButton() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-2 mt-4 mb-4 px-2">
+    <div className="w-full flex flex-col items-center gap-2 mt-4 mb-4 px-2 max-w-xs mx-auto">
       {!isAnonymous ? (
         <>
           <div className="text-xs text-gray-700 break-all text-center w-full">{user.email}</div>
@@ -62,7 +62,7 @@ export default function LoginButton() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-full block text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
+              className="h-8 min-w-[100px] max-w-[160px] w-auto px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-1" />
@@ -71,7 +71,7 @@ export default function LoginButton() {
             <Button
               variant="destructive"
               size="sm"
-              className="h-8 w-full block text-xs border border-red-200 hover:bg-red-50 font-merriweather"
+              className="h-8 min-w-[100px] max-w-[160px] w-auto px-3 text-xs border border-red-200 hover:bg-red-50 font-merriweather"
               onClick={handleDeleteAccount}
             >
               <Trash2 className="h-4 w-4 mr-1" />
@@ -80,7 +80,7 @@ export default function LoginButton() {
           </div>
           <div className="text-xs text-gray-400 text-center w-full mt-1">Your data is automatically synced across devices.</div>
         </>
-      ) : (
+      ) :
         <>
           <Button
             variant="ghost"
@@ -125,7 +125,7 @@ export default function LoginButton() {
             </div>
           )}
         </>
-      )}
+      }
     </div>
   );
 } 
