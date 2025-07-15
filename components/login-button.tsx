@@ -62,7 +62,7 @@ export default function LoginButton() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 min-w-[70px] max-w-[110px] w-auto px-2 text-[11px] border border-gray-200 hover:bg-gray-50 font-merriweather"
+              className="h-8 min-w-[90px] max-w-[130px] w-auto px-2 text-[11px] border border-gray-200 hover:bg-gray-50 font-merriweather"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-0.5" />
@@ -71,7 +71,7 @@ export default function LoginButton() {
             <Button
               variant="destructive"
               size="sm"
-              className="h-8 min-w-[70px] max-w-[110px] w-auto px-2 text-[11px] border border-red-200 hover:bg-red-50 font-merriweather"
+              className="h-8 min-w-[90px] max-w-[130px] w-auto px-2 text-[11px] border border-red-200 hover:bg-red-50 font-merriweather"
               onClick={handleDeleteAccount}
             >
               <Trash2 className="h-4 w-4 mr-0.5" />
