@@ -14,11 +14,13 @@ export default function Home() {
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
         <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
           <div className="flex items-center justify-center gap-1 sm:gap-2">
-            <ProfileMenu size="sm" />
             <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal whitespace-nowrap">Now & Then</h1>
             <Clock size="sm" />
           </div>
-          {/* Always show the sign-in message under the title */}
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <ProfileMenu size="sm" />
+            <span className="text-gray-600 text-sm sm:text-base">Sign in to save and sync your timers.<br /><span className="text-xs text-gray-400">Without sign in, data may be lost.</span></span>
+          </div>
           <LoginButton />
         </div>
         {/* <SupabaseUserIdentifier /> */}

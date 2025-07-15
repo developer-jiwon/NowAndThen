@@ -15,12 +15,7 @@ export default function LoginButton() {
 
   // Only show the sign-in message if not logged in
   if (isAnonymous) {
-    return (
-      <div className="text-xs text-gray-500 text-center mb-2 mt-3 max-w-xs mx-auto">
-        Sign in to save and sync your timers.<br />
-        <span className="text-gray-400">Without sign in, data may be lost.</span>
-      </div>
-    );
+    return null;
   }
   // Otherwise, render nothing
   return null;
