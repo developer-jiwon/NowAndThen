@@ -365,9 +365,9 @@ export default function CountdownCard({
         
         {/* Title section */}
         <div className="w-full mb-3">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            {isPinned && <Pin className="h-5 w-5 text-gray-600" />}
-            <h3 className="text-sm sm:text-base font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight" style={{display: 'block'}}>
+          <div className="relative flex items-center justify-center gap-2 mb-2">
+            {isPinned && <Pin className="h-5 w-5 text-gray-600 absolute left-0 top-1" />}
+            <h3 className="text-xs sm:text-sm font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight pl-5" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
