@@ -1,17 +1,18 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useLayoutEffect, useState } from "react"
 import { useAnonymousAuth } from "@/hooks/useAnonymousAuth"
 import { useCountdowns } from "@/hooks/useCountdowns"
 import CountdownCard from "@/components/countdown-card"
 import { Button } from "@/components/ui/button"
 import { Plus, Loader2 } from "lucide-react"
-import { useState } from "react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form";
 import { v4 as uuidv4 } from 'uuid';
-import AdSenseComponent from "@/components/AdSenseComponent";
+// [광고(AdSense) 관련 코드 완전 삭제]
+import { useInView } from "react-intersection-observer";
+import { getUserStorageKey, getUserId } from "@/lib/user-utils";
 
 interface SupabaseCountdownGridProps {
   category: string;
@@ -22,6 +23,7 @@ export default function SupabaseCountdownGrid({
   category, 
   showHidden = false 
 }: SupabaseCountdownGridProps) {
+  // All hooks must be declared at the top, before any conditional returns
   const { user, loading: authLoading } = useAnonymousAuth();
   const { 
     countdowns, 
@@ -32,86 +34,14 @@ export default function SupabaseCountdownGrid({
     updateCountdown, 
     deleteCountdown 
   } = useCountdowns(category);
-  
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
-
-  // 사용자가 로드되면 카운트다운 데이터 로드
-  useEffect(() => {
-    if (user && !authLoading) {
-      loadCountdowns(user.id);
-    }
-  }, [user, authLoading, category]);
-
-  // 예시 타이머 자동 생성 (최초 1회, 해당 카테고리에 아무것도 없을 때만)
-  useEffect(() => {
-    if (!user || authLoading || dataLoading) return;
-    if (category === 'pinned') return;
-    // 카테고리별 예시 타이머 정의
-    const today = new Date();
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const yyyy = today.getFullYear();
-    const mm = pad(today.getMonth() + 1);
-    const dd = pad(today.getDate());
-    const dateStr = `${yyyy}-${mm}-${dd}`;
-    const defaultExamples: Record<string, Countdown[]> = {
-      general: [
-        {
-          id: uuidv4(),
-          title: '100 Day Challenge',
-          date: new Date(today.getTime() + 100 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-          hidden: false,
-          pinned: true,
-          originalCategory: 'general',
-        },
-        {
-          id: uuidv4(),
-          title: 'Birthday',
-          date: `${yyyy}-12-25`,
-          hidden: false,
-          pinned: true,
-          originalCategory: 'general',
-        },
-      ],
-      personal: [
-        {
-          id: uuidv4(),
-          title: 'Work Anniversary',
-          date: `${yyyy - 2}-01-01`,
-          hidden: false,
-          pinned: false,
-          originalCategory: 'personal',
-        },
-        {
-          id: uuidv4(),
-          title: 'Wedding Anniversary',
-          date: `${yyyy - 4}-05-20`,
-          hidden: false,
-          pinned: false,
-          originalCategory: 'personal',
-        },
-      ],
-      custom: [
-        {
-          id: uuidv4(),
-          title: 'My Custom Timer',
-          date: dateStr,
-          hidden: false,
-          pinned: false,
-          originalCategory: 'custom',
-        },
-      ],
-    };
-    const examples = defaultExamples[category] || [];
-    // 중복 체크: 이미 같은 title/date/pinned 조합이 있으면 생성하지 않음
-    const alreadyExists = (title: string, date: string, pinned: boolean) =>
-      countdowns.some(c => c.title === title && c.date === date && c.pinned === pinned);
-    const toAdd = examples.filter(ex => !alreadyExists(ex.title, ex.date, !!ex.pinned));
-    if (toAdd.length === 0) return;
-    Promise.all(toAdd.map(example => addCountdown(example, user.id))).then(() => {
-      loadCountdowns(user.id);
-    });
-  }, [user, authLoading, dataLoading, countdowns.length, category]);
+  const gridRef = useRef<HTMLDivElement>(null);
+  // [광고(AdSense) 관련 코드 완전 삭제]
+  const { ref: adRef, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   // 카운트다운 필터링
   const filteredCountdowns = countdowns.filter(countdown => {
@@ -127,6 +57,57 @@ export default function SupabaseCountdownGrid({
     if (!a.pinned && b.pinned) return 1;
     return 0;
   });
+
+  useLayoutEffect(() => {
+    if (!gridRef.current) return;
+    const checkWidth = () => {
+      const width = gridRef.current?.offsetWidth || 0;
+      // [광고(AdSense) 관련 코드 완전 삭제]
+    };
+    checkWidth();
+    window.addEventListener("resize", checkWidth);
+    return () => window.removeEventListener("resize", checkWidth);
+  }, [sortedCountdowns.length]);
+
+  // 사용자가 로드되면 카운트다운 데이터 로드
+  useEffect(() => {
+    if (user && !authLoading) {
+      loadCountdowns(user.id);
+    }
+  }, [user, authLoading, category]);
+
+  // 최초 1회만 예시 데이터 삽입 (비로그인/로컬 only, 자동 재생성 X)
+  useEffect(() => {
+    if (user || authLoading) return; // 로그인/익명은 제외
+
+    // 반드시 userId를 먼저 생성
+    const userId = getUserId();
+
+    // general
+    const generalKey = getUserStorageKey("countdowns_general", userId);
+    const generalFlag = `sample_created_general_${userId}`;
+    if (!localStorage.getItem(generalKey) && !localStorage.getItem(generalFlag)) {
+      const generalExamples = [
+        { id: crypto.randomUUID(), title: "100 Day Challenge", date: "2024-12-31", hidden: false, pinned: true },
+        { id: crypto.randomUUID(), title: "Birthday", date: "2024-12-25", hidden: false, pinned: true },
+      ];
+      localStorage.setItem(generalKey, JSON.stringify(generalExamples));
+      localStorage.setItem(generalFlag, "true");
+    }
+
+    // personal
+    const personalKey = getUserStorageKey("countdowns_personal", userId);
+    const personalFlag = `sample_created_personal_${userId}`;
+    if (!localStorage.getItem(personalKey) && !localStorage.getItem(personalFlag)) {
+      const personalExamples = [
+        { id: crypto.randomUUID(), title: "Work Anniversary", date: "2022-01-01", hidden: false, pinned: false },
+        { id: crypto.randomUUID(), title: "Wedding Anniversary", date: "2020-05-20", hidden: false, pinned: false },
+        { id: crypto.randomUUID(), title: "First Day at School", date: "2010-03-02", hidden: false, pinned: false },
+      ];
+      localStorage.setItem(personalKey, JSON.stringify(personalExamples));
+      localStorage.setItem(personalFlag, "true");
+    }
+  }, [user, authLoading]);
 
   const handleRemove = async (id: string) => {
     if (!user) return;
@@ -320,7 +301,7 @@ export default function SupabaseCountdownGrid({
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {sortedCountdowns.map((countdown) => (
                 <CountdownCard
                   key={countdown.id}
@@ -333,10 +314,8 @@ export default function SupabaseCountdownGrid({
                 />
               ))}
             </div>
-            {/* Safe AdSense placement: only show with real content */}
-            <div className="flex justify-center mt-4">
-              <AdSenseComponent />
-            </div>
+            {/* Safe AdSense placement: only show with real content and visible grid */}
+            {/* [광고(AdSense) 관련 코드 완전 삭제] */}
           </>
         )
       )}
