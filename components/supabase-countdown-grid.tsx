@@ -10,6 +10,7 @@ import { useState } from "react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form";
+import { v4 as uuidv4 } from 'uuid';
 
 interface SupabaseCountdownGridProps {
   category: string;
@@ -40,6 +41,73 @@ export default function SupabaseCountdownGrid({
       loadCountdowns(user.id);
     }
   }, [user, authLoading, category]);
+
+  // 예시 타이머 자동 생성 (최초 1회, 해당 카테고리에 아무것도 없을 때만)
+  useEffect(() => {
+    if (!user || authLoading || dataLoading) return;
+    if (countdowns.length > 0) return;
+    // 카테고리별 예시 타이머 정의
+    const today = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const yyyy = today.getFullYear();
+    const mm = pad(today.getMonth() + 1);
+    const dd = pad(today.getDate());
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+    const defaultExamples: Record<string, Countdown[]> = {
+      general: [
+        {
+          id: uuidv4(),
+          title: '100 Day Challenge',
+          date: new Date(today.getTime() + 100 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+          hidden: false,
+          pinned: false,
+          originalCategory: 'general',
+        },
+        {
+          id: uuidv4(),
+          title: 'Birthday',
+          date: `${yyyy}-12-25`,
+          hidden: false,
+          pinned: false,
+          originalCategory: 'general',
+        },
+      ],
+      personal: [
+        {
+          id: uuidv4(),
+          title: 'Work Anniversary',
+          date: `${yyyy - 2}-01-01`,
+          hidden: false,
+          pinned: false,
+          originalCategory: 'personal',
+        },
+        {
+          id: uuidv4(),
+          title: 'Wedding Anniversary',
+          date: `${yyyy - 4}-05-20`,
+          hidden: false,
+          pinned: false,
+          originalCategory: 'personal',
+        },
+      ],
+      custom: [
+        {
+          id: uuidv4(),
+          title: 'My Custom Timer',
+          date: dateStr,
+          hidden: false,
+          pinned: false,
+          originalCategory: 'custom',
+        },
+      ],
+    };
+    const examples = defaultExamples[category] || [];
+    if (examples.length === 0) return;
+    // 예시 타이머를 모두 추가
+    Promise.all(examples.map(example => addCountdown(example, user.id))).then(() => {
+      loadCountdowns(user.id);
+    });
+  }, [user, authLoading, dataLoading, countdowns.length, category]);
 
   // 카운트다운 필터링
   const filteredCountdowns = countdowns.filter(countdown => {

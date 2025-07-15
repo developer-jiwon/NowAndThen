@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-export function Clock() {
+export function Clock({ size }: { size?: 'sm' }) {
   const [time, setTime] = useState<Date | null>(null)
   const [timezone, setTimezone] = useState("")
   
@@ -46,9 +46,21 @@ export function Clock() {
     minute: "2-digit",
   })
 
+  // Responsive size classes
+  const containerClass = size === 'sm'
+    ? "inline-flex items-center backdrop-blur-sm px-1 py-0.5 rounded-md ml-0.5 transition-all duration-300 select-none"
+    : "inline-flex items-center backdrop-blur-sm px-2 py-1 rounded-md ml-2 transition-all duration-300 select-none"
+  const timeClass = size === 'sm'
+    ? "font-mono text-[10px] font-medium tracking-wide"
+    : "font-mono text-xs font-medium tracking-wide"
+  const tzClass = size === 'sm'
+    ? "text-[8px] font-normal tracking-wide uppercase ml-0.5"
+    : "text-[10px] font-normal tracking-wide uppercase ml-1"
+  const dotClass = size === 'sm' ? "w-0.5 h-0.5" : "w-1 h-1"
+
   return (
     <div 
-      className="inline-flex items-center backdrop-blur-sm px-2 py-1 rounded-md ml-2 transition-all duration-300 select-none"
+      className={containerClass}
       style={{
         background: `linear-gradient(135deg, ${white}05, ${charcoal}05)`,
         border: `1px solid ${charcoal}10`,
@@ -56,16 +68,16 @@ export function Clock() {
       }}
     >
       <div className="flex items-center gap-1">
-        <div className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: `${charcoal}70` }} />
+        <div className={dotClass + " rounded-full animate-pulse"} style={{ backgroundColor: `${charcoal}70` }} />
         <span 
-          className="font-mono text-xs font-medium tracking-wide"
+          className={timeClass}
           style={{ color: charcoal }}
         >
           {formattedTime}
         </span>
       </div>
       <span 
-        className="text-[10px] font-normal tracking-wide uppercase ml-1"
+        className={tzClass}
         style={{ color: `${charcoal}80` }}
       >
         {timezone}

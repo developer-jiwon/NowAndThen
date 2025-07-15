@@ -13,10 +13,10 @@ export default function Home() {
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
         <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
-          <div className="flex items-center justify-center gap-2">
-            <ProfileMenu />
-            <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal">Now & Then</h1>
-            <Clock />
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
+            <ProfileMenu size="sm" />
+            <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal whitespace-nowrap">Now & Then</h1>
+            <Clock size="sm" />
           </div>
           {/* Always show the sign-in message under the title */}
           <LoginButton />

@@ -278,20 +278,22 @@ export default function CountdownCard({
             exit={{ opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white/90 p-2.5 rounded-md shadow-sm text-center w-full max-w-[200px] border border-gray-200/30">
-              <p className="text-gray-700 mb-2 text-xs font-normal">Delete this timer?</p>
-              <div className="flex justify-center gap-2">
+            <div className="bg-white/90 p-1.5 rounded-md shadow-sm text-center w-full max-w-[160px] border border-gray-200/30">
+              <p className="text-gray-700 mb-1 text-[11px] font-normal">Delete timer?</p>
+              <div className="flex justify-center gap-1.5">
                 <button 
-                  className="text-xs py-1 px-2 bg-transparent border border-gray-300/50 rounded hover:bg-gray-100/50 transition-colors"
+                  className="text-[15px] py-0 px-1 min-w-0 h-6 rounded-sm bg-transparent border border-gray-300/50 hover:bg-gray-100/50 transition-colors"
                   onClick={cancelDelete}
+                  aria-label="Cancel"
                 >
-                  Cancel
+                  ×
                 </button>
                 <button 
-                  className="text-xs py-1 px-2 bg-red-500/50 hover:bg-red-600/50 text-white border-none rounded transition-colors"
+                  className="text-[15px] py-0 px-1 min-w-0 h-6 rounded-sm bg-transparent border border-gray-300/50 hover:bg-gray-100/50 transition-colors"
                   onClick={confirmDelete}
+                  aria-label="Delete"
                 >
-                  Delete
+                  🗑️
                 </button>
               </div>
             </div>
@@ -386,7 +388,7 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className="text-3xl sm:text-6xl font-bold font-serif text-center" style={{ color: cardColor }}>
+              <span className="text-2xl sm:text-5xl font-bold font-serif text-center" style={{ color: cardColor }}>
                 <span className="inline-block mr-2">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
