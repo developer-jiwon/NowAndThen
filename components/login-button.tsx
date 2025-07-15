@@ -9,129 +9,19 @@ import { LogIn, LogOut, User, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginButton() {
-  const user = useUser();
-  const [open, setOpen] = useState(false);
-  const supabaseClient = useSupabaseClient();
-
   // More robust anonymous user detection
+  const user = useUser();
   const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/'; // Redirect to homepage for reliable logout on mobile
-  };
-
-  // 회원 탈퇴(계정 및 데이터 삭제)
-  const handleDeleteAccount = async () => {
-    if (!user) {
-      alert('No user found. Please sign in first.');
-      return;
-    }
-    if (!window.confirm("Are you sure you want to delete your account and all your data? This action cannot be undone.")) return;
-    try {
-      // 1. countdown 데이터 삭제
-      if (user.id) {
-        await supabase.from('countdowns').delete().eq('user_id', user.id);
-      }
-      // 2. 계정 삭제 (API Route 호출)
-      const res = await fetch('/api/delete-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        alert('An error occurred while deleting your account: ' + (data.error || res.statusText));
-        return;
-      }
-      // 3. 로그아웃 및 메인 이동
-      await supabase.auth.signOut();
-      window.location.href = '/';
-    } catch (err) {
-      alert('An error occurred while deleting your account.');
-      console.error(err);
-    }
-  };
-
-  return (
-    <div className="w-full flex flex-col items-center gap-1 mt-2 mb-0 px-1 max-w-xs mx-auto">
-      {!isAnonymous ? (
-        <>
-          <div className="text-xs text-gray-700 break-all text-center w-full">{user.email}</div>
-          <div className="flex flex-row gap-1 w-full justify-center mt-0.5">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 min-w-[90px] max-w-[130px] w-auto px-2 text-[11px] border border-gray-200 hover:bg-gray-50 font-merriweather"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4 mr-0.5" />
-              Sign out
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="h-8 min-w-[90px] max-w-[130px] w-auto px-2 text-[11px] border border-red-200 hover:bg-red-50 font-merriweather"
-              onClick={handleDeleteAccount}
-            >
-              <Trash2 className="h-4 w-4 mr-0.5" />
-              Delete Account
-            </Button>
-          </div>
-          {/* 안내문구는 여기서만 한 번만 렌더링 */}
-          <div className="text-xs text-gray-400 text-center w-full mt-0 mb-0">Your data is automatically synced across devices.</div>
-        </>
-      ) :
-        <>
-          {/* 비로그인 안내 메시지 */}
-          <div className="text-xs text-gray-500 text-center mb-2 max-w-xs mx-auto">
-            Sign in to securely save and sync your countdowns across devices.<br />
-            <span className="text-gray-400">Without signing in, your data may be lost if you clear your browser or switch devices.</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-3 text-xs border border-gray-200 hover:bg-gray-50 font-merriweather"
-            onClick={() => setOpen(true)}
-          >
-            <LogIn className="h-4 w-4 mr-1" />
-            Sign in
-          </Button>
-          {open && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-              <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full relative">
-                <button
-                  className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="sr-only">Close</span>
-                  ×
-                </button>
-                <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 font-merriweather">Sign in</h2>
-                <Auth
-                  supabaseClient={supabaseClient}
-                  appearance={{
-                    theme: ThemeSupa,
-                    style: {
-                      button: { fontFamily: 'Merriweather, serif' },
-                      label: { fontFamily: 'Merriweather, serif' },
-                      input: { fontFamily: 'Merriweather, serif' },
-                      anchor: { fontFamily: 'Merriweather, serif' },
-                      message: { fontFamily: 'Merriweather, serif' },
-                      container: { fontFamily: 'Merriweather, serif' },
-                      loader: { fontFamily: 'Merriweather, serif' },
-                    },
-                  }}
-                  providers={["google"]}
-                  theme="light"
-                  showLinks={false}
-                  onlyThirdPartyProviders={true}
-                />
-              </div>
-            </div>
-          )}
-        </>
-      }
-    </div>
-  );
+  // Only show the sign-in message if not logged in
+  if (isAnonymous) {
+    return (
+      <div className="text-xs text-gray-500 text-center mb-2 mt-3 max-w-xs mx-auto">
+        Sign in to save and sync your timers.<br />
+        <span className="text-gray-400">Without sign in, data may be lost.</span>
+      </div>
+    );
+  }
+  // Otherwise, render nothing
+  return null;
 } 

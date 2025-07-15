@@ -4,6 +4,7 @@ import SupabaseUserIdentifier from "@/components/supabase-user-identifier"
 import { Suspense } from "react"
 import { Clock } from "@/components/ui/clock"
 import dynamic from "next/dynamic"
+import ProfileMenu from "@/components/profile-menu";
 
 const LoginButton = dynamic(() => import("@/components/login-button"), { ssr: false })
 
@@ -12,14 +13,13 @@ export default function Home() {
     <main className="min-h-screen bg-white flex flex-col justify-center items-center p-2 sm:p-4 md:p-8">
       <div className="container mx-auto max-w-6xl flex-1 flex flex-col justify-center">
         <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
+            <ProfileMenu />
             <h1 className="font-merriweather text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal">Now & Then</h1>
             <Clock />
           </div>
-          {/* 로그인/로그아웃/회원탈퇴 버튼: 항상 타이틀 바로 아래, 한 줄로 배치 */}
-          <div className="w-full flex flex-col items-center gap-2 mt-2 mb-2 px-2">
-            <LoginButton />
-          </div>
+          {/* Always show the sign-in message under the title */}
+          <LoginButton />
         </div>
         {/* <SupabaseUserIdentifier /> */}
         {/* 탭 메뉴 및 본문 */}
