@@ -44,9 +44,9 @@ export default function RootLayout({
             {children}
           </div>
           <footer className="w-full border-t border-gray-100 py-6 mt-12 bg-white text-center text-sm text-gray-500">
-            <a href="/privacy-policy" className="hover:underline">개인정보처리방침</a>
+            <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
             <span className="mx-2 text-gray-300">|</span>
-            <a href="/cookie-policy" className="hover:underline">쿠키정책</a>
+            <a href="/cookie-policy" className="hover:underline">Cookie Policy</a>
           </footer>
         </SupabaseProvider>
       </body>
