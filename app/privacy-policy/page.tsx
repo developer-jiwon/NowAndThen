@@ -1,63 +1,63 @@
 "use client"
-import React from "react";
-import { useRouter } from "next/navigation";
 
-export default function PrivacyPolicy() {
-  const router = useRouter();
+export default function PrivacyPolicyPage() {
   return (
-    <main className="max-w-2xl mx-auto py-12 px-4 relative">
-      {/* X(닫기) 버튼 - 왼쪽 상단으로 이동 */}
-      <button
-        onClick={() => router.push("/")}
-        aria-label="닫기"
-        className="absolute top-4 left-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none z-50"
-      >
-        ×
-      </button>
-      <h1 className="text-3xl font-bold mb-6">개인정보처리방침 (Privacy Policy)</h1>
-      <div className="space-y-6 text-base leading-relaxed">
-        <p>
-          Now & Then(이하 “서비스”)는 이용자의 개인정보를 중요하게 생각하며, 관련 법령을 준수합니다.
-        </p>
-        <ol className="list-decimal pl-6 space-y-2">
-          <li>
-            <strong>수집하는 개인정보 항목</strong><br />
-            - 이메일(구글 로그인 시)<br />
-            - 서비스 이용 기록(카운트다운 데이터 등)<br />
-            - 쿠키 및 로컬스토리지 정보
-          </li>
-          <li>
-            <strong>개인정보의 수집 및 이용 목적</strong><br />
-            - 서비스 제공 및 개선<br />
-            - 사용자 인증 및 보안<br />
-            - 맞춤형 광고(구글 애드센스)
-          </li>
-          <li>
-            <strong>개인정보의 보관 및 파기</strong><br />
-            - 회원 탈퇴 시 즉시 파기<br />
-            - 관련 법령에 따라 일정 기간 보관될 수 있음
-          </li>
-          <li>
-            <strong>쿠키 및 유사기술의 사용</strong><br />
-            - 서비스 이용 분석, 광고 제공, 로그인 상태 유지 등을 위해 쿠키/로컬스토리지 사용<br />
-            - 사용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있음
-          </li>
-          <li>
-            <strong>제3자 제공</strong><br />
-            - Google(로그인, 광고), Supabase(데이터 저장) 등 외부 서비스 제공자에게 일부 정보가 전달될 수 있음
-          </li>
-          <li>
-            <strong>이용자의 권리</strong><br />
-            - 개인정보 열람, 정정, 삭제 요청 가능<br />
-            - 문의: [이메일 주소 또는 문의 폼]
-          </li>
-          <li>
-            <strong>정책 변경 안내</strong><br />
-            - 본 방침은 변경될 수 있으며, 변경 시 서비스 내 공지
-          </li>
-        </ol>
-        <p className="text-sm text-gray-500 mt-8">최종 업데이트: 2024년 6월</p>
-      </div>
+    <main className="max-w-2xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
+      <p className="mb-4">Now & Then ("the Service", "we", "us") values your privacy and complies with applicable laws and regulations. This Privacy Policy explains how we collect, use, and protect your personal information.</p>
+      <ol className="list-decimal pl-5 space-y-2">
+        <li>
+          <strong>Information We Collect</strong>
+          <ul className="list-disc pl-5">
+            <li>Email address (when logging in with Google)</li>
+            <li>Service usage records (countdown data, etc.)</li>
+            <li>Cookies and local storage information</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Purpose of Collection and Use</strong>
+          <ul className="list-disc pl-5">
+            <li>To provide and improve the Service</li>
+            <li>User authentication and security</li>
+            <li>Personalized advertising (Google AdSense)</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Retention and Deletion</strong>
+          <ul className="list-disc pl-5">
+            <li>Immediate deletion upon account withdrawal</li>
+            <li>Retention as required by law</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Cookies and Similar Technologies</strong>
+          <ul className="list-disc pl-5">
+            <li>Used for analytics, advertising, login status, etc.</li>
+            <li>Users can refuse cookies via browser settings</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Third-Party Sharing</strong>
+          <ul className="list-disc pl-5">
+            <li>Google (login, advertising)</li>
+            <li>Supabase (data storage)</li>
+          </ul>
+        </li>
+        <li>
+          <strong>User Rights</strong>
+          <ul className="list-disc pl-5">
+            <li>Access, correction, and deletion of personal data</li>
+            <li>Contact: [your email address]</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Policy Changes</strong>
+          <ul className="list-disc pl-5">
+            <li>This policy may be updated. Changes will be notified within the Service.</li>
+          </ul>
+        </li>
+      </ol>
+      <p className="mt-6 text-xs text-gray-500">Last updated: June 2024</p>
     </main>
   );
 } 

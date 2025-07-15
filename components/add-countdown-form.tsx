@@ -181,34 +181,29 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
           render={({ field }) => (
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Date</FormLabel>
-              <div className="relative">
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch w-full">
                 <FormControl>
                   <Input
                     type="date"
                     {...field}
                     onChange={(e) => {
-                      console.log("Date input raw value:", e.target.value);
                       handleDateChange(e, field.onChange);
                     }}
-                    className="h-8"
+                    className="h-8 w-full min-w-0"
                   />
                 </FormControl>
+                {/* 모바일에서는 아래, PC에서는 오른쪽에 Count Down/Up 표시 */}
                 {dateChanged && (
                   <div 
-                    className={`absolute right-0 top-0 h-full flex items-center justify-center pr-3 text-xs font-medium rounded-r-md transition-all duration-500 ${
-                      isCountUp 
-                        ? 'bg-opacity-90 text-black' 
-                        : 'bg-opacity-90 text-black'
-                    }`}
+                    className="flex items-center justify-center mt-2 sm:mt-0 sm:ml-2 px-3 py-1 rounded-md text-xs font-medium transition-all duration-500 min-w-[110px] max-w-full"
                     style={{ 
                       backgroundColor: isCountUp 
                         ? 'rgba(241, 192, 192, 0.25)' // 25% transparent soft pink for count up (matching card)
                         : 'rgba(139, 207, 190, 0.25)', // 25% transparent mint green for count down
-                      width: '120px',
-                      boxShadow: '0 0 5px rgba(0,0,0,0.1)',
+                      boxShadow: '0 0 5px rgba(0,0,0,0.07)',
                     }}
                   >
-                    <span className="flex items-center">
+                    <span className="flex items-center w-full justify-center">
                       {isCountUp ? (
                         <>
                           <Clock className="h-3 w-3 mr-1" /> Count Up
