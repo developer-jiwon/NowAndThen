@@ -41,9 +41,16 @@ export default function RootLayout({
             {children}
           </div>
           <footer className="w-full border-t border-gray-100 py-6 mt-12 bg-white text-center text-sm text-gray-500">
-            <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
-            <span className="mx-2 text-gray-300">|</span>
-            <a href="/cookie-policy" className="hover:underline">Cookie Policy</a>
+            <div>Now & Then helps you track your most important moments.</div>
+            <div className="mt-1 flex flex-wrap justify-center gap-x-3 gap-y-1">
+              <a href="/terms-of-service" className="hover:underline">Terms of Service</a>
+              <span className="text-gray-300">|</span>
+              <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+              <span className="text-gray-300">|</span>
+              <a href="/cookie-policy" className="hover:underline">Cookie Policy</a>
+              <span className="text-gray-300">|</span>
+              Contact: <a href="mailto:dev.jiwonnie@gmail.com" className="hover:underline">dev.jiwonnie@gmail.com</a>
+            </div>
           </footer>
         </SupabaseProvider>
       </body>
