@@ -4,7 +4,7 @@ import { Merriweather } from "next/font/google"
 import "./globals.css"
 import dynamic from "next/dynamic"
 import SupabaseProvider from "@/components/SupabaseProvider"
-import Script from "next/script";
+// import Script from "next/script"; // 더 이상 사용하지 않음
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -33,12 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
-        <Script
-          id="adsense-script"
-          strategy="afterInteractive"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4588308927468413"
-          crossOrigin="anonymous"
-        />
+        {/* 애드센스 광고 스크립트 제거됨 */}
       </head>
       <body className={`${merriweather.variable}`}>
         <SupabaseProvider>
