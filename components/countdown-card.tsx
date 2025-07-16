@@ -358,16 +358,14 @@ export default function CountdownCard({
       </div>
       
       {/* Card with illustrative style */}
-      <div className="p-2 sm:p-5 flex flex-col min-h-[140px] sm:min-h-[200px]" style={{ ...borderStyle, borderRadius: '16px', minHeight: undefined }}>
+      <div className="p-2 sm:p-5 flex flex-col min-h-[140px] sm:min-h-[200px] shadow-md shadow-gray-200 border rounded-lg border-[#F5F5F5]" style={{ ...borderStyle, boxShadow: undefined, borderRadius: '16px', minHeight: undefined, borderColor: '#F5F5F5' }}>
         {/* Decorative corner accents - now inside the card */}
         
         {/* Title section */}
-        <div className="w-full mb-1">
-          <div className="relative flex items-center justify-center gap-1 mb-1">
-            <h3 className="text-[14px] sm:text-lg font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
-              {headerTitle}
-            </h3>
-          </div>
+        <div className="w-full mb-1 min-h-[28px] flex items-center justify-center">
+          <h3 className="text-[14px] sm:text-lg font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
+            {headerTitle}
+          </h3>
         </div>
         
         {/* Simple divider without circle */}
