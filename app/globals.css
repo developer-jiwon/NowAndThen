@@ -116,3 +116,11 @@
   font-family: 'Merriweather', serif !important;
 }
 
+/* Hide browser default calendar icon for date input */
+/*
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+*/
+

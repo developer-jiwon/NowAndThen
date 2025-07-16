@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -36,6 +36,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Clock, Hourglass } from "lucide-react"
 import { standardizeDate, isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
 import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 
 // Define colors for past and future events
 const charcoal = "#333333"; // Pantone charcoal for past events
@@ -178,32 +180,65 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
         <FormField
           control={form.control}
           name="date"
-          render={({ field }) => (
-            <FormItem className="space-y-1 w-full max-w-sm">
-              <FormLabel className="text-sm">Date</FormLabel>
-              <FormControl>
-                <Input
-                  type="date"
-                  {...field}
-                  onChange={(e) => {
-                    handleDateChange(e, field.onChange);
-                  }}
-                  className="h-8 w-full max-w-[220px] mx-auto"
-                />
-              </FormControl>
-              {dateChanged && (
-                <div className="w-full mt-2 px-3 py-1 rounded-md text-xs font-medium text-center"
-                  style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
-                  {isCountUp ? (
-                    <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
-                  ) : (
-                    <><Hourglass className="h-3 w-3 mr-1 inline" /> Count Down</>
-                  )}
-                </div>
-              )}
-              <CustomFormMessage name="date" />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const [showCalendar, setShowCalendar] = useState(false);
+            const [selectedDay, setSelectedDay] = useState<Date | undefined>(field.value ? new Date(field.value) : undefined);
+            const inputRef = useRef<HTMLInputElement>(null);
+            const { ref, ...restField } = field;
+            // 날짜를 YYYY-MM-DD로 포맷
+            const formatDate = (date: Date | undefined) => date ? date.toISOString().slice(0, 10) : '';
+            return (
+              <FormItem className="space-y-1 w-full max-w-sm">
+                <FormLabel className="text-sm">Date</FormLabel>
+                <FormControl>
+                  <div className="relative w-full max-w-sm">
+                    <span
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
+                      onClick={() => setShowCalendar((v) => !v)}
+                    >
+                      <CalendarIcon className="w-4 h-4" />
+                    </span>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={formatDate(selectedDay)}
+                      readOnly
+                      placeholder="YYYY-MM-DD"
+                      onClick={() => setShowCalendar(true)}
+                      className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                    {showCalendar && (
+                      <div className="absolute z-50 left-0 mt-2 bg-white border rounded shadow-lg" style={{ width: '100%' }}>
+                        <DayPicker
+                          mode="single"
+                          selected={selectedDay}
+                          onSelect={(day) => {
+                            setSelectedDay(day);
+                            setShowCalendar(false);
+                            if (day) {
+                              field.onChange(formatDate(day));
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+                {dateChanged && (
+                  <div className="w-full mt-2 px-3 py-1 rounded-md text-xs font-medium text-center"
+                    style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
+                    {isCountUp ? (
+                      <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
+                    ) : (
+                      <><Hourglass className="h-3 w-3 mr-1 inline" /> Count Down</>
+                    )}
+                  </div>
+                )}
+                <CustomFormMessage name="date" />
+              </FormItem>
+            )
+          }}
         />
 
         <FormField
