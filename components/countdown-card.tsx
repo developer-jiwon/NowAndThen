@@ -358,24 +358,20 @@ export default function CountdownCard({
       </div>
       
       {/* Card with illustrative style */}
-      <div className="p-3 sm:p-5 flex flex-col" style={borderStyle}>
+      <div className="p-2 sm:p-5 flex flex-col min-h-[140px] sm:min-h-[200px]" style={{ ...borderStyle, borderRadius: '16px', minHeight: undefined }}>
         {/* Decorative corner accents - now inside the card */}
-        <div className="absolute top-2 left-2 w-4 h-4 border-t-4 border-l-4 border-[#36454F]"></div>
-        <div className="absolute top-2 right-2 w-4 h-4 border-t-4 border-r-4 border-[#36454F]"></div>
-        <div className="absolute bottom-2 left-2 w-4 h-4 border-b-4 border-l-4 border-[#36454F]"></div>
-        <div className="absolute bottom-2 right-2 w-4 h-4 border-b-4 border-r-4 border-[#36454F]"></div>
         
         {/* Title section */}
         <div className="w-full mb-1">
           <div className="relative flex items-center justify-center gap-1 mb-1">
-            <h3 className="text-xs sm:text-sm font-medium text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
+            <h3 className="text-[14px] sm:text-lg font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
               {headerTitle}
             </h3>
           </div>
         </div>
         
         {/* Simple divider without circle */}
-        <div className="w-full h-[2px] bg-[#36454F]/30 mb-3"></div>
+        <div className="w-full h-[1.5px] bg-gray-300 opacity-80 mb-2 sm:mb-3"></div>
         
         {/* Main countdown display */}
         <div className="flex-1 flex flex-col items-center justify-center">
@@ -388,7 +384,7 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className="text-2xl sm:text-5xl font-bold font-serif text-center" style={{ color: cardColor }}>
+              <span className="text-xl sm:text-5xl font-bold font-serif text-center" style={{ color: cardColor }}>
                 <span className="inline-block mr-2">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
@@ -397,16 +393,16 @@ export default function CountdownCard({
             </motion.div>
           </AnimatePresence>
           
-          <span className="text-xs uppercase mt-1 font-medium tracking-wider text-gray-600 text-center">
+          <span className="text-[10px] sm:text-xs uppercase mt-0.5 font-medium tracking-wider text-gray-600 text-center">
             {timeRemaining.isCountUp ? "Days Since" : "Days Until"}
           </span>
         </div>
         
         {/* Footer with date */}
-        <div className="w-full flex items-center justify-center mt-3 mb-1">
-          <div className="flex items-center justify-center gap-1 px-3 py-1 bg-[#36454F]/10 rounded-full">
-            <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
-            <p className="text-xs text-gray-600 whitespace-nowrap">
+        <div className="w-full flex items-center justify-center mt-2 sm:mt-3 mb-1">
+          <div className="flex items-center justify-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 bg-[#36454F]/10 rounded-full">
+            <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500 flex-shrink-0" />
+            <p className="text-[10px] sm:text-xs text-gray-600 whitespace-nowrap">
               {formatDateString(exactDate)}
             </p>
           </div>
