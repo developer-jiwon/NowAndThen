@@ -25,11 +25,17 @@ export default function AdSenseComponent({
   adLayoutKey,
   className = "my-4"
 }: AdSenseProps) {
+  // Check if AdSense is approved via environment variable
+  const isAdSenseApproved = process.env.NEXT_PUBLIC_ADSENSE_APPROVED === 'true';
+  
   const adRef = useRef<HTMLModElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Don't load ads if not approved
+    if (!isAdSenseApproved) return;
+    
     const loadAd = () => {
       try {
         // Check if adsbygoogle is available and the element exists
@@ -59,7 +65,7 @@ export default function AdSenseComponent({
     return () => {
       clearTimeout(timer);
     };
-  }, [isLoaded]);
+  }, [isLoaded, isAdSenseApproved]);
 
   // Reset when component unmounts or re-mounts
   useEffect(() => {
@@ -68,6 +74,11 @@ export default function AdSenseComponent({
       setAdError(null);
     };
   }, []);
+
+  // Don't render anything if AdSense is not approved
+  if (!isAdSenseApproved) {
+    return null;
+  }
 
   if (adError) {
     return (
