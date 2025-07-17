@@ -12,12 +12,10 @@ export default function UserIdentifier() {
   
   useEffect(() => {
     // Process URL parameters first
-    console.log("UserIdentifier: Processing URL parameters");
     processUrlParameters();
     
     // Get the user ID
     const id = getUserId();
-    console.log("UserIdentifier: Got user ID:", id);
     
     // Set the user ID directly (no need to truncate since it's already short)
     if (id && id.length > 0) {
@@ -29,9 +27,7 @@ export default function UserIdentifier() {
   
   const copyToClipboard = () => {
     // Generate a shareable URL with the latest data
-    console.log("UserIdentifier: Creating shareable URL");
     const url = createShareableUrl();
-    console.log("UserIdentifier: Shareable URL created:", url);
     
     // Store the URL for debugging
     setShareableUrl(url);
@@ -39,7 +35,6 @@ export default function UserIdentifier() {
     if (navigator.clipboard && url) {
       navigator.clipboard.writeText(url)
         .then(() => {
-          console.log("UserIdentifier: URL copied to clipboard");
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         })

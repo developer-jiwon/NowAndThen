@@ -76,38 +76,6 @@ export default function SupabaseCountdownGrid({
     }
   }, [user, authLoading, category]);
 
-  // 최초 1회만 예시 데이터 삽입 (비로그인/로컬 only, 자동 재생성 X)
-  useEffect(() => {
-    if (user || authLoading) return; // 로그인/익명은 제외
-
-    // 반드시 userId를 먼저 생성
-    const userId = getUserId();
-
-    // general
-    const generalKey = getUserStorageKey("countdowns_general", userId);
-    const generalFlag = `sample_created_general_${userId}`;
-    if (!localStorage.getItem(generalKey) && !localStorage.getItem(generalFlag)) {
-      const generalExamples = [
-        { id: crypto.randomUUID(), title: "100 Day Challenge", date: "2024-12-31", hidden: false, pinned: true },
-        { id: crypto.randomUUID(), title: "Birthday", date: "2024-12-25", hidden: false, pinned: true },
-      ];
-      localStorage.setItem(generalKey, JSON.stringify(generalExamples));
-      localStorage.setItem(generalFlag, "true");
-    }
-
-    // personal
-    const personalKey = getUserStorageKey("countdowns_personal", userId);
-    const personalFlag = `sample_created_personal_${userId}`;
-    if (!localStorage.getItem(personalKey) && !localStorage.getItem(personalFlag)) {
-      const personalExamples = [
-        { id: crypto.randomUUID(), title: "Work Anniversary", date: "2022-01-01", hidden: false, pinned: false },
-        { id: crypto.randomUUID(), title: "Wedding Anniversary", date: "2020-05-20", hidden: false, pinned: false },
-        { id: crypto.randomUUID(), title: "First Day at School", date: "2010-03-02", hidden: false, pinned: false },
-      ];
-      localStorage.setItem(personalKey, JSON.stringify(personalExamples));
-      localStorage.setItem(personalFlag, "true");
-    }
-  }, [user, authLoading]);
 
   const handleRemove = async (id: string) => {
     if (!user) return;
