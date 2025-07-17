@@ -38,16 +38,14 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
   function onSubmit(values: CountdownFormValues) {
     // Use the exact date value from the form
     const exactDate = values.date
-    console.log("Edit form - Exact date:", exactDate)
     
     // Determine if this is a count up event (past date)
     const isCountUp = isDateInPast(exactDate)
-    console.log("Edit form - isCountUp:", isCountUp)
     
     // Create updated countdown with the exact date
     const updatedCountdown: Partial<Countdown> = {
       title: values.title,
-      date: exactDate, // Use the exact date value
+      date: exactDate,
       isCountUp: isCountUp,
     }
 
@@ -82,22 +80,24 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
           {success && (
             <Alert className="mb-4 bg-white border-charcoal/20 text-charcoal">
               <CheckCircle2 className="h-4 w-4 text-charcoal" />
-              <AlertDescription>Timer updated successfully!</AlertDescription>
+              <AlertDescription>Timer updated and saved</AlertDescription>
             </Alert>
           )}
 
-          <CountdownForm 
-            defaultValues={defaultValues} 
-            onSubmit={onSubmit} 
-            submitButtonText="Save Changes" 
-          />
-          
-          <button 
-            onClick={onCancel}
-            className="mt-4 w-full py-2 px-4 border border-charcoal/30 rounded-md text-sm font-medium text-charcoal hover:bg-charcoal/5 transition-colors"
-          >
-            Cancel
-          </button>
+          <div className="space-y-3">
+            <CountdownForm 
+              defaultValues={defaultValues} 
+              onSubmit={onSubmit} 
+              submitButtonText="Save Changes" 
+            />
+            
+            <button 
+              onClick={onCancel}
+              className="w-full h-7 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>

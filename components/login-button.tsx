@@ -1,12 +1,6 @@
 "use client"
 
-import { useState } from "react";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, User, Trash2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export default function LoginButton() {
   // More robust anonymous user detection

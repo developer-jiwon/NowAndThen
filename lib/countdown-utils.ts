@@ -9,18 +9,14 @@ export function standardizeDate(dateInput: string): string {
     return '';
   }
   
-  console.log("Original date input:", dateInput);
-  
   // If it's already in YYYY-MM-DD format, return as is
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-    console.log("Already in YYYY-MM-DD format:", dateInput);
     return dateInput;
   }
   
   // If it has a time component, extract just the date part
   if (dateInput.includes('T')) {
     const datePart = dateInput.split('T')[0];
-    console.log("Extracted date part from ISO format:", datePart);
     return datePart;
   }
   
@@ -39,7 +35,6 @@ export function standardizeDate(dateInput: string): string {
     }
     
     const result = `${year}-${month}-${day}`;
-    console.log(`Parsed MM/DD/YYYY format: ${dateInput} → ${result}`);
     return result;
   }
   
@@ -75,7 +70,6 @@ export function standardizeDate(dateInput: string): string {
       day = String(parseInt(day)).padStart(2, '0');
       
       const result = `${year}-${month}-${day}`;
-      console.log(`Parsed date parts: ${dateInput} → ${result}`);
       return result;
     }
   } catch (error) {
@@ -89,14 +83,9 @@ export function standardizeDate(dateInput: string): string {
 
 // Utility function to determine if a date is in the past
 export function isDateInPast(dateString: string): boolean {
-  // Log the exact input for debugging
-  console.log("isDateInPast checking date:", dateString);
-  
   // Get today's date in YYYY-MM-DD format
   const now = new Date();
   const todayFormatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  
-  console.log(`Comparing dates: Target=${dateString}, Today=${todayFormatted}`);
   
   // Direct string comparison
   return dateString < todayFormatted;
@@ -104,8 +93,6 @@ export function isDateInPast(dateString: string): boolean {
 
 // Calculate time remaining for a countdown or elapsed for a countup
 export function calculateTimeRemaining(targetDateString: string, isCountUp = false): TimeRemaining {
-  console.log("calculateTimeRemaining input:", targetDateString, "isCountUp:", isCountUp);
-  
   // Get current time
   const now = new Date();
   const nowYear = now.getFullYear();
@@ -129,8 +116,6 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
       targetMonth = targetDate.getMonth() + 1; // 0-indexed to 1-indexed
       targetDay = targetDate.getDate();
     }
-    
-    console.log("Date parts:", { targetYear, targetMonth, targetDay, nowYear, nowMonth, nowDay });
   } catch (error) {
     console.error("Error parsing date:", error);
     // Return a default value in case of error
@@ -156,8 +141,6 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
                      targetMonth === (tomorrow.getMonth() + 1) && 
                      targetDay === tomorrow.getDate();
   
-  console.log("Date check:", { isToday, isTomorrow });
-  
   // Calculate days difference using a simple date difference calculation
   // Create date objects with time set to midnight to avoid time-of-day issues
   const targetDateObj = new Date(targetYear, targetMonth - 1, targetDay, 0, 0, 0, 0);
@@ -176,8 +159,6 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
   if (isToday) {
     days = 0;
   }
-  
-  console.log("Calculated days:", days);
   
   // Return the time remaining object
   return {

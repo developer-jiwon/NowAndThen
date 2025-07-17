@@ -7,13 +7,13 @@ export function useAnonymousAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 세션 확인 및 익명 로그인
+    // Check session and perform anonymous login
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          // localStorage에 이전 guest_id가 있으면 복원 시도
+          // Try to restore previous guest_id from localStorage
           const previousGuestId = localStorage.getItem('guest_id');
           console.log('No session found, signing in anonymously...');
           const { data, error } = await supabase.auth.signInAnonymously();
@@ -26,7 +26,7 @@ export function useAnonymousAuth() {
           
           if (data.user) {
             console.log('Anonymous user created:', data.user.id);
-            // 최초 생성 또는 복원 시 guest_id를 localStorage에 저장
+            // Store guest_id in localStorage for first creation or restoration
             if (!previousGuestId) {
               localStorage.setItem('guest_id', data.user.id);
             }
@@ -34,7 +34,7 @@ export function useAnonymousAuth() {
           }
         } else {
           console.log('Existing session found:', session.user.id);
-          // 익명 유저라면 guest_id를 localStorage에 저장
+          // If anonymous user, store guest_id in localStorage
           if (session.user.user_metadata?.provider === 'anonymous') {
             localStorage.setItem('guest_id', session.user.id);
           }
@@ -49,16 +49,16 @@ export function useAnonymousAuth() {
 
     checkSession();
 
-    // 인증 상태 변경 감지
+    // Listen for authentication state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
-        // 로그아웃 후, 이전 guest_id가 있으면 복원 시도
+        // After logout, try to restore previous guest_id
         if (event === 'SIGNED_OUT') {
           const previousGuestId = localStorage.getItem('guest_id');
           if (previousGuestId) {
-            // 익명 로그인 재시도 (Supabase는 이전 guest_id를 직접 복원하는 기능은 없으나,
-            // 새 익명 세션이 생성되면 localStorage에 계속 guest_id를 유지)
+            // Retry anonymous login (Supabase doesn't have direct guest_id restoration,
+            // but when new anonymous session is created, continue to maintain guest_id in localStorage)
             supabase.auth.signInAnonymously().then(({ data, error }) => {
               if (!error && data.user) {
                 localStorage.setItem('guest_id', data.user.id);

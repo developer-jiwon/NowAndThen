@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Countdown } from '@/lib/types';
 import type { Database } from '@/lib/supabase';
@@ -10,8 +10,8 @@ export function useCountdowns(category: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Supabase 데이터를 앱 타입으로 변환
-  const transformCountdown = (row: CountdownRow): Countdown => ({
+  // Transform Supabase data to app types
+  const transformCountdown = useCallback((row: CountdownRow): Countdown => ({
     id: row.id,
     title: row.title,
     date: row.date,
@@ -19,10 +19,10 @@ export function useCountdowns(category: string) {
     hidden: row.hidden,
     pinned: row.pinned,
     originalCategory: row.category as "custom" | "general" | "personal",
-  });
+  }), []);
 
-  // 앱 타입을 Supabase 타입으로 변환
-  const transformToSupabase = (countdown: Countdown, userId: string) => ({
+  // Transform app types to Supabase types
+  const transformToSupabase = useCallback((countdown: Countdown, userId: string) => ({
     id: countdown.id,
     user_id: userId,
     title: countdown.title,
@@ -31,16 +31,16 @@ export function useCountdowns(category: string) {
     hidden: countdown.hidden,
     pinned: countdown.pinned,
     category: countdown.originalCategory,
-  });
+  }), []);
 
-  // 카운트다운 로드
+  // Load countdowns
   const loadCountdowns = async (userId: string) => {
     try {
       setLoading(true);
       setError(null);
 
       if (category === "pinned") {
-        // pinned 탭일 때: 모든 카테고리에서 pinned:true인 것만 모아서 보여줌
+        // For pinned tab: collect pinned:true items from all categories
         const categories = ["general", "personal", "custom"];
         let allPinned: Countdown[] = [];
         for (const cat of categories) {
@@ -60,7 +60,7 @@ export function useCountdowns(category: string) {
         }
         setCountdowns(allPinned);
       } else if (category === "hidden") {
-        // hidden 탭일 때: 모든 카테고리에서 hidden:true인 것만 모아서 보여줌
+        // For hidden tab: collect hidden:true items from all categories
         const categories = ["general", "personal", "custom"];
         let allHidden: Countdown[] = [];
         for (const cat of categories) {
@@ -80,7 +80,7 @@ export function useCountdowns(category: string) {
         }
         setCountdowns(allHidden);
       } else {
-        // 기존 카테고리별 로딩
+        // Load by existing category
         const { data, error: fetchError } = await supabase
           .from('countdowns')
           .select('*')
@@ -105,7 +105,7 @@ export function useCountdowns(category: string) {
     }
   };
 
-  // 카운트다운 추가
+  // Add countdown
   const addCountdown = async (countdown: Countdown, userId: string) => {
     try {
       const supabaseData = transformToSupabase(countdown, userId);
@@ -130,7 +130,7 @@ export function useCountdowns(category: string) {
     }
   };
 
-  // 카운트다운 업데이트
+  // Update countdown
   const updateCountdown = async (countdown: Countdown, userId: string) => {
     try {
       const supabaseData = transformToSupabase(countdown, userId);
@@ -159,7 +159,7 @@ export function useCountdowns(category: string) {
     }
   };
 
-  // 카운트다운 삭제
+  // Delete countdown
   const deleteCountdown = async (countdownId: string, userId: string) => {
     try {
       const { error: deleteError } = await supabase
@@ -180,7 +180,7 @@ export function useCountdowns(category: string) {
     }
   };
 
-  // 실시간 구독 설정
+  // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
       .channel('countdowns')
@@ -216,7 +216,7 @@ export function useCountdowns(category: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [category]);
+  }, [category, transformCountdown]);
 
   return {
     countdowns,

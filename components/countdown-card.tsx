@@ -7,17 +7,15 @@ import type { Countdown, TimeRemaining } from "@/lib/types"
 import { calculateTimeRemaining, isDateInPast, standardizeDate, formatDateString } from "@/lib/countdown-utils"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
 
-// Define colors for past and future events
-const countUpColor = "#f1c0c0"; // Soft pink/light coral for count up
-const countDownColor = "#8BCFBE"; // Mint/seafoam green for count down (keeping the original)
-const charcoalColor = "#36454F"; // Illustrative charcoal color
-const customTabCountdownColor = "#6495ED"; // New color: Cornflower Blue for custom tab countdowns
+// Modern, cohesive color palette
+const countUpColor = "#e11d48"; // Clean red for count up (past events)
+const countDownColor = "#16a34a"; // Clean green for count down (future events)
+const customTabCountdownColor = "#2563eb"; // Clean blue for custom tab countdowns
 
-// 2024 Pantone trendy colors
-const pantoneBlack = "#2D2926"; // Pantone Black
-const pantoneWhite = "#F5F5F5"; // Pantone White/Off-White
-const pantoneCream = "#F2EFE9"; // Pantone Cream
-const pantoneGray = "#8E8E8E"; // Pantone Gray
+// Modern UI colors
+const neutralDark = "#1f2937"; // Modern dark gray
+const neutralLight = "#f9fafb"; // Clean light background
+const neutralMedium = "#6b7280"; // Balanced medium gray
 
 // Animation variants for countdown cards
 const countdownCardVariants = {
@@ -132,6 +130,7 @@ interface CountdownCardProps {
   onToggleVisibility: (id: string) => void
   onTogglePin?: (id: string) => void
   onEdit?: (id: string) => void
+  onDuplicate?: (id: string) => void
   category: string
 }
 
@@ -141,6 +140,7 @@ export default function CountdownCard({
   onToggleVisibility,
   onTogglePin,
   onEdit,
+  onDuplicate,
   category,
 }: CountdownCardProps) {
   // Use the exact date from the countdown
@@ -238,18 +238,18 @@ export default function CountdownCard({
   const cardColor = isCountUp ? countUpColor : 
                    (category === "custom" ? customTabCountdownColor : countDownColor);
 
-  // Illustrative border style
+  // Clean, modern card style
   const borderStyle = {
-    borderWidth: '2px',
+    borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: 'rgba(54, 69, 79, 0.25)', // 75% transparent charcoal
-    borderRadius: '16px',
-    boxShadow: `3px 3px 0 rgba(54, 69, 79, 0.25)`, // 75% transparent charcoal shadow
+    borderColor: '#e5e7eb',
+    borderRadius: '12px',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     background: isCountUp 
-      ? 'rgba(241, 192, 192, 0.25)' // Countup background
+      ? '#fef2f2' // Light red background for countup
       : (category === "custom" 
-         ? 'rgba(100, 149, 237, 0.25)' // Custom tab countdown background (Cornflower Blue)
-         : 'rgba(139, 207, 190, 0.25)'), // Regular countdown background
+         ? '#eff6ff' // Light blue background for custom
+         : '#f0fdf4'), // Light green background for countdown
     position: 'relative' as 'relative',
     width: '100%',
     maxWidth: '350px',
@@ -279,7 +279,7 @@ export default function CountdownCard({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white/90 p-1.5 rounded-md shadow-sm text-center w-full max-w-[160px] border border-gray-200/30">
-              <p className="text-gray-700 mb-1 text-[11px] font-normal">Delete timer?</p>
+              <p className="text-gray-700 mb-1 text-[11px] font-normal">Delete this timer?</p>
               <div className="flex justify-center gap-1.5">
                 <button 
                   className="text-[15px] py-0 px-1 min-w-0 h-6 rounded-sm bg-transparent border border-gray-300/50 hover:bg-gray-100/50 transition-colors"
@@ -289,11 +289,11 @@ export default function CountdownCard({
                   ×
                 </button>
                 <button 
-                  className="text-[15px] py-0 px-1 min-w-0 h-6 rounded-sm bg-transparent border border-gray-300/50 hover:bg-gray-100/50 transition-colors"
+                  className="text-[15px] py-0 px-1 min-w-0 h-6 rounded-sm bg-transparent border border-gray-300/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center"
                   onClick={confirmDelete}
                   aria-label="Delete"
                 >
-                  🗑️
+                  <Trash2 className="h-3 w-3 text-gray-600" />
                 </button>
               </div>
             </div>
@@ -302,23 +302,23 @@ export default function CountdownCard({
       </AnimatePresence>
       
       {/* Action dots positioned outside the card */}
-      <div className="absolute -left-3 sm:-left-3 -left-2 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 sm:gap-3 z-10">
+      <div className="absolute -left-2.5 top-1/2 transform -translate-y-1/2 flex flex-col gap-1.5 z-10">
         <motion.div
           custom={0}
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${isPinned ? 'bg-[#14532d]' : 'bg-[#F2EFE9]'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-5 h-5 rounded-full flex items-center justify-center cursor-pointer shadow-sm ${isPinned ? 'bg-gray-800' : 'bg-white border border-gray-200'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return; // hidden 탭에서는 동작하지 않음
             if (onTogglePin) {
               onTogglePin(countdown.id);
             } else {
-              console.error("❌❌❌ onTogglePin prop is missing! ❌❌❌");
+              console.error("onTogglePin prop is missing");
             }
           }}
         >
-          {isPinned ? <PinOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" /> : <Pin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />}
+          {isPinned ? <PinOff className="h-2.5 w-2.5 text-white" /> : <Pin className="h-2.5 w-2.5 text-gray-600" />}
         </motion.div>
         
         <motion.div
@@ -326,10 +326,10 @@ export default function CountdownCard({
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${countdown.hidden ? 'bg-[#2D2926]' : 'bg-[#F2EFE9]'}`}
+          className={`w-5 h-5 rounded-full flex items-center justify-center cursor-pointer shadow-sm ${countdown.hidden ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
-          {category === "hidden" ? <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : (countdown.hidden ? <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" /> : <EyeOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#2D2926]" />)}
+          {category === "hidden" ? <Eye className="h-2.5 w-2.5 text-white" /> : (countdown.hidden ? <Eye className="h-2.5 w-2.5 text-white" /> : <EyeOff className="h-2.5 w-2.5 text-gray-600" />)}
         </motion.div>
         
         {onEdit && (
@@ -338,38 +338,56 @@ export default function CountdownCard({
             variants={iconDotVariants}
             whileHover="hover"
             whileTap="tap"
-            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#8E8E8E] flex items-center justify-center cursor-pointer shadow-md"
+            className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer shadow-sm"
             onClick={() => onEdit(countdown.id)}
           >
-            <Edit className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" />
+            <Edit className="h-2.5 w-2.5 text-white" />
+          </motion.div>
+        )}
+        
+        {onDuplicate && (
+          <motion.div
+            custom={3}
+            variants={iconDotVariants}
+            whileHover="hover"
+            whileTap="tap"
+            className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center cursor-pointer shadow-sm"
+            onClick={() => onDuplicate(countdown.id)}
+          >
+            <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
           </motion.div>
         )}
         
         <motion.div
-          custom={3}
+          custom={4}
           variants={iconDotVariants}
           whileHover="hover"
           whileTap="tap"
-          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#2D2926] flex items-center justify-center cursor-pointer shadow-md"
+          className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-sm"
           onClick={handleDeleteClick}
         >
-          <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#F5F5F5]" />
+          <Trash2 className="h-2.5 w-2.5 text-white" />
         </motion.div>
       </div>
       
       {/* Card with illustrative style */}
-      <div className="p-2 sm:p-5 flex flex-col min-h-[140px] sm:min-h-[200px] shadow-md shadow-gray-200 border rounded-lg border-[#F5F5F5]" style={{ ...borderStyle, boxShadow: undefined, borderRadius: '16px', minHeight: undefined, borderColor: '#F5F5F5' }}>
+      <div 
+        className="p-4 flex flex-col min-h-[180px]" 
+        style={borderStyle}
+      >
         {/* Decorative corner accents - now inside the card */}
         
         {/* Title section */}
         <div className="w-full mb-1 min-h-[28px] flex items-center justify-center">
-          <h3 className="text-[14px] sm:text-lg font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2" style={{display: 'block'}}>
+          <h3 className="text-sm font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2">
             {headerTitle}
           </h3>
         </div>
         
-        {/* Simple divider without circle */}
-        <div className="w-full h-[1.5px] bg-gray-300 opacity-80 mb-2 sm:mb-3"></div>
+        {/* Simple divider */}
+        <div className="w-full h-px bg-gray-200 mb-3"></div>
         
         {/* Main countdown display */}
         <div className="flex-1 flex flex-col items-center justify-center">
@@ -382,7 +400,7 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className="text-xl sm:text-5xl font-bold font-serif text-center" style={{ color: cardColor }}>
+              <span className="text-3xl sm:text-4xl font-bold font-serif text-center" style={{ color: cardColor }}>
                 <span className="inline-block mr-2">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
@@ -391,16 +409,16 @@ export default function CountdownCard({
             </motion.div>
           </AnimatePresence>
           
-          <span className="text-[10px] sm:text-xs uppercase mt-0.5 font-medium tracking-wider text-gray-600 text-center">
-            {timeRemaining.isCountUp ? "Days Since" : "Days Until"}
+                      <span className="text-xs uppercase mt-1 font-medium tracking-wide text-gray-600 text-center">
+            {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
         
         {/* Footer with date */}
-        <div className="w-full flex items-center justify-center mt-2 sm:mt-3 mb-1">
-          <div className="flex items-center justify-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 bg-[#36454F]/10 rounded-full">
-            <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500 flex-shrink-0" />
-            <p className="text-[10px] sm:text-xs text-gray-600 whitespace-nowrap">
+        <div className="w-full flex items-center justify-center mt-3">
+          <div className="flex items-center justify-center gap-1 px-3 py-1 bg-gray-100 rounded-full">
+            <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
+            <p className="text-xs text-gray-600 whitespace-nowrap">
               {formatDateString(exactDate)}
             </p>
           </div>

@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useAnonymousAuth } from "@/hooks/useAnonymousAuth"
-import { Button } from "@/components/ui/button"
-import { Check, Share2, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 export default function SupabaseUserIdentifier() {
   const { user, loading } = useAnonymousAuth();
-  const [copied, setCopied] = useState(false);
   
   // Debug: Log user object structure
   useEffect(() => {
@@ -21,31 +19,12 @@ export default function SupabaseUserIdentifier() {
   // Simplified check: authenticated users have an email, anonymous users don't
   const isAuthenticated = user && user.email && user.email.length > 0;
 
-  const copyToClipboard = () => {
-    if (!user) return;
-    
-    // 현재 URL을 복사 (사용자 ID는 URL에 포함되지 않음)
-    const currentUrl = window.location.href;
-    
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(currentUrl)
-        .then(() => {
-          console.log("URL copied to clipboard");
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-        });
-    }
-  };
-  
   if (loading) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
         <div className="flex items-center justify-center gap-2">
           <Loader2 className="h-3 w-3 animate-spin" />
-          <span>Please wait...</span>
+          <span>Connecting...</span>
         </div>
       </div>
     );
@@ -55,7 +34,7 @@ export default function SupabaseUserIdentifier() {
   if (!isAuthenticated) {
     return (
       <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-        <p className="text-[10px] mt-1">Sign in to sync your data across devices.</p>
+        <p className="text-[10px] mt-1">Sign in to sync your timers across all devices.</p>
       </div>
     );
   }
@@ -63,7 +42,7 @@ export default function SupabaseUserIdentifier() {
   // Authenticated user: only show sync message
   return (
     <div className="text-xs text-gray-400 text-center mt-2 mb-4">
-      <p className="text-[10px] mt-1">Your data is automatically synced across devices.</p>
+      <p className="text-[10px] mt-1">Your timers are synced and backed up securely.</p>
     </div>
   )
 } 

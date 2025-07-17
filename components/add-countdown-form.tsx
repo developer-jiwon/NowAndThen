@@ -17,7 +17,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,30 +31,37 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { Countdown } from "@/lib/types"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2, Clock, Hourglass } from "lucide-react"
-import { standardizeDate, isDateInPast, handleHtmlDateInput } from "@/lib/countdown-utils"
+import { Clock, Hourglass } from "lucide-react"
+import { isDateInPast } from "@/lib/countdown-utils"
 import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
 
-// Define colors for past and future events
-const charcoal = "#333333"; // Pantone charcoal for past events
-const skyBlue = "#87CEEB"; // Sky blue for future events
-const countUpColor = "#f1c0c0"; // Soft pink/light coral for count up (matching the card color)
-const countDownColor = "#8BCFBE"; // Mint green for count down (matching the card background)
+// Modern color indicators for count up and count down
+const countUpColor = "#e11d48"; // Clean red for count up
+const countDownColor = "#16a34a"; // Clean green for count down
 
-// Define the form schema with validation
+// Enhanced date validation
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+// Define the form schema with enhanced validation
 export const formSchema = z.object({
   title: z.string().min(2, {
-    message: "Title too short",
+    message: "Title must be at least 2 characters",
   }).max(20, {
-    message: "Title too long"
+    message: "Title cannot exceed 20 characters"
   }),
-  date: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Need a valid date",
-  }),
-  category: z.enum(["general", "personal"]).default("general"),
+  date: z.string()
+    .min(1, "Date is required")
+    .regex(dateRegex, "Please enter date in YYYY-MM-DD format")
+    .refine((date) => {
+      const parsed = new Date(date);
+      return !isNaN(parsed.getTime()) && parsed.getFullYear() >= 1900 && parsed.getFullYear() <= 2100;
+    }, {
+      message: "Please enter a valid date between 1900-2100",
+    }),
+  category: z.enum(["general", "personal"], {
+    required_error: "Please select a category",
+    invalid_type_error: "Invalid category selected",
+  }).default("general"),
   isCountUp: z.boolean().optional(),
 })
 
@@ -67,10 +73,9 @@ interface CountdownFormProps {
   submitButtonText?: string
 }
 
-export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add Timer" }: CountdownFormProps) {
+export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Create Timer" }: CountdownFormProps) {
   const [dateChanged, setDateChanged] = useState(true)
   const [isCountUp, setIsCountUp] = useState(false)
-  const [animationActive, setAnimationActive] = useState(true)
 
   const form = useForm<CountdownFormValues>({
     resolver: zodResolver(formSchema),
@@ -85,17 +90,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
   useEffect(() => {
     const dateValue = form.getValues("date")
     if (dateValue) {
-      // Standardize the date format
-      const standardizedDate = standardizeDate(dateValue)
-      
-      // Determine if this is a count up event (past date)
-      const isPastDate = isDateInPast(standardizedDate)
-      
+      const isPastDate = isDateInPast(dateValue)
       setIsCountUp(isPastDate)
       setDateChanged(true)
-      setAnimationActive(true)
-      
-      console.log("Initial date check:", standardizedDate, "isCountUp:", isPastDate)
     }
   }, [form, defaultValues])
 
@@ -110,55 +107,33 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
 
   // Helper function to handle date input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    // Get the exact date value from the input
     const exactDate = e.target.value;
-    console.log("Exact date from input:", exactDate);
-    
-    // Pass the exact value to the form
     onChange(exactDate);
     
-    // Determine if this is a count up event (past date)
-    const isPastDate = isDateInPast(exactDate);
-    
-    setIsCountUp(isPastDate);
-    setDateChanged(true);
-    setAnimationActive(true);
-    
-    console.log("Date changed to:", exactDate, "isCountUp:", isPastDate);
+    // Only update count status for valid dates
+    if (dateRegex.test(exactDate)) {
+      const parsedDate = new Date(exactDate);
+      if (!isNaN(parsedDate.getTime())) {
+        const isPastDate = isDateInPast(exactDate);
+        setIsCountUp(isPastDate);
+        setDateChanged(true);
+      }
+    }
   }
 
   // Function to handle form submission with isCountUp value
   const handleSubmit = (values: CountdownFormValues) => {
-    // Get the exact date value from the form
     const exactDate = values.date;
-    console.log("Exact date from form:", exactDate);
-    
-    // Determine if this is a count up event (past date)
     const isPastDate = isDateInPast(exactDate);
-    console.log("isCountUp:", isPastDate);
     
-    // Pass all values to the parent component
     onSubmit({
       ...values,
-      date: exactDate, // Use the exact date value
-      isCountUp: isPastDate // Explicitly pass isCountUp to the parent component
+      date: exactDate,
+      isCountUp: isPastDate
     });
     
-    // Reset the form after submission
     resetForm();
   }
-
-  // Custom error message component with proper typing
-  const CustomFormMessage = ({ name }: { name: keyof CountdownFormValues }) => {
-    const error = form.formState.errors[name];
-    if (!error) return null;
-    
-    return (
-      <div className="text-xs text-[#36454F]/70 mt-1 font-medium animate-fade-in-out">
-        {error.message as string}
-      </div>
-    );
-  };
 
   return (
     <Form {...form}>
@@ -170,9 +145,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
             <FormItem className="space-y-1 w-full max-w-sm">
               <FormLabel className="text-sm">Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter title (max 20 chars)" {...field} maxLength={20} className="h-8 w-full" />
+                <Input placeholder="Enter timer title" {...field} maxLength={20} className="h-8 w-full" />
               </FormControl>
-              <CustomFormMessage name="title" />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -181,51 +156,62 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
           control={form.control}
           name="date"
           render={({ field }) => {
-            const [showCalendar, setShowCalendar] = useState(false);
-            const [selectedDay, setSelectedDay] = useState<Date | undefined>(field.value ? new Date(field.value) : undefined);
             const inputRef = useRef<HTMLInputElement>(null);
-            const { ref, ...restField } = field;
-            // 날짜를 YYYY-MM-DD로 포맷
-            const formatDate = (date: Date | undefined) => date ? date.toISOString().slice(0, 10) : '';
+            
             return (
               <FormItem className="space-y-1 w-full max-w-sm">
                 <FormLabel className="text-sm">Date</FormLabel>
                 <FormControl>
                   <div className="relative w-full max-w-sm">
-                    <span
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
-                      onClick={() => setShowCalendar((v) => !v)}
-                    >
-                      <CalendarIcon className="w-4 h-4" />
-                    </span>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={formatDate(selectedDay)}
-                      readOnly
-                      placeholder="YYYY-MM-DD"
-                      onClick={() => setShowCalendar(true)}
-                      className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    />
-                    {showCalendar && (
-                      <div className="absolute z-50 left-0 mt-2 bg-white border rounded shadow-lg" style={{ width: '100%' }}>
-                        <DayPicker
-                          mode="single"
-                          selected={selectedDay}
-                          onSelect={(day) => {
-                            setSelectedDay(day);
-                            setShowCalendar(false);
-                            if (day) {
-                              field.onChange(formatDate(day));
-                            }
-                          }}
-                          initialFocus
-                        />
-                      </div>
-                    )}
+                    {/* Quick preset buttons */}
+                    <div className="flex gap-1 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const today = new Date().toISOString().slice(0, 10);
+                          field.onChange(today);
+                          const isPastDate = isDateInPast(today);
+                          setIsCountUp(isPastDate);
+                          setDateChanged(true);
+                        }}
+                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      >
+                        Today
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const tomorrow = new Date();
+                          tomorrow.setDate(tomorrow.getDate() + 1);
+                          const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+                          field.onChange(tomorrowStr);
+                          const isPastDate = isDateInPast(tomorrowStr);
+                          setIsCountUp(isPastDate);
+                          setDateChanged(true);
+                        }}
+                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      >
+                        Tomorrow
+                      </button>
+                    </div>
+                    
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <CalendarIcon className="w-4 h-4" />
+                      </span>
+                      <input
+                        ref={inputRef}
+                        type="date"
+                        value={field.value}
+                        onChange={(e) => handleDateChange(e, field.onChange)}
+                        className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        min="1900-01-01"
+                        max="2100-12-31"
+                      />
+                    </div>
                   </div>
                 </FormControl>
-                {dateChanged && (
+                {dateChanged && field.value && dateRegex.test(field.value) && (
                   <div className="w-full mt-2 px-3 py-1 rounded-md text-xs font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
@@ -235,7 +221,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                     )}
                   </div>
                 )}
-                <CustomFormMessage name="date" />
+                <FormMessage />
               </FormItem>
             )
           }}
@@ -253,7 +239,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
               >
                 <FormControl>
                   <SelectTrigger className="h-8 w-full">
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="Choose category" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -261,14 +247,16 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Add
                   <SelectItem value="personal">Personal</SelectItem>
                 </SelectContent>
               </Select>
-              <CustomFormMessage name="category" />
+              <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full bg-charcoal hover:bg-charcoal/90 h-8 mt-2 max-w-sm mx-auto">
+        <div className="flex gap-2 w-full max-w-sm mx-auto">
+                  <Button type="submit" className="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 h-7 text-sm px-3">
           {submitButtonText}
         </Button>
+        </div>
       </form>
     </Form>
   )
@@ -278,56 +266,37 @@ export default function AddCountdownForm() {
   const [showSuccess, setShowSuccess] = useState(false)
   
   function onSubmit(values: CountdownFormValues) {
-    console.log("AddCountdownForm received values:", values);
-    
-    // Get the exact date value from the form
     const exactDate = values.date;
-    console.log("Exact date from form:", exactDate);
-    
-    // Determine if this is a count up event (past date)
-    // We'll still use isDateInPast for this, but we won't modify the date
     const isPastDate = isDateInPast(exactDate);
     
-    // Create a new countdown with the form values
     const newCountdown: Countdown = {
       id: uuidv4(),
       title: values.title,
-      date: exactDate, // Use the exact date value
+      date: exactDate,
       isCountUp: isPastDate,
       hidden: false,
       pinned: false,
       originalCategory: values.category,
     }
     
-    console.log("Saving countdown with exact date:", newCountdown.date);
-    
     try {
-      // Get existing countdowns from localStorage using user-specific key
       const storageKey = getUserStorageKey(`countdowns_${values.category}`);
       const existingCountdowns = localStorage.getItem(storageKey)
       const countdowns = existingCountdowns ? JSON.parse(existingCountdowns) : []
       
-      // Add the new countdown to the array
       countdowns.push(newCountdown)
-      
-      // Save the updated countdowns to localStorage
       localStorage.setItem(storageKey, JSON.stringify(countdowns))
       
-      // Dispatch a custom event to notify other components
       window.dispatchEvent(new CustomEvent('countdownsUpdated', {
         detail: { category: values.category }
       }))
       
-      // Update the URL with just the user ID
       const userId = localStorage.getItem("now_then_user_id");
       if (userId) {
         updateUrlWithUserId(userId, false);
       }
       
-      // Show success message with minimal design
       setShowSuccess(true)
-      
-      // Hide success message after 2 seconds
       setTimeout(() => {
         setShowSuccess(false)
       }, 2000)
@@ -339,13 +308,13 @@ export default function AddCountdownForm() {
   return (
     <Card className="max-w-sm mx-auto">
       <CardHeader className="pb-1 pt-3 px-4">
-        <CardTitle className="text-base font-medium">Add New Timer</CardTitle>
-        <CardDescription className="text-sm">Create a new countdown or count-up timer</CardDescription>
+        <CardTitle className="text-base font-medium">Create Timer</CardTitle>
+        <CardDescription className="text-sm">Set up your countdown or count-up timer</CardDescription>
       </CardHeader>
       <CardContent className="pt-2 px-4">
         {showSuccess && (
-          <div className="mb-2 py-1 text-xs text-center text-[#36454F]/70 animate-fade-in-out">
-            Timer added
+          <div className="mb-2 py-1 text-xs text-center text-green-600 animate-fade-in-out">
+            Timer created successfully
           </div>
         )}
         <CountdownForm onSubmit={onSubmit} />
