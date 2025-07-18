@@ -244,35 +244,13 @@ export default function SupabaseCountdownGrid({
 
   return (
     <div className="w-full">
-      {/* Search bar for non-custom categories with timers */}
+      {/* Single search bar for all categories except custom */}
       {category !== 'custom' && sortedCountdowns.length > 0 && (
         <div className="mb-6 flex justify-center">
           <div className="relative max-w-xs w-full">
             <input
               type="text"
               placeholder="Search timers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 px-4 pr-10 rounded-full bg-gray-50 border-0 text-sm placeholder-gray-400 focus:outline-none focus:bg-white focus:shadow-md transition-all duration-200 max-w-xs"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      {/* Add search bar below pinned tab title */}
-      {category === 'pinned' && (
-        <div className="mb-4 flex justify-center">
-          <div className="relative max-w-xs w-full">
-            <input
-              type="text"
-              placeholder="Search pinned timers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-10 px-4 pr-10 rounded-full bg-gray-50 border-0 text-sm placeholder-gray-400 focus:outline-none focus:bg-white focus:shadow-md transition-all duration-200 max-w-xs"
