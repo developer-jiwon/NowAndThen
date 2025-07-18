@@ -255,19 +255,6 @@ export default function Blog() {
           </article>
         ))}
       </div>
-
-      <div className="mt-12 text-center">
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Ready to Apply These Ideas?</h3>
-          <p className="text-gray-600 mb-6">Start implementing these time management strategies with your own countdown timers.</p>
-          <Link
-            href="/#custom"
-            className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
-          >
-            Create Your First Timer
-          </Link>
-        </div>
-      </div>
     </main>
   );
 }

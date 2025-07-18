@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { Briefcase, PartyPopper, Dumbbell, BookOpen, PiggyBank, Palette } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Templates | Now & Then",
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
 interface Template {
   id: string;
   title: string;
-  emoji: string;
+  emoji: React.ReactNode; // Changed to React.ReactNode to accommodate Lucide icons
   description: string;
   examples: { title: string; days: string }[];
 }
@@ -19,7 +21,7 @@ const templates: Template[] = [
   {
     id: "work",
     title: "Work & Career",
-    emoji: "💼",
+    emoji: <Briefcase className="w-6 h-6 text-blue-700" />, // replaced emoji
     description: "Professional deadlines and milestones",
     examples: [
       { title: "Q4 Budget Presentation", days: "15 days" },
@@ -30,8 +32,8 @@ const templates: Template[] = [
   },
   {
     id: "personal",
-    title: "Life Events", 
-    emoji: "🎉",
+    title: "Life Events",
+    emoji: <PartyPopper className="w-6 h-6 text-pink-600" />, // replaced emoji
     description: "Personal milestones and celebrations",
     examples: [
       { title: "Sarah's Birthday", days: "12 days" },
@@ -43,7 +45,7 @@ const templates: Template[] = [
   {
     id: "health",
     title: "Health & Fitness",
-    emoji: "💪",
+    emoji: <Dumbbell className="w-6 h-6 text-green-600" />, // replaced emoji
     description: "Wellness goals and challenges",
     examples: [
       { title: "Marathon Training Start", days: "14 days" },
@@ -55,7 +57,7 @@ const templates: Template[] = [
   {
     id: "learning",
     title: "Learning & Growth",
-    emoji: "📚", 
+    emoji: <BookOpen className="w-6 h-6 text-yellow-600" />, // replaced emoji
     description: "Education and skill development",
     examples: [
       { title: "Certification Exam", days: "28 days" },
@@ -67,7 +69,7 @@ const templates: Template[] = [
   {
     id: "finance",
     title: "Money & Planning",
-    emoji: "💰",
+    emoji: <PiggyBank className="w-6 h-6 text-purple-600" />, // replaced emoji
     description: "Financial goals and deadlines",
     examples: [
       { title: "Tax Filing Deadline", days: "35 days" },
@@ -79,7 +81,7 @@ const templates: Template[] = [
   {
     id: "creative",
     title: "Creative Projects",
-    emoji: "🎨",
+    emoji: <Palette className="w-6 h-6 text-orange-500" />, // replaced emoji
     description: "Artistic and creative pursuits",
     examples: [
       { title: "Art Exhibition Opening", days: "18 days" },
@@ -104,41 +106,31 @@ export default function Templates() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template) => (
-          <div key={template.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-sm transition-all">
-            <div className="mb-4">
-              <div className="flex items-center mb-2">
-                <span className="text-2xl mr-2">{template.emoji}</span>
-                <h2 className="font-semibold text-gray-900">{template.title}</h2>
+          <Card key={template.id} className="hover:shadow-md transition-all">
+            <CardHeader className="flex flex-row items-center gap-3 pb-2">
+              <div>{template.emoji}</div>
+              <div>
+                <CardTitle className="text-lg font-semibold">{template.title}</CardTitle>
+                <CardDescription>{template.description}</CardDescription>
               </div>
-              <p className="text-sm text-gray-600">{template.description}</p>
-            </div>
-            
-            <div className="space-y-3">
-              {template.examples.map((example, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-900">{example.title}</span>
-                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">{example.days}</span>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-3">
+                {template.examples.map((example, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-900">{example.title}</span>
+                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">{example.days}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="mt-10 text-center">
-        <div className="bg-blue-50 rounded-lg p-6 mb-6">
-          <h3 className="font-semibold text-blue-900 mb-2">Ready to get started?</h3>
-          <p className="text-blue-700 text-sm mb-4">Create your first timer using any of these ideas as inspiration.</p>
-          <Link
-            href="/#custom"
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-          >
-            Create Timer
-          </Link>
-        </div>
-      </div>
+      {/* Removed the Ready to get started box for a cleaner, consistent UI */}
     </main>
   );
 }

@@ -136,14 +136,7 @@ export default function Guide() {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center pt-4">
-          <Link
-            href="/#custom"
-            className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
-          >
-            Apply These Techniques
-          </Link>
-        </div>
+        {/* Removed the Apply These Techniques button as requested */}
       </div>
     </main>
   );
