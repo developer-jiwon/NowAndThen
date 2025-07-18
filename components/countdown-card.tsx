@@ -124,6 +124,13 @@ const countupNumberVariants = {
   }
 };
 
+// 1. Smaller, more compact action buttons
+const actionBtnBase = "w-4 h-4 rounded border border-gray-200 bg-white flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-100 transition-colors duration-150 p-0.5";
+const actionBtnActive = "bg-gray-800 text-white border-gray-800";
+const actionBtnRed = "bg-red-50 border-red-200 text-red-600 hover:bg-red-100";
+const actionBtnGreen = "bg-green-50 border-green-200 text-green-600 hover:bg-green-100";
+const actionBtnGray = "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100";
+
 interface CountdownCardProps {
   countdown: Countdown
   onRemove: (id: string) => void
@@ -238,13 +245,13 @@ export default function CountdownCard({
   const cardColor = isCountUp ? countUpColor : 
                    (category === "custom" ? customTabCountdownColor : countDownColor);
 
-  // Clean, modern card style
+  // Clean, modern, compact card style
   const borderStyle = {
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: '#e5e7eb',
-    borderRadius: '12px',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    borderColor: isCountUp ? '#fca5a5' : '#6ee7b7', // red for countup, green for countdown
+    borderRadius: '10px',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
     background: isCountUp 
       ? '#fef2f2' // Light red background for countup
       : (category === "custom" 
@@ -252,12 +259,14 @@ export default function CountdownCard({
          : '#f0fdf4'), // Light green background for countdown
     position: 'relative' as 'relative',
     width: '100%',
-    maxWidth: '350px',
-    minHeight: '200px',
+    maxWidth: '320px',
+    minWidth: '0',
+    minHeight: '140px',
     height: 'auto',
     overflow: 'hidden',
     display: 'flex',
-    flexDirection: 'column' as 'column'
+    flexDirection: 'column' as 'column',
+    padding: '12px 10px',
   };
 
   return (
@@ -301,94 +310,66 @@ export default function CountdownCard({
         )}
       </AnimatePresence>
       
-      {/* Action dots positioned outside the card */}
-      <div className="absolute -left-2.5 top-1/2 transform -translate-y-1/2 flex flex-col gap-1.5 z-10">
-        <motion.div
-          custom={0}
-          variants={iconDotVariants}
-          whileHover="hover"
-          whileTap="tap"
-          className={`w-5 h-5 rounded-full flex items-center justify-center cursor-pointer shadow-sm ${isPinned ? 'bg-gray-800' : 'bg-white border border-gray-200'} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+      {/* Action buttons: floating outside top-right like a bookmark/tab */}
+      <div className="absolute -top-4 -right-2 z-20 flex flex-row gap-1 bg-white/90 rounded-xl shadow-md px-1.5 py-1 border border-gray-100"
+        style={{ minHeight: '28px' }}
+      >
+        <div
+          className={`${actionBtnBase} ${isPinned ? actionBtnActive : actionBtnGray} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
-            if (category === 'hidden') return; // hidden 탭에서는 동작하지 않음
+            if (category === 'hidden') return;
             if (onTogglePin) {
               onTogglePin(countdown.id);
-            } else {
-              console.error("onTogglePin prop is missing");
             }
           }}
         >
-          {isPinned ? <PinOff className="h-2.5 w-2.5 text-white" /> : <Pin className="h-2.5 w-2.5 text-gray-600" />}
-        </motion.div>
-        
-        <motion.div
-          custom={1}
-          variants={iconDotVariants}
-          whileHover="hover"
-          whileTap="tap"
-          className={`w-5 h-5 rounded-full flex items-center justify-center cursor-pointer shadow-sm ${countdown.hidden ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}
+          {isPinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
+        </div>
+        <div
+          className={`${actionBtnBase} ${countdown.hidden ? actionBtnActive : actionBtnGray}`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
-          {category === "hidden" ? <Eye className="h-2.5 w-2.5 text-white" /> : (countdown.hidden ? <Eye className="h-2.5 w-2.5 text-white" /> : <EyeOff className="h-2.5 w-2.5 text-gray-600" />)}
-        </motion.div>
-        
+          {category === "hidden" ? <Eye className="h-3 w-3" /> : (countdown.hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />)}
+        </div>
         {onEdit && (
-          <motion.div
-            custom={2}
-            variants={iconDotVariants}
-            whileHover="hover"
-            whileTap="tap"
-            className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer shadow-sm"
+          <div
+            className={`${actionBtnBase} ${actionBtnGray}`}
             onClick={() => onEdit(countdown.id)}
           >
-            <Edit className="h-2.5 w-2.5 text-white" />
-          </motion.div>
+            <Edit className="h-3 w-3" />
+          </div>
         )}
-        
         {onDuplicate && (
-          <motion.div
-            custom={3}
-            variants={iconDotVariants}
-            whileHover="hover"
-            whileTap="tap"
-            className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center cursor-pointer shadow-sm"
+          <div
+            className={`${actionBtnBase} ${actionBtnGreen}`}
             onClick={() => onDuplicate(countdown.id)}
           >
-            <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-          </motion.div>
+          </div>
         )}
-        
-        <motion.div
-          custom={4}
-          variants={iconDotVariants}
-          whileHover="hover"
-          whileTap="tap"
-          className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-sm"
+        <div
+          className={`${actionBtnBase} ${actionBtnRed}`}
           onClick={handleDeleteClick}
         >
-          <Trash2 className="h-2.5 w-2.5 text-white" />
-        </motion.div>
+          <Trash2 className="h-3 w-3" />
+        </div>
       </div>
       
       {/* Card with illustrative style */}
       <div 
-        className="p-4 flex flex-col min-h-[180px]" 
+        className="flex flex-col min-h-[120px] p-0" 
         style={borderStyle}
       >
-        {/* Decorative corner accents - now inside the card */}
-        
         {/* Title section */}
-        <div className="w-full mb-1 min-h-[28px] flex items-center justify-center">
-          <h3 className="text-sm font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-12 overflow-hidden leading-tight line-clamp-2">
+        <div className="w-full mb-0.5 min-h-[22px] flex items-center justify-center">
+          <h3 className="text-xs font-semibold text-gray-800 font-serif text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
             {headerTitle}
           </h3>
         </div>
-        
-        {/* Simple divider */}
-        <div className="w-full h-px bg-gray-200 mb-3"></div>
-        
+        {/* Divider */}
+        <div className="w-full h-px bg-gray-200 mb-2"></div>
         {/* Main countdown display */}
         <div className="flex-1 flex flex-col items-center justify-center">
           <AnimatePresence mode="wait">
@@ -400,25 +381,23 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className="text-3xl sm:text-4xl font-bold font-serif text-center" style={{ color: cardColor }}>
-                <span className="inline-block mr-2">
+              <span className={`text-2xl sm:text-3xl font-bold font-serif text-center ${isCountUp ? 'text-red-500' : 'text-green-600'}`}>
+                <span className="inline-block mr-1">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
                 {timeRemaining.days}
               </span>
             </motion.div>
           </AnimatePresence>
-          
-                      <span className="text-xs uppercase mt-1 font-medium tracking-wide text-gray-600 text-center">
+          <span className="text-[10px] uppercase mt-0.5 font-medium tracking-wide text-gray-600 text-center">
             {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
-        
         {/* Footer with date */}
-        <div className="w-full flex items-center justify-center mt-3">
-          <div className="flex items-center justify-center gap-1 px-3 py-1 bg-gray-100 rounded-full">
+        <div className="w-full flex items-center justify-center mt-2">
+          <div className="flex items-center justify-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full">
             <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
-            <p className="text-xs text-gray-600 whitespace-nowrap">
+            <p className="text-[11px] text-gray-600 whitespace-nowrap">
               {formatDateString(exactDate)}
             </p>
           </div>
