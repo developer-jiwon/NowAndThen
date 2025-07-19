@@ -99,12 +99,16 @@ export function useCountdowns(category: string) {
         
         // If no countdowns found and this is a regular category (not custom), check for sample data
         if (transformedCountdowns.length === 0 && category !== "pinned" && category !== "hidden" && category !== "custom") {
-          const samplesDeletedKey = `samples_deleted_${category}`;
-          const samplesDeleted = localStorage.getItem(samplesDeletedKey);
+          // Get deleted sample IDs for this category
+          const deletedSamplesKey = `deleted_samples_${category}`;
+          const deletedSamples = JSON.parse(localStorage.getItem(deletedSamplesKey) || '[]');
           
-          if (samplesDeleted !== 'true') {
-            // Show sample data for new users
-            const sampleCountdowns = getDefaultCountdowns(category);
+          // Show sample data for new users, excluding deleted ones
+          const sampleCountdowns = getDefaultCountdowns(category).filter(
+            sample => !deletedSamples.includes(sample.id)
+          );
+          
+          if (sampleCountdowns.length > 0) {
             setCountdowns(sampleCountdowns);
             return;
           }

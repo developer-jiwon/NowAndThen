@@ -127,7 +127,7 @@ const countupNumberVariants = {
 // 1. Smaller, more compact action buttons
 const actionBtnBase = "w-4 h-4 rounded border border-gray-200 bg-white flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-100 transition-colors duration-150 p-0.5";
 const actionBtnActive = "bg-gray-800 text-white border-gray-800";
-const actionBtnPinned = "bg-[#14532d] text-white border-[#14532d]"; // dark forest green for pinned
+const actionBtnPinned = "bg-[#166534] text-white border-[#166534] hover:bg-[#15803d] hover:border-[#15803d]"; // dark forest green for pinned
 const actionBtnRed = "bg-red-50 border-red-200 text-red-600 hover:bg-red-100";
 const actionBtnGreen = "bg-green-50 border-green-200 text-green-600 hover:bg-green-100";
 const actionBtnGray = "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100";
@@ -316,7 +316,7 @@ export default function CountdownCard({
         style={{ minHeight: '28px' }}
       >
         <div
-          className={`${actionBtnBase} ${isPinned ? actionBtnPinned : actionBtnGray} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`${actionBtnBase} ${isPinned ? 'bg-[#059669] text-white border-[#059669] hover:bg-[#047857] hover:border-[#047857] shadow-lg ring-2 ring-[#10b981] ring-opacity-30' : actionBtnGray} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return;
             if (onTogglePin) {
@@ -324,7 +324,7 @@ export default function CountdownCard({
             }
           }}
         >
-          {isPinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
+          <Pin className={`h-3 w-3 ${isPinned ? 'fill-white' : ''}`} />
         </div>
         <div
           className={`${actionBtnBase} ${countdown.hidden ? actionBtnActive : actionBtnGray}`}

@@ -79,9 +79,13 @@ export default function SupabaseCountdownGrid({
       // Check if this is a sample countdown being deleted
       const countdownToDelete = countdowns.find(c => c.id === id);
       if (countdownToDelete && id.startsWith('sample-')) {
-        // Mark that samples have been deleted for this category
-        const samplesDeletedKey = `samples_deleted_${category}`;
-        localStorage.setItem(samplesDeletedKey, 'true');
+        // Mark this specific sample as deleted
+        const deletedSamplesKey = `deleted_samples_${category}`;
+        const deletedSamples = JSON.parse(localStorage.getItem(deletedSamplesKey) || '[]');
+        if (!deletedSamples.includes(id)) {
+          deletedSamples.push(id);
+          localStorage.setItem(deletedSamplesKey, JSON.stringify(deletedSamples));
+        }
         
         // For sample data, reload countdowns to refresh the display
         await loadCountdowns(user.id);
