@@ -262,6 +262,7 @@ export default function Blog() {
         <AdSenseComponent 
           className="flex justify-center"
           adFormat="auto"
+          pageType="content"
         />
       </div>
     </main>

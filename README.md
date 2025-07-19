@@ -41,11 +41,18 @@ touch .env.local
 ```bash
 # AdSense Configuration
 # Set to 'true' only after Google AdSense approval
-NEXT_PUBLIC_ADSENSE_APPROVED=false
+NEXT_PUBLIC_ADSENSE_APPROVED=true
 
-# Add your Supabase credentials here
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=https://nowandthen.app
+NEXT_PUBLIC_SITE_NAME=Now & Then
+
+# Analytics (optional)
+NEXT_PUBLIC_GA_ID=your_google_analytics_id
 ```
 
 5. Run the development server:

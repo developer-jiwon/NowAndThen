@@ -144,6 +144,7 @@ export default function About() {
           <AdSenseComponent 
             className="flex justify-center"
             adFormat="auto"
+            pageType="content"
           />
         </div>
       </div>

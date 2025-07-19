@@ -401,6 +401,7 @@ export default function SupabaseCountdownGrid({
                 <AdSenseComponent 
                   className="flex justify-center my-6"
                   adFormat="auto"
+                  pageType="app"
                 />
               </div>
             )}

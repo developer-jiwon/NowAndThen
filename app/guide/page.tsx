@@ -141,6 +141,7 @@ export default function Guide() {
           <AdSenseComponent 
             className="flex justify-center"
             adFormat="auto"
+            pageType="content"
           />
         </div>
 

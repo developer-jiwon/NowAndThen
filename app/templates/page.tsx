@@ -136,6 +136,7 @@ export default function Templates() {
         <AdSenseComponent 
           className="flex justify-center"
           adFormat="auto"
+          pageType="content"
         />
       </div>
 

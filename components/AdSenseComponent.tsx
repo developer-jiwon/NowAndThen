@@ -16,6 +16,7 @@ interface AdSenseProps {
   adLayout?: string;
   adLayoutKey?: string;
   className?: string;
+  pageType?: 'content' | 'app' | 'landing';
 }
 
 export default function AdSenseComponent({ 
@@ -23,7 +24,8 @@ export default function AdSenseComponent({
   adFormat = "auto", 
   adLayout,
   adLayoutKey,
-  className = "my-4"
+  className = "my-4",
+  pageType = 'content'
 }: AdSenseProps) {
   // Check if AdSense is approved via environment variable
   const isAdSenseApproved = process.env.NEXT_PUBLIC_ADSENSE_APPROVED === 'true';
@@ -32,10 +34,38 @@ export default function AdSenseComponent({
   const [isLoaded, setIsLoaded] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
   const [adStatus, setAdStatus] = useState<string>('loading');
+  const [hasContent, setHasContent] = useState(false);
+
+  // Verify page has sufficient content before showing ads
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkContent = () => {
+      // Check for substantial content on the page
+      const mainContent = document.querySelector('main') || document.body;
+      const textContent = mainContent?.textContent || '';
+      const wordCount = textContent.trim().split(/\s+/).length;
+      
+      // Minimum 100 words for content pages, 50 for app pages
+      const minWords = pageType === 'content' ? 100 : 50;
+      const hasSufficientContent = wordCount >= minWords;
+      
+      setHasContent(hasSufficientContent);
+      
+      if (!hasSufficientContent) {
+        console.log(`Insufficient content for ads: ${wordCount} words (minimum: ${minWords})`);
+        setAdStatus('no-content');
+      }
+    };
+    
+    // Check content after a delay to ensure page is loaded
+    const timer = setTimeout(checkContent, 1000);
+    return () => clearTimeout(timer);
+  }, [pageType]);
 
   useEffect(() => {
-    // Don't load ads if not approved
-    if (!isAdSenseApproved) return;
+    // Don't load ads if not approved or no content
+    if (!isAdSenseApproved || !hasContent) return;
     
     const loadAd = () => {
       try {
@@ -53,21 +83,27 @@ export default function AdSenseComponent({
             setIsLoaded(true);
             setAdError(null);
             
-            // Monitor ad status
+            // Monitor ad status with multiple checks
             const checkAdStatus = () => {
               if (adRef.current) {
                 const status = adRef.current.getAttribute('data-ad-status');
-                if (status === 'filled') {
+                const height = adRef.current.offsetHeight;
+                
+                if (status === 'filled' && height > 50) {
                   setAdStatus('filled');
-                } else if (status === 'unfilled') {
+                  console.log('Ad successfully loaded and filled');
+                } else if (status === 'unfilled' || height < 50) {
                   setAdStatus('unfilled');
                   setAdError('No ads available');
+                  console.log('Ad space unfilled or too small');
                 }
               }
             };
             
-            // Check status after a delay
-            setTimeout(checkAdStatus, 2000);
+            // Check status multiple times with increasing delays
+            setTimeout(checkAdStatus, 1000);
+            setTimeout(checkAdStatus, 3000);
+            setTimeout(checkAdStatus, 5000);
           }
         }
       } catch (error) {
@@ -77,13 +113,13 @@ export default function AdSenseComponent({
       }
     };
 
-    // Delay ad loading to ensure DOM is ready
-    const timer = setTimeout(loadAd, 1000);
+    // Delay ad loading to ensure DOM is ready and content is verified
+    const timer = setTimeout(loadAd, 2000);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [isLoaded, isAdSenseApproved]);
+  }, [isLoaded, isAdSenseApproved, hasContent]);
 
   // Reset when component unmounts or re-mounts
   useEffect(() => {
@@ -99,8 +135,8 @@ export default function AdSenseComponent({
     return null;
   }
 
-  // Don't show error state - just hide the ad space
-  if (adError || adStatus === 'unfilled') {
+  // Don't show anything if no content or ad errors
+  if (!hasContent || adError || adStatus === 'unfilled' || adStatus === 'no-content') {
     return null;
   }
 
@@ -109,11 +145,11 @@ export default function AdSenseComponent({
       <Script
         id="adsense-script"
         async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXX"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4588308927468413"
         crossOrigin="anonymous"
         strategy="afterInteractive"
         onLoad={() => {
-          // Script loaded, but don't push ads yet
+          console.log('AdSense script loaded successfully');
         }}
         onError={(e) => {
           console.error("AdSense script error:", e);
@@ -124,13 +160,22 @@ export default function AdSenseComponent({
       <ins 
         ref={adRef}
         className="adsbygoogle"
-        style={{ display: "block", textAlign: "center" }}
-        data-ad-client="ca-pub-XXXXXXX"
+        style={{ 
+          display: "block", 
+          textAlign: "center",
+          minHeight: "100px",
+          backgroundColor: "#f8f9fa",
+          border: "1px solid #e9ecef",
+          borderRadius: "8px",
+          padding: "20px"
+        }}
+        data-ad-client="ca-pub-4588308927468413"
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-ad-layout={adLayout}
         data-ad-layout-key={adLayoutKey}
         data-full-width-responsive="true"
+        data-adtest="off"
       />
     </div>
   );

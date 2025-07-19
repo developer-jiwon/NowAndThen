@@ -8,6 +8,7 @@ import ProfileMenu from "@/components/profile-menu";
 import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
 import Link from "next/link";
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 export default function Home() {
   const user = useUser();
@@ -47,10 +48,10 @@ export default function Home() {
         </div>
         
         {/* Welcome content and feature highlights */}
-        <div className="w-full max-w-2xl mx-auto mb-6 text-center">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4 border border-blue-100">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Master Your Time</h2>
-            <p className="text-sm text-gray-600 mb-3">
+        <div className="w-full max-w-2xl mx-auto mb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-3 border border-blue-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
+            <p className="text-sm text-gray-600 mb-3 text-center">
               Create countdown timers for deadlines, count up for milestones, and never miss important dates again. 
               Perfect for productivity, goal tracking, and time management.
             </p>
@@ -61,11 +62,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex justify-center gap-3 mb-4 text-sm">
-            <Link href="/guide" className="text-blue-600 hover:underline">Guide</Link>
-            <Link href="/blog" className="text-blue-600 hover:underline">Blog</Link>
-            <Link href="/templates" className="text-blue-600 hover:underline">Templates</Link>
-          </div>
+
         </div>
         
         {/* Clean tabs for timer categories */}
@@ -118,6 +115,15 @@ export default function Home() {
             </Suspense>
           </TabsContent>
         </Tabs>
+        
+        {/* AdSense for main page with substantial content */}
+        <div className="mt-6">
+          <AdSenseComponent 
+            className="flex justify-center"
+            adFormat="auto"
+            pageType="content"
+          />
+        </div>
       </div>
     </main>
   )
