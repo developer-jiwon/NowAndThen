@@ -135,8 +135,8 @@ export default function PrivacyPolicy() {
             </ul>
             <p className="mt-4">
               To exercise these rights, please contact us at{" "}
-              <a href="mailto:privacy@nowandthen.app" className="text-blue-600 hover:underline">
-                privacy@nowandthen.app
+              <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">
+                dev.jiwonnie@gmail.com
               </a>
             </p>
           </div>
@@ -209,8 +209,7 @@ export default function PrivacyPolicy() {
               If you have any questions about this Privacy Policy or our data practices, please contact us:
             </p>
             <ul className="space-y-2">
-              <li>Email: <a href="mailto:privacy@nowandthen.app" className="text-blue-600 hover:underline">privacy@nowandthen.app</a></li>
-              <li>General Support: <a href="mailto:support@nowandthen.app" className="text-blue-600 hover:underline">support@nowandthen.app</a></li>
+              <li>Email: <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">dev.jiwonnie@gmail.com</a></li>
             </ul>
           </div>
         </section>

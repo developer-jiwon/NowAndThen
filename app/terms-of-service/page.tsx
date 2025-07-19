@@ -177,8 +177,8 @@ export default function TermsOfService() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">13. Contact Information</h2>
           <p className="text-gray-700 leading-relaxed">
             If you have any questions about these Terms, please contact us at{" "}
-            <a href="mailto:legal@nowandthen.app" className="text-blue-600 hover:underline">
-              legal@nowandthen.app
+            <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">
+              dev.jiwonnie@gmail.com
             </a>
           </p>
         </section>
