@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
   title: "About | Now & Then",
@@ -137,6 +138,14 @@ export default function About() {
             Create Your First Timer
           </Link>
         </section>
+
+        {/* AdSense for content-rich about page */}
+        <div className="mt-12">
+          <AdSenseComponent 
+            className="flex justify-center"
+            adFormat="auto"
+          />
+        </div>
       </div>
     </main>
   );

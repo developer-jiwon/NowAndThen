@@ -76,6 +76,18 @@ export default function SupabaseCountdownGrid({
   const handleRemove = async (id: string) => {
     if (!user) return;
     try {
+      // Check if this is a sample countdown being deleted
+      const countdownToDelete = countdowns.find(c => c.id === id);
+      if (countdownToDelete && id.startsWith('sample-')) {
+        // Mark that samples have been deleted for this category
+        const samplesDeletedKey = `samples_deleted_${category}`;
+        localStorage.setItem(samplesDeletedKey, 'true');
+        
+        // For sample data, reload countdowns to refresh the display
+        await loadCountdowns(user.id);
+        return;
+      }
+      
       await deleteCountdown(id, user.id);
     } catch (error) {
       console.error('Error removing countdown:', error);
@@ -383,8 +395,8 @@ export default function SupabaseCountdownGrid({
               ))}
             </div>
             
-            {/* AdSense placement for content-rich pages */}
-            {filteredCountdowns.length >= 4 && inView && (
+            {/* Only show ads when there's substantial content */}
+            {filteredCountdowns.length >= 8 && inView && (
               <div ref={adRef} className="mt-8">
                 <AdSenseComponent 
                   className="flex justify-center my-6"

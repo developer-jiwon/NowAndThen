@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
   title: "Blog | Now & Then",
@@ -254,6 +255,14 @@ export default function Blog() {
             </div>
           </article>
         ))}
+      </div>
+
+      {/* AdSense for content-rich blog page */}
+      <div className="mt-12">
+        <AdSenseComponent 
+          className="flex justify-center"
+          adFormat="auto"
+        />
       </div>
     </main>
   );

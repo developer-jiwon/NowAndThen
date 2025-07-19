@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
   title: "Guide | Now & Then",
@@ -133,6 +134,14 @@ export default function Guide() {
               <strong>Progress Satisfaction:</strong> Watching countdowns decrease gives micro-dopamine hits that maintain motivation over long projects.
             </p>
           </div>
+        </div>
+
+        {/* AdSense for content-rich guide page */}
+        <div className="mt-8">
+          <AdSenseComponent 
+            className="flex justify-center"
+            adFormat="auto"
+          />
         </div>
 
         {/* Call to Action */}

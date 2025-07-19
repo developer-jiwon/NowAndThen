@@ -31,6 +31,7 @@ export default function AdSenseComponent({
   const adRef = useRef<HTMLModElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
+  const [adStatus, setAdStatus] = useState<string>('loading');
 
   useEffect(() => {
     // Don't load ads if not approved
@@ -51,11 +52,28 @@ export default function AdSenseComponent({
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             setIsLoaded(true);
             setAdError(null);
+            
+            // Monitor ad status
+            const checkAdStatus = () => {
+              if (adRef.current) {
+                const status = adRef.current.getAttribute('data-ad-status');
+                if (status === 'filled') {
+                  setAdStatus('filled');
+                } else if (status === 'unfilled') {
+                  setAdStatus('unfilled');
+                  setAdError('No ads available');
+                }
+              }
+            };
+            
+            // Check status after a delay
+            setTimeout(checkAdStatus, 2000);
           }
         }
       } catch (error) {
         console.error("AdSense loading error:", error);
         setAdError(error instanceof Error ? error.message : "Unknown AdSense error");
+        setAdStatus('error');
       }
     };
 
@@ -72,6 +90,7 @@ export default function AdSenseComponent({
     return () => {
       setIsLoaded(false);
       setAdError(null);
+      setAdStatus('loading');
     };
   }, []);
 
@@ -80,12 +99,9 @@ export default function AdSenseComponent({
     return null;
   }
 
-  if (adError) {
-    return (
-      <div className={`${className} text-center text-gray-500 text-sm`}>
-        {/* Ad space - error occurred */}
-      </div>
-    );
+  // Don't show error state - just hide the ad space
+  if (adError || adStatus === 'unfilled') {
+    return null;
   }
 
   return (
@@ -102,6 +118,7 @@ export default function AdSenseComponent({
         onError={(e) => {
           console.error("AdSense script error:", e);
           setAdError("Failed to load AdSense script");
+          setAdStatus('error');
         }}
       />
       <ins 

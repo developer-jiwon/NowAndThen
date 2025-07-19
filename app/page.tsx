@@ -8,7 +8,6 @@ import ProfileMenu from "@/components/profile-menu";
 import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
 import Link from "next/link";
-import AdSenseComponent from "@/components/AdSenseComponent";
 
 export default function Home() {
   const user = useUser();
@@ -47,14 +46,26 @@ export default function Home() {
           <LoginButton />
         </div>
         
-        {/* Clean content links */}
-        <div className="w-full max-w-md mx-auto mb-6 text-center">
+        {/* Welcome content and feature highlights */}
+        <div className="w-full max-w-2xl mx-auto mb-6 text-center">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4 border border-blue-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Master Your Time</h2>
+            <p className="text-sm text-gray-600 mb-3">
+              Create countdown timers for deadlines, count up for milestones, and never miss important dates again. 
+              Perfect for productivity, goal tracking, and time management.
+            </p>
+            <div className="flex justify-center gap-4 text-xs text-gray-500">
+              <span>✓ Visual countdowns</span>
+              <span>✓ Cross-device sync</span>
+              <span>✓ Smart organization</span>
+            </div>
+          </div>
+          
           <div className="flex justify-center gap-3 mb-4 text-sm">
             <Link href="/guide" className="text-blue-600 hover:underline">Guide</Link>
             <Link href="/blog" className="text-blue-600 hover:underline">Blog</Link>
             <Link href="/templates" className="text-blue-600 hover:underline">Templates</Link>
           </div>
-          <AdSenseComponent className="my-2" />
         </div>
         
         {/* Clean tabs for timer categories */}

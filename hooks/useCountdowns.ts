@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Countdown } from '@/lib/types';
 import type { Database } from '@/lib/supabase';
+import { getDefaultCountdowns } from '@/lib/countdown-utils';
 
 type CountdownRow = Database['public']['Tables']['countdowns']['Row'];
 
@@ -95,6 +96,20 @@ export function useCountdowns(category: string) {
         }
 
         const transformedCountdowns = data?.map(transformCountdown) || [];
+        
+        // If no countdowns found and this is a regular category (not custom), check for sample data
+        if (transformedCountdowns.length === 0 && category !== "pinned" && category !== "hidden" && category !== "custom") {
+          const samplesDeletedKey = `samples_deleted_${category}`;
+          const samplesDeleted = localStorage.getItem(samplesDeletedKey);
+          
+          if (samplesDeleted !== 'true') {
+            // Show sample data for new users
+            const sampleCountdowns = getDefaultCountdowns(category);
+            setCountdowns(sampleCountdowns);
+            return;
+          }
+        }
+        
         setCountdowns(transformedCountdowns);
       }
     } catch (err) {

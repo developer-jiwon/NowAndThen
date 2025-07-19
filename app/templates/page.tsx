@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Briefcase, PartyPopper, Dumbbell, BookOpen, PiggyBank, Palette } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
   title: "Templates | Now & Then",
@@ -128,6 +129,14 @@ export default function Templates() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* AdSense for content-rich templates page */}
+      <div className="mt-12">
+        <AdSenseComponent 
+          className="flex justify-center"
+          adFormat="auto"
+        />
       </div>
 
       {/* Removed the Ready to get started box for a cleaner, consistent UI */}
