@@ -33,7 +33,7 @@ const templates: Template[] = [
   },
   {
     id: "personal",
-    title: "Life Events",
+    title: "Life Events", 
     emoji: <PartyPopper className="w-6 h-6 text-pink-600" />, // replaced emoji
     description: "Personal milestones and celebrations",
     examples: [
@@ -116,16 +116,16 @@ export default function Templates() {
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="space-y-3">
-                {template.examples.map((example, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-900">{example.title}</span>
-                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">{example.days}</span>
-                    </div>
+            <div className="space-y-3">
+              {template.examples.map((example, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-900">{example.title}</span>
+                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">{example.days}</span>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
             </CardContent>
           </Card>
         ))}

@@ -4,8 +4,8 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',
+      userAgent: '*',
+      allow: '/',
         disallow: ['/api/', '/admin/', '/_next/', '/private/'],
       },
       {
@@ -22,7 +22,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: 'Googlebot-Mobile',
         allow: '/',
         disallow: ['/api/', '/admin/', '/_next/', '/private/'],
-      },
+    },
     ],
     sitemap: 'https://nowandthen.app/sitemap.xml',
     host: 'https://nowandthen.app',
