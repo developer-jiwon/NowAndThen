@@ -89,6 +89,22 @@ export default function RootLayout({
         <meta name="application-name" content="Now & Then" />
         <meta name="description" content="Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies." />
         
+        {/* Google Search Console Verification - Replace with your actual verification code */}
+        <meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />
+        
+        {/* Google Analytics 4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'GA_MEASUREMENT_ID');
+            `,
+          }}
+        />
+        
         {/* Structured Data for AdSense */}
         <script
           type="application/ld+json"
@@ -151,6 +167,43 @@ export default function RootLayout({
             })
           }}
         />
+        
+        {/* FAQ Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Do I need to sign in?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No, but signing in syncs your timers across devices."
+                  }
+                },
+                {
+                  "@type": "Question", 
+                  "name": "Is my data private?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Local storage for anonymous use, encrypted cloud for signed-in users."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What's the difference between categories?",
+                  "acceptedAnswer": {
+                    "@type": "Answer", 
+                    "text": "Pinned for urgent deadlines, General for work tasks, Personal for life events, Custom for anything else."
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </head>
       <body className={`${merriweather.variable} min-h-screen flex flex-col justify-between`}>
         <SupabaseProvider>
@@ -170,6 +223,8 @@ export default function RootLayout({
                 <a href="/templates" className="hover:underline">Templates</a>
                 <span className="text-gray-300">|</span>
                 <a href="/faq" className="hover:underline">FAQ</a>
+                <span className="text-gray-300">|</span>
+                <a href="/contact" className="hover:underline">Contact</a>
               </div>
               <div className="flex flex-row flex-wrap justify-center gap-x-2 w-full mb-2">
                 <a href="/terms-of-service" className="hover:underline">Terms of Service</a>

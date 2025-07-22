@@ -7,7 +7,7 @@ import { Clock } from "@/components/ui/clock"
 import ProfileMenu from "@/components/profile-menu";
 import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
-import Link from "next/link";
+// import Link from "next/link";
 import AdSenseComponent from "@/components/AdSenseComponent";
 
 export default function Home() {

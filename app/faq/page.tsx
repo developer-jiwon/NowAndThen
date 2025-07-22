@@ -36,6 +36,42 @@ const faqItems: FAQItem[] = [
   {
     question: "Can I duplicate timers?",
     answer: "Yes, use the three-dot menu on any timer and select 'Duplicate'."
+  },
+  {
+    question: "What happens when a timer expires?",
+    answer: "It shows 'Days Passed' and counts upward, perfect for tracking anniversaries or how long since a deadline."
+  },
+  {
+    question: "Can I edit a timer after creating it?",
+    answer: "Yes, click the timer to edit the title, date, or time. Changes save automatically."
+  },
+  {
+    question: "How many timers can I create?",
+    answer: "No limit. However, we recommend keeping pinned timers under 10 for better focus."
+  },
+  {
+    question: "Does it work offline?",
+    answer: "Yes, the app works offline. Changes sync when you're back online if you're signed in."
+  },
+  {
+    question: "Can I set reminders or notifications?",
+    answer: "Currently no push notifications, but you can bookmark specific timers to check regularly."
+  },
+  {
+    question: "What time zones does it support?",
+    answer: "Timers use your device's local time zone automatically. No manual time zone setting needed."
+  },
+  {
+    question: "Is there a mobile app?",
+    answer: "The web app works great on mobile browsers. You can add it to your home screen for app-like experience."
+  },
+  {
+    question: "Can I share timers with others?",
+    answer: "Currently timers are private to your account. Sharing features may be added in future updates."
+  },
+  {
+    question: "What if I forget my login?",
+    answer: "We use Google OAuth, so you'll use your Google account. If you can't access Google, your local timers will still work."
   }
 ];
 
