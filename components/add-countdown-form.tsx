@@ -166,53 +166,51 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                 <FormLabel className="text-sm">Date</FormLabel>
                 <div className="w-full max-w-[280px] mx-auto">
                   <FormControl>
-                    <div className="w-full">
-                      {/* Quick preset buttons */}
-                      <div className="flex gap-1 mb-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const today = new Date().toISOString().slice(0, 10);
-                            field.onChange(today);
-                            const isPastDate = isDateInPast(today);
-                            setIsCountUp(isPastDate);
-                            setDateChanged(true);
-                          }}
-                          className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
-                        >
-                          Today
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const tomorrow = new Date();
-                            tomorrow.setDate(tomorrow.getDate() + 1);
-                            const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-                            field.onChange(tomorrowStr);
-                            const isPastDate = isDateInPast(tomorrowStr);
-                            setIsCountUp(isPastDate);
-                            setDateChanged(true);
-                          }}
-                          className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
-                        >
-                          Tomorrow
-                        </button>
-                      </div>
-                      
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
-                          <CalendarIcon className="w-4 h-4" />
-                        </span>
-                        <Input
-                          ref={inputRef}
-                          type="date"
-                          value={field.value}
-                          onChange={(e) => handleDateChange(e, field.onChange)}
-                          className="h-8 pl-9 pr-3 max-w-[280px]"
-                          min="1900-01-01"
-                          max="2100-12-31"
-                        />
-                      </div>
+                    {/* Quick preset buttons */}
+                    <div className="flex gap-1 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const today = new Date().toISOString().slice(0, 10);
+                          field.onChange(today);
+                          const isPastDate = isDateInPast(today);
+                          setIsCountUp(isPastDate);
+                          setDateChanged(true);
+                        }}
+                        className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      >
+                        Today
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const tomorrow = new Date();
+                          tomorrow.setDate(tomorrow.getDate() + 1);
+                          const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+                          field.onChange(tomorrowStr);
+                          const isPastDate = isDateInPast(tomorrowStr);
+                          setIsCountUp(isPastDate);
+                          setDateChanged(true);
+                        }}
+                        className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      >
+                        Tomorrow
+                      </button>
+                    </div>
+                    
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+                        <CalendarIcon className="w-4 h-4" />
+                      </span>
+                      <input
+                        ref={inputRef}
+                        type="date"
+                        value={field.value}
+                        onChange={(e) => handleDateChange(e, field.onChange)}
+                        className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        min="1900-01-01"
+                        max="2100-12-31"
+                      />
                     </div>
                   </FormControl>
                 </div>
