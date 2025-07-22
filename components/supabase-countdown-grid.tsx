@@ -249,7 +249,7 @@ export default function SupabaseCountdownGrid({
         <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-md w-full text-center shadow-sm">
           <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
           <p className="text-gray-600 text-sm mb-4">
-            Organize your important dates, goals, and events with countdown timers such as:
+            Add a timer to keep track of what matters most.
           </p>
           <ul className="text-left text-gray-700 text-xs mb-4 list-disc list-inside mx-auto max-w-[220px]">
             <li>Project deadline</li>

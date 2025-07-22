@@ -52,8 +52,7 @@ export default function Home() {
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-3 border border-blue-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
             <p className="text-sm text-gray-600 mb-3 text-center">
-              Create countdown timers for deadlines, count up for milestones, and never miss important dates again. 
-              Perfect for productivity, goal tracking, and time management.
+              Create countdowns for deadlines and milestones—never miss an important date.
             </p>
             <div className="flex justify-center gap-4 text-xs text-gray-500">
               <span>✓ Visual countdowns</span>
