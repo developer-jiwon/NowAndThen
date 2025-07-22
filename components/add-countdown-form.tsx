@@ -274,7 +274,11 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
   )
 }
 
-export default function AddCountdownForm() {
+interface AddCountdownFormProps {
+  onCancel?: () => void;
+}
+
+export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
   const [showSuccess, setShowSuccess] = useState(false)
   
   function onSubmit(values: CountdownFormValues) {
@@ -329,7 +333,7 @@ export default function AddCountdownForm() {
             Timer created successfully
           </div>
         )}
-        <CountdownForm onSubmit={onSubmit} onCancel={() => setShowAddForm(false)} />
+        <CountdownForm onSubmit={onSubmit} onCancel={onCancel || (() => {})} />
       </CardContent>
     </Card>
   )
