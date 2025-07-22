@@ -48,7 +48,8 @@ export default function Home() {
         </div>
         
         {/* Welcome content and feature highlights */}
-        <div className="w-full max-w-2xl mx-auto mb-4">
+        {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
+        <div className="w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 mb-4">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-3 border border-blue-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
             <p className="text-sm text-gray-600 mb-3 text-center">
@@ -60,8 +61,6 @@ export default function Home() {
               <span>✓ Smart organization</span>
             </div>
           </div>
-          
-
         </div>
         
         {/* Clean tabs for timer categories */}

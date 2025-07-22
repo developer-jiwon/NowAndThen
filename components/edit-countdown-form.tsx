@@ -93,7 +93,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
             
             <button 
               onClick={onCancel}
-              className="w-full h-7 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+              className="w-full max-w-[320px] mx-auto h-7 text-xs text-gray-600 hover:text-gray-800 transition-colors"
             >
               Cancel
             </button>

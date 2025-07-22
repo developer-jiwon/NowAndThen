@@ -71,9 +71,10 @@ interface CountdownFormProps {
   defaultValues?: CountdownFormValues
   onSubmit: (values: CountdownFormValues) => void
   submitButtonText?: string
+  onCancel: () => void
 }
 
-export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Create Timer" }: CountdownFormProps) {
+export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Create Timer", onCancel }: CountdownFormProps) {
   const [dateChanged, setDateChanged] = useState(true)
   const [isCountUp, setIsCountUp] = useState(false)
 
@@ -137,16 +138,18 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3 w-full max-w-[280px] mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-[320px] mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="space-y-1 w-full max-w-[280px]">
+            <FormItem className="space-y-1">
               <FormLabel className="text-sm">Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter timer title" {...field} maxLength={20} className="h-8 w-full" />
-              </FormControl>
+              <div className="w-full max-w-[320px] mx-auto">
+                <FormControl>
+                  <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -159,60 +162,62 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             const inputRef = useRef<HTMLInputElement>(null);
             
             return (
-              <FormItem className="space-y-1 w-full max-w-[280px]">
+              <FormItem className="space-y-1">
                 <FormLabel className="text-sm">Date</FormLabel>
-                <FormControl>
-                  <div className="relative w-full max-w-[280px]">
-                    {/* Quick preset buttons */}
-                    <div className="flex gap-1 mb-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const today = new Date().toISOString().slice(0, 10);
-                          field.onChange(today);
-                          const isPastDate = isDateInPast(today);
-                          setIsCountUp(isPastDate);
-                          setDateChanged(true);
-                        }}
-                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
-                      >
-                        Today
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const tomorrow = new Date();
-                          tomorrow.setDate(tomorrow.getDate() + 1);
-                          const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-                          field.onChange(tomorrowStr);
-                          const isPastDate = isDateInPast(tomorrowStr);
-                          setIsCountUp(isPastDate);
-                          setDateChanged(true);
-                        }}
-                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
-                      >
-                        Tomorrow
-                      </button>
+                <div className="w-full max-w-[320px] mx-auto">
+                  <FormControl>
+                    <div className="relative w-full">
+                      {/* Quick preset buttons */}
+                      <div className="flex gap-1 mb-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const today = new Date().toISOString().slice(0, 10);
+                            field.onChange(today);
+                            const isPastDate = isDateInPast(today);
+                            setIsCountUp(isPastDate);
+                            setDateChanged(true);
+                          }}
+                          className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                        >
+                          Today
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tomorrow = new Date();
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+                            const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+                            field.onChange(tomorrowStr);
+                            const isPastDate = isDateInPast(tomorrowStr);
+                            setIsCountUp(isPastDate);
+                            setDateChanged(true);
+                          }}
+                          className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                        >
+                          Tomorrow
+                        </button>
+                      </div>
+                      
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                          <CalendarIcon className="w-4 h-4" />
+                        </span>
+                        <input
+                          ref={inputRef}
+                          type="date"
+                          value={field.value}
+                          onChange={(e) => handleDateChange(e, field.onChange)}
+                          className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          min="1900-01-01"
+                          max="2100-12-31"
+                        />
+                      </div>
                     </div>
-                    
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <CalendarIcon className="w-4 h-4" />
-                      </span>
-                      <input
-                        ref={inputRef}
-                        type="date"
-                        value={field.value}
-                        onChange={(e) => handleDateChange(e, field.onChange)}
-                        className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        min="1900-01-01"
-                        max="2100-12-31"
-                      />
-                    </div>
-                  </div>
-                </FormControl>
+                  </FormControl>
+                </div>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
-                  <div className="w-full mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
+                  <div className="w-full max-w-[320px] mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
                       <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
@@ -231,32 +236,39 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem className="space-y-1 w-full max-w-[280px]">
+            <FormItem className="space-y-1">
               <FormLabel className="text-sm">Category</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger className="h-8 w-full">
-                    <SelectValue placeholder="Choose category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="personal">Personal</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="w-full max-w-[320px] mx-auto">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="h-8 w-full">
+                      <SelectValue placeholder="Choose category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="personal">Personal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="flex gap-2 w-full max-w-[280px] mx-auto">
-                  <Button type="submit" className="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 h-7 text-sm px-3">
+        <div className="w-full max-w-[320px] mx-auto">
+                  <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
           {submitButtonText}
         </Button>
         </div>
+        <div className="w-full max-w-[320px] mx-auto">
+  <Button type="button" onClick={onCancel} variant="outline" className="w-full mt-0 h-7 text-sm">
+    Cancel
+  </Button>
+</div>
       </form>
     </Form>
   )
@@ -317,7 +329,7 @@ export default function AddCountdownForm() {
             Timer created successfully
           </div>
         )}
-        <CountdownForm onSubmit={onSubmit} />
+        <CountdownForm onSubmit={onSubmit} onCancel={() => setShowAddForm(false)} />
       </CardContent>
     </Card>
   )

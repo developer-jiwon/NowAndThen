@@ -275,15 +275,9 @@ export default function SupabaseCountdownGrid({
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}
+            onCancel={() => setShowAddForm(false)}
             submitButtonText="Create Timer"
           />
-          <Button 
-            onClick={() => setShowAddForm(false)}
-            variant="outline"
-            className="w-full mt-2 h-7 text-sm px-3"
-          >
-            Cancel
-          </Button>
         </div>
       </div>
     );
@@ -355,15 +349,9 @@ export default function SupabaseCountdownGrid({
           <div className="max-w-sm w-full">
             <CountdownForm 
               onSubmit={handleAddCountdown}
+              onCancel={() => setShowAddForm(false)}
               submitButtonText="Create Timer"
             />
-            <Button 
-              onClick={() => setShowAddForm(false)}
-              variant="outline"
-              className="w-full mt-2 h-7 text-sm px-3"
-            >
-              Cancel
-            </Button>
           </div>
         </div>
       )}
@@ -406,15 +394,9 @@ export default function SupabaseCountdownGrid({
               <div className="max-w-sm w-full">
                 <CountdownForm 
                   onSubmit={handleAddCountdown}
+                  onCancel={() => setShowAddForm(false)}
                   submitButtonText="Create Timer"
                 />
-                <Button 
-                  onClick={() => setShowAddForm(false)}
-                  variant="outline"
-                  className="w-full mt-2 h-7 text-sm px-3"
-                >
-                  Cancel
-                </Button>
               </div>
             </div>
           ) : (
