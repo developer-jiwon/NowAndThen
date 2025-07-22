@@ -65,7 +65,7 @@ export default function Home() {
         
         {/* Clean tabs for timer categories */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-4 h-9 bg-gray-100 rounded-lg p-1">
+          <TabsList className="grid w-full max-w-md sm:max-w-none mx-auto grid-cols-5 mb-4 h-9 bg-gray-100 rounded-lg p-1">
             <TabsTrigger value="pinned" className="text-xs font-medium rounded-md">
               Pinned
             </TabsTrigger>
