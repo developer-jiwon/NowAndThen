@@ -243,7 +243,7 @@ export default function SupabaseCountdownGrid({
     }
   }
 
-  if (filteredCountdowns.length === 0) {
+  if (filteredCountdowns.length === 0 && !showAddForm) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-md w-full text-center shadow-sm">
@@ -264,6 +264,61 @@ export default function SupabaseCountdownGrid({
           >
             Add Timer
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showAddForm) {
+    return (
+      <div className="mb-4 flex justify-center">
+        <div className="max-w-sm w-full">
+          <CountdownForm 
+            onSubmit={handleAddCountdown}
+            submitButtonText="Create Timer"
+          />
+          <Button 
+            onClick={() => setShowAddForm(false)}
+            variant="outline"
+            className="w-full mt-2 h-7 text-sm px-3"
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show search results or empty state
+  if (filteredCountdowns.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <div className="bg-gray-50 rounded-lg p-6 max-w-md mx-auto">
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            {showHidden 
+              ? "No Hidden Timers" 
+              : `No ${category.charAt(0).toUpperCase() + category.slice(1)} Timers`}
+          </h3>
+          <p className="text-gray-600 text-sm mb-6">
+            {category === 'pinned' 
+              ? "Pin important timers." 
+              : category === 'general'
+              ? "Track deadlines and goals."
+              : category === 'personal'
+              ? "Personal milestones."
+              : showHidden
+              ? "Hidden timers appear here."
+              : "Create custom timers."}
+          </p>
+          
+          {!showHidden && category !== 'general' && category !== 'personal' && (
+            <Button 
+              onClick={() => setShowAddForm(true)}
+              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 text-sm"
+            >
+              Add Timer
+            </Button>
+          )}
         </div>
       </div>
     );

@@ -212,7 +212,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   </div>
                 </FormControl>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
-                  <div className="w-full mt-2 px-3 py-1 rounded-md text-xs font-medium text-center"
+                  <div className="w-full mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
                       <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
