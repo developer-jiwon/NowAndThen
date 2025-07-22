@@ -89,6 +89,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
               defaultValues={defaultValues} 
               onSubmit={onSubmit} 
               submitButtonText="Save Changes" 
+              onCancel={onCancel}
             />
             
             <button 
