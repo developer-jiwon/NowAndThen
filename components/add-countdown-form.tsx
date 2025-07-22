@@ -138,14 +138,14 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-sm sm:max-w-md mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Title</FormLabel>
-              <div className="w-full max-w-sm sm:max-w-md mx-auto">
+              <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <FormControl>
                   <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full" />
                 </FormControl>
@@ -164,9 +164,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             return (
               <FormItem className="space-y-1">
                 <FormLabel className="text-sm">Date</FormLabel>
-                <div className="w-full max-w-sm sm:max-w-md mx-auto">
+                <div className="w-full max-w-xs sm:max-w-md mx-auto">
                   {/* Quick preset buttons */}
-                  <div className="flex gap-1 mb-2 max-w-sm sm:max-w-md">
+                  <div className="flex gap-1 mb-2 max-w-xs sm:max-w-md">
                     <button
                       type="button"
                       onClick={() => {
@@ -197,23 +197,45 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                     </button>
                   </div>
                   
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
-                      <CalendarIcon className="w-4 h-4" />
-                    </span>
-                    <input
-                      ref={inputRef}
-                      type="date"
-                      value={field.value}
-                      onChange={(e) => handleDateChange(e, field.onChange)}
-                      className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      min="1900-01-01"
-                      max="2100-12-31"
-                    />
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        type="text"
+                        value={field.value}
+                        onChange={(e) => handleDateChange(e, field.onChange)}
+                        className="h-8 w-full text-center"
+                        placeholder="Select date"
+                        readOnly
+                        onFocus={(e) => {
+                          const input = document.createElement('input');
+                          input.type = 'date';
+                          input.value = field.value || '';
+                          input.style.display = 'none';
+                          document.body.appendChild(input);
+                          
+                          input.onchange = (e) => {
+                            const target = e.target as HTMLInputElement;
+                            field.onChange(target.value);
+                            const isPastDate = isDateInPast(target.value);
+                            setIsCountUp(isPastDate);
+                            setDateChanged(true);
+                            document.body.removeChild(input);
+                          };
+                          
+                          input.onblur = () => {
+                            if (document.body.contains(input)) {
+                              document.body.removeChild(input);
+                            }
+                          };
+                          
+                          input.showPicker();
+                        }}
+                      />
+                    </FormControl>
                   </div>
                 </div>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
-                  <div className="w-full max-w-sm sm:max-w-md mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
+                  <div className="w-full max-w-xs sm:max-w-md mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
                       <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
@@ -234,7 +256,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           render={({ field }) => (
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Category</FormLabel>
-              <div className="w-full max-w-sm sm:max-w-md mx-auto">
+              <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -255,12 +277,12 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-sm sm:max-w-md mx-auto">
+        <div className="w-full max-w-xs sm:max-w-md mx-auto">
                   <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
           {submitButtonText}
         </Button>
         </div>
-        <div className="w-full max-w-sm sm:max-w-md mx-auto">
+        <div className="w-full max-w-xs sm:max-w-md mx-auto">
   <Button type="button" onClick={onCancel} variant="outline" className="w-full mt-0 h-7 text-sm">
     Cancel
   </Button>

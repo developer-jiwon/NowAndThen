@@ -49,7 +49,7 @@ export default function Home() {
         
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
-        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 mb-4">
+        <div className="w-full max-w-xs sm:max-w-md mx-auto px-4 mb-4">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-3 border border-blue-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
             <p className="text-sm text-gray-600 mb-3 text-center">
@@ -65,7 +65,7 @@ export default function Home() {
         
         {/* Clean tabs for timer categories */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-sm sm:max-w-md mx-auto grid-cols-5 mb-4 h-9 bg-gray-100 rounded-lg p-1">
+          <TabsList className="grid w-full max-w-xs sm:max-w-md mx-auto grid-cols-5 mb-4 h-9 bg-gray-100 rounded-lg p-1">
             <TabsTrigger value="pinned" className="text-xs font-medium rounded-md">
               Pinned
             </TabsTrigger>
