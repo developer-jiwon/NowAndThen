@@ -166,7 +166,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                 <FormLabel className="text-sm">Date</FormLabel>
                 <div className="w-full max-w-xs mx-auto">
                   {/* Quick preset buttons */}
-                  <div className="flex gap-1 mb-2">
+                  <div className="flex gap-1 mb-2 max-w-xs">
                     <button
                       type="button"
                       onClick={() => {
