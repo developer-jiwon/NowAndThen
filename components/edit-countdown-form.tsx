@@ -70,7 +70,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-sm mx-auto">
       <Card className="border-charcoal/10 shadow-sm">
         <CardHeader className="pb-4 sm:pb-6">
           <CardTitle className="text-lg sm:text-xl font-merriweather">Edit Timer</CardTitle>

@@ -137,12 +137,12 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3 w-full max-w-sm mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3 w-full max-w-[280px] mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="space-y-1 w-full max-w-sm">
+            <FormItem className="space-y-1 w-full max-w-[280px]">
               <FormLabel className="text-sm">Title</FormLabel>
               <FormControl>
                 <Input placeholder="Enter timer title" {...field} maxLength={20} className="h-8 w-full" />
@@ -159,10 +159,10 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             const inputRef = useRef<HTMLInputElement>(null);
             
             return (
-              <FormItem className="space-y-1 w-full max-w-sm">
+              <FormItem className="space-y-1 w-full max-w-[280px]">
                 <FormLabel className="text-sm">Date</FormLabel>
                 <FormControl>
-                  <div className="relative w-full max-w-sm">
+                  <div className="relative w-full max-w-[280px]">
                     {/* Quick preset buttons */}
                     <div className="flex gap-1 mb-2">
                       <button
@@ -231,7 +231,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem className="space-y-1 w-full max-w-sm">
+            <FormItem className="space-y-1 w-full max-w-[280px]">
               <FormLabel className="text-sm">Category</FormLabel>
               <Select
                 onValueChange={field.onChange}
@@ -252,7 +252,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="flex gap-2 w-full max-w-sm mx-auto">
+        <div className="flex gap-2 w-full max-w-[280px] mx-auto">
                   <Button type="submit" className="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 h-7 text-sm px-3">
           {submitButtonText}
         </Button>
@@ -306,7 +306,7 @@ export default function AddCountdownForm() {
   }
 
   return (
-    <Card className="max-w-sm mx-auto">
+    <Card className="max-w-[280px] mx-auto">
       <CardHeader className="pb-1 pt-3 px-4">
         <CardTitle className="text-base font-medium">Create Timer</CardTitle>
         <CardDescription className="text-sm">Set up your countdown or count-up timer</CardDescription>

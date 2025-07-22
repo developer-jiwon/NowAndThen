@@ -231,7 +231,7 @@ export default function SupabaseCountdownGrid({
     if (countdownToEdit) {
       return (
         <div className="w-full flex justify-center">
-          <div className="max-w-md w-full">
+          <div className="max-w-sm w-full">
             <EditCountdownForm
               countdown={countdownToEdit}
               onSave={handleSaveEdit}
@@ -246,7 +246,7 @@ export default function SupabaseCountdownGrid({
   if (filteredCountdowns.length === 0 && !showAddForm) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-md w-full text-center shadow-sm">
+        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-sm w-full text-center shadow-sm">
           <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
           <p className="text-gray-600 text-sm mb-4">
             Add a timer to keep track of what matters most.
@@ -293,7 +293,7 @@ export default function SupabaseCountdownGrid({
   if (filteredCountdowns.length === 0) {
     return (
       <div className="text-center py-8">
-        <div className="bg-gray-50 rounded-lg p-6 max-w-md mx-auto">
+        <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
           <h3 className="text-lg font-medium text-gray-800 mb-2">
             {showHidden 
               ? "No Hidden Timers" 
@@ -329,13 +329,13 @@ export default function SupabaseCountdownGrid({
       {/* Single search bar for all categories except custom */}
       {category !== 'custom' && sortedCountdowns.length > 0 && (
         <div className="mb-6 flex justify-center">
-          <div className="relative max-w-xs w-full">
+          <div className="relative max-w-sm w-full">
             <input
               type="text"
               placeholder="Search timers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 px-4 pr-10 rounded-full bg-gray-50 border-0 text-sm placeholder-gray-400 focus:outline-none focus:bg-white focus:shadow-md transition-all duration-200 max-w-xs"
+              className="w-full h-10 px-4 pr-10 rounded-full bg-gray-50 border-0 text-sm placeholder-gray-400 focus:outline-none focus:bg-white focus:shadow-md transition-all duration-200 max-w-sm"
             />
             {searchQuery && (
               <button
@@ -387,7 +387,7 @@ export default function SupabaseCountdownGrid({
         {filteredCountdowns.length === 0 ? (
           searchQuery ? (
             <div className="text-center py-8">
-              <div className="bg-gray-50 rounded-lg p-6 max-w-md mx-auto">
+              <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">No search results</h3>
                 <p className="text-gray-600 text-sm">
                   No timers found for "{searchQuery}"
@@ -419,7 +419,7 @@ export default function SupabaseCountdownGrid({
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="bg-gray-50 rounded-lg p-6 max-w-md mx-auto">
+              <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
                   {showHidden 
                     ? "No Hidden Timers" 
