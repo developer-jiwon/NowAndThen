@@ -138,14 +138,14 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-[320px] mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-[280px] mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Title</FormLabel>
-              <div className="w-full max-w-[320px] mx-auto">
+              <div className="w-full max-w-[280px] mx-auto">
                 <FormControl>
                   <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full" />
                 </FormControl>
@@ -164,7 +164,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             return (
               <FormItem className="space-y-1">
                 <FormLabel className="text-sm">Date</FormLabel>
-                <div className="w-full max-w-[320px] mx-auto">
+                <div className="w-full max-w-[280px] mx-auto">
                   <FormControl>
                     <div className="w-full">
                       {/* Quick preset buttons */}
@@ -217,7 +217,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   </FormControl>
                 </div>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
-                  <div className="w-full max-w-[320px] mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
+                  <div className="w-full max-w-[280px] mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
                       <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
@@ -238,7 +238,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           render={({ field }) => (
             <FormItem className="space-y-1">
               <FormLabel className="text-sm">Category</FormLabel>
-              <div className="w-full max-w-[320px] mx-auto">
+              <div className="w-full max-w-[280px] mx-auto">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -259,12 +259,12 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-[320px] mx-auto">
+        <div className="w-full max-w-[280px] mx-auto">
                   <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
           {submitButtonText}
         </Button>
         </div>
-        <div className="w-full max-w-[320px] mx-auto">
+        <div className="w-full max-w-[280px] mx-auto">
   <Button type="button" onClick={onCancel} variant="outline" className="w-full mt-0 h-7 text-sm">
     Cancel
   </Button>
