@@ -199,16 +199,16 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         </button>
                       </div>
                       
-                      <div className="relative w-full">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
                           <CalendarIcon className="w-4 h-4" />
                         </span>
-                        <input
+                        <Input
                           ref={inputRef}
                           type="date"
                           value={field.value}
                           onChange={(e) => handleDateChange(e, field.onChange)}
-                          className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          className="h-8 pl-9 pr-3"
                           min="1900-01-01"
                           max="2100-12-31"
                         />
