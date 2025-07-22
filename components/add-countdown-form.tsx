@@ -166,9 +166,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                 <FormLabel className="text-sm">Date</FormLabel>
                 <div className="w-full max-w-[320px] mx-auto">
                   <FormControl>
-                    <div className="relative w-full">
+                    <div className="w-full">
                       {/* Quick preset buttons */}
-                      <div className="flex gap-1 mb-2 max-w-[320px]">
+                      <div className="flex gap-1 mb-2">
                         <button
                           type="button"
                           onClick={() => {
@@ -199,7 +199,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         </button>
                       </div>
                       
-                      <div className="relative">
+                      <div className="relative w-full">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                           <CalendarIcon className="w-4 h-4" />
                         </span>
@@ -208,7 +208,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                           type="date"
                           value={field.value}
                           onChange={(e) => handleDateChange(e, field.onChange)}
-                          className="h-8 w-full max-w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                           min="1900-01-01"
                           max="2100-12-31"
                         />
