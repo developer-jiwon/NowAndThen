@@ -175,133 +175,20 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
 
 // Get default countdowns based on category
 export function getDefaultCountdowns(category: string): Countdown[] {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  
-  // Helper to format date as YYYY-MM-DD
-  const formatDate = (date: Date) => {
-    return date.toISOString().slice(0, 10);
-  };
-  
-  // Helper to add days to today
-  const addDays = (days: number) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + days);
-    return formatDate(date);
-  };
-  
-  // Helper to subtract days from today (for count-up events)
-  const subtractDays = (days: number) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - days);
-    return formatDate(date);
-  };
-
-  switch (category) {
-    case "general":
-      return [
-        {
-          id: "sample-general-1",
-          title: "Q4 Report Due",
-          date: addDays(15),
-          isCountUp: false,
-          hidden: false,
-          pinned: true,
-          originalCategory: "general"
-        },
-        {
-          id: "sample-general-2", 
-          title: "Team Meeting",
-          date: addDays(3),
-          isCountUp: false,
-          hidden: false,
-          pinned: false,
-          originalCategory: "general"
-        },
-        {
-          id: "sample-general-3",
-          title: "Project Deadline",
-          date: addDays(30),
-          isCountUp: false,
-          hidden: false,
-          pinned: false,
-          originalCategory: "general"
-        }
-      ];
-      
-    case "personal":
-      return [
-        {
-          id: "sample-personal-1",
-          title: "Mom's Birthday",
-          date: addDays(45),
-          isCountUp: false,
-          hidden: false,
-          pinned: true,
-          originalCategory: "personal"
-        },
-        {
-          id: "sample-personal-2",
-          title: "Vacation",
-          date: addDays(67),
-          isCountUp: false,
-          hidden: false,
-          pinned: false,
-          originalCategory: "personal"
-        },
-        {
-          id: "sample-personal-3",
-          title: "Anniversary",
-          date: addDays(23),
-          isCountUp: false,
-          hidden: false,
-          pinned: false,
-          originalCategory: "personal"
-        },
-        {
-          id: "sample-personal-4",
-          title: "Graduation Day",
-          date: subtractDays(5),
-          isCountUp: true,
-          hidden: false,
-          pinned: false,
-          originalCategory: "personal"
-        }
-      ];
-      
-    case "custom":
-      return []; // Custom 탭에는 샘플 데이터 없음
-      
-    default:
-      return [];
-  }
+  return [];
 }
 
 // Get countdowns from localStorage or default ones
 export function getCountdowns(category: string): Countdown[] {
   if (typeof window === "undefined") {
-    return []
+    return [];
   }
-
   const storageKey = getUserStorageKey(`countdowns_${category}`)
   const storedCountdowns = localStorage.getItem(storageKey)
-  const samplesDeletedKey = `samples_deleted_${category}`
-
   if (storedCountdowns) {
     return JSON.parse(storedCountdowns)
   }
-
-  // Check if user has previously deleted samples for this category
-  const samplesDeleted = localStorage.getItem(samplesDeletedKey)
-  
-  if (samplesDeleted === 'true') {
-    // User has deleted samples before, don't show them again
-    return []
-  }
-
-  // Show sample data for new users
-  return getDefaultCountdowns(category)
+  return [];
 }
 
 // Get all pinned countdowns from all categories

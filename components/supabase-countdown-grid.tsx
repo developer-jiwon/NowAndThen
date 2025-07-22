@@ -76,22 +76,6 @@ export default function SupabaseCountdownGrid({
   const handleRemove = async (id: string) => {
     if (!user) return;
     try {
-      // Check if this is a sample countdown being deleted
-      const countdownToDelete = countdowns.find(c => c.id === id);
-      if (countdownToDelete && id.startsWith('sample-')) {
-        // Mark this specific sample as deleted
-        const deletedSamplesKey = `deleted_samples_${category}`;
-        const deletedSamples = JSON.parse(localStorage.getItem(deletedSamplesKey) || '[]');
-        if (!deletedSamples.includes(id)) {
-          deletedSamples.push(id);
-          localStorage.setItem(deletedSamplesKey, JSON.stringify(deletedSamples));
-        }
-        
-        // For sample data, reload countdowns to refresh the display
-        await loadCountdowns(user.id);
-        return;
-      }
-      
       await deleteCountdown(id, user.id);
     } catch (error) {
       console.error('Error removing countdown:', error);
@@ -123,6 +107,7 @@ export default function SupabaseCountdownGrid({
         { ...countdown, pinned: !countdown.pinned },
         user.id
       );
+      await loadCountdowns(user.id);
     } catch (error) {
       console.error('Error toggling pin:', error);
     }
@@ -256,6 +241,32 @@ export default function SupabaseCountdownGrid({
         </div>
       );
     }
+  }
+
+  if (filteredCountdowns.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-md w-full text-center shadow-sm">
+          <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
+          <p className="text-gray-600 text-sm mb-4">
+            Organize your important dates, goals, and events with countdown timers such as:
+          </p>
+          <ul className="text-left text-gray-700 text-xs mb-4 list-disc list-inside mx-auto max-w-[220px]">
+            <li>Project deadline</li>
+            <li>Family/friend birthday</li>
+            <li>Workout routine</li>
+            <li>Exam D-day</li>
+            <li>Anniversary or event</li>
+          </ul>
+          <Button 
+            onClick={() => setShowAddForm(true)}
+            className="w-full h-8 text-xs font-medium rounded-md"
+          >
+            Add Timer
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
