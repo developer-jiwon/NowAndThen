@@ -206,7 +206,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                       type="date"
                       value={field.value}
                       onChange={(e) => handleDateChange(e, field.onChange)}
-                      className="h-8 w-full pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="h-8 max-w-xs pl-9 pr-3 rounded-md border border-input bg-background text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       min="1900-01-01"
                       max="2100-12-31"
                     />
