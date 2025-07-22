@@ -246,7 +246,7 @@ export default function SupabaseCountdownGrid({
   if (filteredCountdowns.length === 0 && !showAddForm) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-sm sm:max-w-sm w-full text-center shadow-sm">
+        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-xs sm:max-w-sm w-full text-center shadow-sm">
           <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
           <p className="text-gray-600 text-sm mb-4">
             Add a timer to keep track of what matters most.
