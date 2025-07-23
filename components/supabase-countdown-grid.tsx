@@ -328,19 +328,22 @@ export default function SupabaseCountdownGrid({
     <div className="w-full">
       {/* Single search bar for all categories except custom */}
       {category !== 'custom' && sortedCountdowns.length > 0 && (
-        <div className="mb-6 flex justify-center">
-          <div className="relative max-w-sm w-full">
+        <div className="mb-4 flex justify-center w-full">
+          <div className="relative w-full max-w-[320px]">
             <input
               type="text"
               placeholder="Search timers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 px-4 pr-10 rounded-full bg-gray-50 border-0 text-sm placeholder-gray-400 focus:outline-none focus:bg-white focus:shadow-md transition-all duration-200 max-w-sm"
+              className="w-full h-10 pl-4 pr-10 rounded-xl bg-white border border-gray-200 shadow-sm text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all duration-200"
             />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" /></svg>
+            </span>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
+                className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
               >
                 ×
               </button>

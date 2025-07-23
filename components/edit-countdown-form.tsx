@@ -91,13 +91,6 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
               submitButtonText="Save Changes" 
               onCancel={onCancel}
             />
-            
-            <button 
-              onClick={onCancel}
-              className="w-full max-w-[320px] mx-auto h-7 text-xs text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              Cancel
-            </button>
           </div>
         </CardContent>
       </Card>

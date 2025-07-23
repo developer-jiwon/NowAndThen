@@ -49,13 +49,13 @@ export default function Home() {
         
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
-        <div className="w-full max-w-xs sm:max-w-md mx-auto px-4 mb-4">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-3 border border-blue-100">
+        <div className="w-full max-w-xs sm:max-w-md md:max-w-xl mx-auto px-4 mb-4">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-5 mb-3">
             <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
             <p className="text-sm text-gray-600 mb-3 text-center">
-              Create countdowns for deadlines and milestones—never miss an important date.
+              Track deadlines and milestones—never miss what matters.
             </p>
-            <div className="flex justify-center gap-4 text-xs text-gray-500">
+            <div className="flex justify-center gap-3 text-xs text-gray-500">
               <span>✓ Visual countdowns</span>
               <span>✓ Cross-device sync</span>
               <span>✓ Smart organization</span>
@@ -65,7 +65,7 @@ export default function Home() {
         
         {/* Clean tabs for timer categories */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-xs sm:max-w-md mx-auto grid-cols-5 mb-4 h-9 bg-gray-100 rounded-lg p-1">
+          <TabsList className="grid w-full max-w-xs sm:max-w-md mx-auto grid-cols-5 mb-0 h-9 bg-gray-100 rounded-lg p-1">
             <TabsTrigger value="pinned" className="text-xs font-medium rounded-md">
               Pinned
             </TabsTrigger>
@@ -84,31 +84,31 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="pinned">
-            <Suspense fallback={<div className="flex justify-center items-center py-8">Loading timers...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="pinned" />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="general">
-            <Suspense fallback={<div className="flex justify-center items-center py-8">Loading timers...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="general" />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="personal">
-            <Suspense fallback={<div className="flex justify-center items-center py-8">Loading timers...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="personal" />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="custom">
-            <Suspense fallback={<div className="flex justify-center items-center py-8">Loading timers...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="custom" />
             </Suspense>
           </TabsContent>
           
           <TabsContent value="hidden">
-            <Suspense fallback={<div className="flex justify-center items-center py-8">Loading timers...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="hidden" showHidden={true} />
             </Suspense>
           </TabsContent>
