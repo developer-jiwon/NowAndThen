@@ -235,7 +235,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                           <CalendarIcon className="h-4 w-4" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                                              <PopoverContent className="w-auto p-0" align="start" side="top" sideOffset={4}>
                         <Calendar
                           mode="single"
                           selected={field.value ? parseISO(field.value) : undefined}
@@ -298,7 +298,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
         />
 
         <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-2">
-          <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
+          <Button type="submit" className="w-full bg-white border border-input hover:bg-white focus:bg-white text-gray-800 h-7 text-sm">
             {submitButtonText}
           </Button>
           <Button type="button" onClick={onCancel} variant="outline" className="w-full h-7 text-sm">
