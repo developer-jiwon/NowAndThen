@@ -112,14 +112,29 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   // Helper function to handle date input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    const exactDate = e.target.value;
-    onChange(exactDate);
+    let value = e.target.value;
+    
+    // 하이픈 제거하고 숫자만 추출
+    const numbers = value.replace(/\D/g, '');
+    
+    // 8자리 이상이면 8자리로 제한
+    if (numbers.length > 8) {
+      return;
+    }
+    
+    // YYYY-MM-DD 형식으로 변환
+    let formattedValue = '';
+    if (numbers.length >= 1) formattedValue += numbers.slice(0, 4);
+    if (numbers.length >= 5) formattedValue += '-' + numbers.slice(4, 6);
+    if (numbers.length >= 7) formattedValue += '-' + numbers.slice(6, 8);
+    
+    onChange(formattedValue);
     
     // Only update count status for valid dates
-    if (dateRegex.test(exactDate)) {
-      const parsedDate = new Date(exactDate);
+    if (dateRegex.test(formattedValue)) {
+      const parsedDate = new Date(formattedValue);
       if (!isNaN(parsedDate.getTime())) {
-        const isPastDate = isDateInPast(exactDate);
+        const isPastDate = isDateInPast(formattedValue);
         setIsCountUp(isPastDate);
         setDateChanged(true);
       }
@@ -202,37 +217,41 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   
                   <div className="flex gap-2">
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "h-8 w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? format(parseISO(field.value), "PPP") : "Select date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? parseISO(field.value) : undefined}
-                                                       onSelect={(date: Date | undefined) => {
-                             if (date) {
-                               const dateString = format(date, "yyyy-MM-dd");
-                               field.onChange(dateString);
-                               const isPastDate = isDateInPast(dateString);
-                               setIsCountUp(isPastDate);
-                               setDateChanged(true);
-                             }
-                           }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <Input
+                        type="text"
+                        value={field.value}
+                        onChange={(e) => handleDateChange(e, field.onChange)}
+                        className="h-8 flex-1 text-center"
+                        placeholder="YYYYMMDD"
+                      />
                     </FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-2"
+                        >
+                          <CalendarIcon className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? parseISO(field.value) : undefined}
+                          onSelect={(date: Date | undefined) => {
+                            if (date) {
+                              const dateString = format(date, "yyyy-MM-dd");
+                              field.onChange(dateString);
+                              const isPastDate = isDateInPast(dateString);
+                              setIsCountUp(isPastDate);
+                              setDateChanged(true);
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
