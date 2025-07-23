@@ -85,31 +85,31 @@ export default function Home() {
 
           <TabsContent value="pinned">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="pinned" />
+              <SupabaseCountdownGrid category="pinned" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="general">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="general" />
+              <SupabaseCountdownGrid category="general" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="personal">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="personal" />
+              <SupabaseCountdownGrid category="personal" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
           <TabsContent value="custom">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="custom" />
+              <SupabaseCountdownGrid category="custom" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
           
           <TabsContent value="hidden">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="hidden" showHidden={true} />
+              <SupabaseCountdownGrid category="hidden" showHidden={true} activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
         </Tabs>

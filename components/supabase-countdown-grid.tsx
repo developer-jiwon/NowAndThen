@@ -15,11 +15,15 @@ import AdSenseComponent from "@/components/AdSenseComponent"
 interface SupabaseCountdownGridProps {
   category: string;
   showHidden?: boolean;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
 export default function SupabaseCountdownGrid({ 
   category, 
-  showHidden = false 
+  showHidden = false, 
+  activeTab,
+  setActiveTab
 }: SupabaseCountdownGridProps) {
   const { user, loading: authLoading } = useAnonymousAuth();
   const { 
@@ -250,6 +254,21 @@ export default function SupabaseCountdownGrid({
   }
 
   if (filteredCountdowns.length === 0 && !showAddForm) {
+    if (category === 'custom') {
+      // custom 탭은 무조건 Add Timer 폼만 보여줌
+      return (
+        <div className="mb-4 flex justify-center">
+          <div className="max-w-sm w-full">
+            <CountdownForm 
+              onSubmit={handleAddCountdown}
+              onCancel={() => setShowAddForm(false)}
+              submitButtonText="Create Timer"
+            />
+          </div>
+        </div>
+      );
+    }
+    // 나머지 탭은 No timers yet 메시지 + Add Timer 버튼
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-xs w-full text-center shadow-sm">
@@ -265,7 +284,7 @@ export default function SupabaseCountdownGrid({
             <li>Anniversary or event</li>
           </ul>
           <Button 
-            onClick={() => setShowAddForm(true)}
+            onClick={() => setActiveTab('custom')}
             className="w-full h-8 text-xs font-medium rounded-md"
           >
             Add Timer
@@ -313,7 +332,7 @@ export default function SupabaseCountdownGrid({
           
           {!showHidden && category !== 'general' && category !== 'personal' && (
             <Button 
-              onClick={() => setShowAddForm(true)}
+              onClick={() => setActiveTab('custom')}
               className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 text-sm"
             >
               Add Timer
@@ -430,7 +449,7 @@ export default function SupabaseCountdownGrid({
                 
                 {!showHidden && category !== 'general' && category !== 'personal' && (
                   <Button 
-                    onClick={() => setShowAddForm(true)}
+                    onClick={() => setActiveTab('custom')}
                     className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 text-sm"
                   >
                     Add Timer
