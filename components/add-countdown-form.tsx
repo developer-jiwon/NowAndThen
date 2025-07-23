@@ -157,12 +157,12 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 w-full max-w-xs sm:max-w-md mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-2">
               <FormLabel className="text-sm">Title</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <FormControl>
@@ -181,7 +181,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             const inputRef = useRef<HTMLInputElement>(null);
             
             return (
-              <FormItem className="space-y-1">
+              <FormItem className="space-y-2">
                 <FormLabel className="text-sm">Date</FormLabel>
                 <div className="w-full max-w-xs sm:max-w-md mx-auto">
                   {/* Quick preset buttons */}
@@ -274,7 +274,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-2">
               <FormLabel className="text-sm">Category</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <Select
@@ -297,16 +297,14 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-xs sm:max-w-md mx-auto">
-                  <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
-          {submitButtonText}
-        </Button>
+        <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-2">
+          <Button type="submit" className="w-full bg-white border border-input hover:border-input focus:border-input text-gray-800 h-7 text-sm">
+            {submitButtonText}
+          </Button>
+          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-7 text-sm">
+            Cancel
+          </Button>
         </div>
-        <div className="w-full max-w-xs sm:max-w-md mx-auto">
-  <Button type="button" onClick={onCancel} variant="outline" className="w-full mt-0 h-7 text-sm">
-    Cancel
-  </Button>
-</div>
       </form>
     </Form>
   )
