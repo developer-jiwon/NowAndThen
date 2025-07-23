@@ -298,7 +298,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
         />
 
         <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-2">
-          <Button type="submit" className="w-full bg-white border border-input hover:bg-white focus:bg-white text-gray-800 h-7 text-sm">
+          <Button type="submit" className="w-full bg-white border border-input hover:bg-gray-50 focus:bg-gray-50 text-gray-800 h-7 text-sm">
             {submitButtonText}
           </Button>
           <Button type="button" onClick={onCancel} variant="outline" className="w-full h-7 text-sm">
