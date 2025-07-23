@@ -34,7 +34,7 @@ import type { Countdown } from "@/lib/types"
 import { Clock, Hourglass } from "lucide-react"
 import { isDateInPast } from "@/lib/countdown-utils"
 import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
-import { format, addDays, isBefore, startOfDay } from "date-fns";
+import { format, addDays, isBefore, startOfDay, parseISO } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -174,7 +174,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                     <button
                       type="button"
                       onClick={() => {
-                        const today = new Date().toISOString().slice(0, 10);
+                        const today = format(new Date(), "yyyy-MM-dd");
                         field.onChange(today);
                         const isPastDate = isDateInPast(today);
                         setIsCountUp(isPastDate);
@@ -187,9 +187,8 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                     <button
                       type="button"
                       onClick={() => {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+                        const tomorrow = addDays(new Date(), 1);
+                        const tomorrowStr = format(tomorrow, "yyyy-MM-dd");
                         field.onChange(tomorrowStr);
                         const isPastDate = isDateInPast(tomorrowStr);
                         setIsCountUp(isPastDate);
@@ -213,13 +212,13 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? format(new Date(field.value), "PPP") : "Select date"}
+                            {field.value ? format(parseISO(field.value), "PPP") : "Select date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
+                            selected={field.value ? parseISO(field.value) : undefined}
                                                        onSelect={(date: Date | undefined) => {
                              if (date) {
                                const dateString = format(date, "yyyy-MM-dd");
