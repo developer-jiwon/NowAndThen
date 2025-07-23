@@ -196,7 +196,7 @@ export default function SupabaseCountdownGrid({
 
   if (authLoading || dataLoading) {
     return (
-      <div className="flex justify-center items-center py-8">
+      <div className="flex justify-start items-center py-8">
         <Loader2 className="h-6 w-6 animate-spin" />
         <span className="ml-2">Loading your timers...</span>
       </div>
@@ -230,7 +230,7 @@ export default function SupabaseCountdownGrid({
     const countdownToEdit = countdowns.find((c) => c.id === editingCountdownId);
     if (countdownToEdit) {
       return (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-start">
           <div className="max-w-sm w-full">
             <EditCountdownForm
               countdown={countdownToEdit}
@@ -245,7 +245,7 @@ export default function SupabaseCountdownGrid({
 
   if (filteredCountdowns.length === 0 && !showAddForm) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-start py-6">
         <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-xs w-full text-center shadow-sm">
           <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
           <p className="text-gray-600 text-sm mb-4">
@@ -271,7 +271,7 @@ export default function SupabaseCountdownGrid({
 
   if (showAddForm) {
     return (
-      <div className="mb-4 flex justify-center">
+      <div className="mb-4 flex justify-start">
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}
@@ -322,7 +322,7 @@ export default function SupabaseCountdownGrid({
     <div className="w-full">
       {/* Single search bar for all categories except custom */}
       {category !== 'custom' && sortedCountdowns.length > 0 && (
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 flex justify-start">
           <div className="relative max-w-sm w-full">
             <input
               type="text"
@@ -334,7 +334,7 @@ export default function SupabaseCountdownGrid({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-start text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
               >
                 ×
               </button>
@@ -345,7 +345,7 @@ export default function SupabaseCountdownGrid({
       
       {/* Add Form */}
       {showAddForm && (
-        <div className="mb-4 flex justify-center">
+        <div className="mb-4 flex justify-start">
           <div className="max-w-sm w-full">
             <CountdownForm 
               onSubmit={handleAddCountdown}
@@ -360,7 +360,7 @@ export default function SupabaseCountdownGrid({
       {editingCountdownId && (() => {
         const editingCountdown = countdowns.find((c) => c.id === editingCountdownId);
         return editingCountdown ? (
-          <div className="mb-4 flex justify-center">
+          <div className="mb-4 flex justify-start">
             <EditCountdownForm
               countdown={editingCountdown}
               onSave={handleSaveEdit}
@@ -390,7 +390,7 @@ export default function SupabaseCountdownGrid({
             </div>
           ) : category === 'custom' ? (
             // Custom 탭에서는 기본적으로 폼 표시
-            <div className="mb-4 flex justify-center">
+            <div className="mb-4 flex justify-start">
               <div className="max-w-sm w-full">
                 <CountdownForm 
                   onSubmit={handleAddCountdown}
@@ -451,7 +451,7 @@ export default function SupabaseCountdownGrid({
             {filteredCountdowns.length >= 8 && inView && (
               <div ref={adRef} className="mt-8">
                 <AdSenseComponent 
-                  className="flex justify-center my-6"
+                  className="flex justify-start my-6"
                   adFormat="auto"
                   pageType="app"
                 />
