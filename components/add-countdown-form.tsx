@@ -34,6 +34,10 @@ import type { Countdown } from "@/lib/types"
 import { Clock, Hourglass } from "lucide-react"
 import { isDateInPast } from "@/lib/countdown-utils"
 import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
+import { format, addDays, isBefore, startOfDay } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 // Modern color indicators for count up and count down
 const countUpColor = "#e11d48"; // Clean red for count up
@@ -199,38 +203,36 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input
-                        type="text"
-                        value={field.value}
-                        onChange={(e) => handleDateChange(e, field.onChange)}
-                        className="h-8 w-full text-center"
-                        placeholder="Select date"
-                        readOnly
-                        onFocus={(e) => {
-                          const input = document.createElement('input');
-                          input.type = 'date';
-                          input.value = field.value || '';
-                          input.style.display = 'none';
-                          document.body.appendChild(input);
-                          
-                          input.onchange = (e) => {
-                            const target = e.target as HTMLInputElement;
-                            field.onChange(target.value);
-                            const isPastDate = isDateInPast(target.value);
-                            setIsCountUp(isPastDate);
-                            setDateChanged(true);
-                            document.body.removeChild(input);
-                          };
-                          
-                          input.onblur = () => {
-                            if (document.body.contains(input)) {
-                              document.body.removeChild(input);
-                            }
-                          };
-                          
-                          input.showPicker();
-                        }}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "h-8 w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? format(new Date(field.value), "PPP") : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                                                       onSelect={(date: Date | undefined) => {
+                             if (date) {
+                               const dateString = format(date, "yyyy-MM-dd");
+                               field.onChange(dateString);
+                               const isPastDate = isDateInPast(dateString);
+                               setIsCountUp(isPastDate);
+                               setDateChanged(true);
+                             }
+                           }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
                   </div>
                 </div>
