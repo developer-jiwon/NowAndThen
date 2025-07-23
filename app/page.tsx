@@ -49,17 +49,42 @@ export default function Home() {
         
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
-        <div className="w-full max-w-xs sm:max-w-md md:max-w-xl mx-auto px-4 mb-4">
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-5 mb-3">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Master Your Time</h2>
-            <p className="text-sm text-gray-600 mb-3 text-center">
-              Track deadlines and milestones—never miss what matters.
-            </p>
-            <div className="flex justify-center gap-3 text-xs text-gray-500">
-              <span>✓ Visual countdowns</span>
-              <span>✓ Cross-device sync</span>
-              <span>✓ Smart organization</span>
+        <div className="w-full max-w-md mx-auto px-4 mb-8" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
+          <div className="relative rounded-[2.5rem] bg-white/70 backdrop-blur-xl border border-gray-100 shadow-lg p-8 flex flex-col items-center overflow-hidden"
+            style={{
+              boxShadow: "0 8px 32px 0 rgba(236, 72, 153, 0.10), 0 1.5px 8px 0 rgba(59, 130, 246, 0.08)"
+            }}
+          >
+            {/* 글로시 하이라이트 */}
+            <div className="absolute left-8 top-4 w-1/3 h-7 bg-white/60 rounded-full blur-[2px] opacity-80 pointer-events-none" />
+            {/* <h1 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">
+              Master Your <span className="text-pink-200">Time</span>
+            </h1> */}
+            <div className="flex justify-center mb-3">
+              <div className="h-1.5 w-20 rounded-full bg-gradient-to-r from-pink-100 via-white/80 to-blue-100 opacity-80" />
             </div>
+            <p className="text-base text-gray-600 mb-5 font-normal text-center" style={{letterSpacing: '0.01em'}}>
+              Never miss what matters.<br />
+              <span className="text-[13px] block mt-2 text-gray-400">Effortless, beautiful, and always in sync.</span>
+            </p>
+            <ul className="flex flex-col sm:flex-row justify-center gap-6 text-[14px] text-gray-500 font-normal">
+              <li className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-pink-100/80 shadow-md" />
+                Visual countdowns
+              </li>
+              <li className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-100/80 shadow-md" />
+                Cross-device sync
+              </li>
+              <li className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-white/80 border border-gray-200 shadow" />
+                Smart organization
+              </li>
+            </ul>
+          </div>
+          {/* 광고 자리 */}
+          <div className="mt-6 w-full flex justify-center">
+            {/* <AdSenseComponent /> */}
           </div>
         </div>
         
