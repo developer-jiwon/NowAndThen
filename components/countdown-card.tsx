@@ -250,24 +250,20 @@ export default function CountdownCard({
   const borderStyle = {
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: isCountUp ? '#fca5a5' : '#6ee7b7',
-    borderRadius: '18px',
-    boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
-    background: isCountUp 
-      ? '#fef2f2'
-      : (category === "custom" 
-         ? '#f0f6ff'
-         : '#f0fdf4'),
+    borderColor: '#e5e7eb',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    background: '#ffffff',
     position: 'relative' as 'relative',
     width: '100%',
-    maxWidth: '340px',
+    maxWidth: '280px',
     minWidth: '0',
-    minHeight: '150px',
+    minHeight: '120px',
     height: 'auto',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column' as 'column',
-    padding: '20px 16px',
+    padding: '16px 12px',
   };
 
   return (
@@ -316,7 +312,7 @@ export default function CountdownCard({
         style={{ minHeight: '20px' }}
       >
         <div
-          className={`w-5 h-5 flex items-center justify-center rounded-full bg-[#166534] text-white border border-[#166534] shadow-sm hover:bg-[#15803d] hover:border-[#15803d] active:bg-[#14532d] transition-all duration-150 p-0 ${isPinned ? '' : ''} ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-5 h-5 flex items-center justify-center rounded-full ${isPinned ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700' : 'bg-gray-700 border-gray-700 hover:bg-gray-800 hover:border-gray-800'} text-white border shadow-sm active:bg-gray-900 transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return;
             if (onTogglePin) {
@@ -327,14 +323,14 @@ export default function CountdownCard({
           <Pin className={`w-3 h-3`} />
         </div>
         <div
-          className={`w-5 h-5 flex items-center justify-center rounded-full bg-gray-700 text-white border border-gray-700 shadow-sm hover:bg-gray-800 hover:border-gray-800 active:bg-gray-900 transition-all duration-150 p-0 ${countdown.hidden ? '' : ''}`}
+          className={`w-5 h-5 flex items-center justify-center rounded-full ${countdown.hidden ? 'bg-amber-600 border-amber-600 hover:bg-amber-700 hover:border-amber-700' : 'bg-gray-600 border-gray-600 hover:bg-gray-700 hover:border-gray-700'} text-white border shadow-sm active:bg-gray-800 transition-all duration-150 p-0`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
           {category === "hidden" ? <Eye className="w-3 h-3" /> : (countdown.hidden ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />)}
         </div>
         {onEdit && (
           <div
-            className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-400 text-white border border-gray-400 shadow-sm hover:bg-gray-500 hover:border-gray-500 active:bg-gray-600 transition-all duration-150 p-0"
+            className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-500 text-white border border-gray-500 shadow-sm hover:bg-gray-600 hover:border-gray-600 active:bg-gray-700 transition-all duration-150 p-0"
             onClick={() => onEdit(countdown.id)}
           >
             <Edit className="w-3 h-3" />
@@ -342,7 +338,7 @@ export default function CountdownCard({
         )}
         {onDuplicate && (
           <div
-            className="w-5 h-5 flex items-center justify-center rounded-full bg-[#166534] text-white border border-[#166534] shadow-sm hover:bg-[#15803d] hover:border-[#15803d] active:bg-[#14532d] transition-all duration-150 p-0"
+            className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-600 text-white border border-gray-600 shadow-sm hover:bg-gray-700 hover:border-gray-700 active:bg-gray-800 transition-all duration-150 p-0"
             onClick={() => onDuplicate(countdown.id)}
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -351,7 +347,7 @@ export default function CountdownCard({
           </div>
         )}
         <div
-          className="w-5 h-5 flex items-center justify-center rounded-full bg-[#dc2626] text-white border border-[#dc2626] shadow-sm hover:bg-[#b91c1c] hover:border-[#b91c1c] active:bg-[#991b1b] transition-all duration-150 p-0"
+          className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-400 text-white border border-gray-400 shadow-sm hover:bg-gray-500 hover:border-gray-500 active:bg-gray-600 transition-all duration-150 p-0"
           onClick={handleDeleteClick}
         >
           <Trash2 className="w-3 h-3" />

@@ -270,13 +270,13 @@ export default function SupabaseCountdownGrid({
     }
     // 나머지 탭은 No timers yet 메시지 + Add Timer 버튼
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 max-w-xs w-full text-center shadow-sm">
-          <h3 className="text-base font-semibold text-gray-900 mb-2">No timers yet</h3>
-          <p className="text-gray-600 text-sm mb-4">
+      <div className="flex flex-col items-center justify-center py-2">
+        <div className="bg-white border border-gray-200 rounded-lg p-3 max-w-xs w-full text-center shadow-sm">
+          <h3 className="text-sm font-semibold text-gray-900 mb-1">No timers yet</h3>
+          <p className="text-gray-600 text-xs mb-2">
             Add a timer to keep track of what matters most.
           </p>
-          <ul className="text-left text-gray-700 text-xs mb-4 list-disc list-inside mx-auto max-w-[220px]">
+          <ul className="text-left text-gray-700 text-xs mb-2 list-disc list-inside mx-auto max-w-[200px]">
             <li>Project deadline</li>
             <li>Family/friend birthday</li>
             <li>Workout routine</li>
@@ -285,7 +285,7 @@ export default function SupabaseCountdownGrid({
           </ul>
           <Button 
             onClick={() => setActiveTab('custom')}
-            className="w-full h-8 text-xs font-medium rounded-md"
+            className="w-full h-7 text-xs font-medium rounded-md bg-gray-900 text-white hover:bg-gray-800"
           >
             Add Timer
           </Button>
@@ -354,15 +354,15 @@ export default function SupabaseCountdownGrid({
               placeholder="Search timers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-4 pr-10 rounded-xl bg-white border border-gray-200 shadow-sm text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all duration-200"
+              className="w-full h-9 pl-3 pr-8 rounded-lg bg-white border border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all duration-200"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" /></svg>
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" /></svg>
             </span>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
+                className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
               >
                 ×
               </button>
@@ -460,7 +460,7 @@ export default function SupabaseCountdownGrid({
           )
         ) : (
           <>
-            <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1 sm:gap-4 sm:px-0">
+            <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
               {filteredCountdowns.map((countdown) => (
                 <CountdownCard
                   key={countdown.id}

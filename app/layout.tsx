@@ -205,12 +205,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${merriweather.variable} min-h-screen flex flex-col justify-between`}>
+      <body className={`${merriweather.variable} flex flex-col`}>
         <SupabaseProvider>
-          <div className="relative flex-1 flex flex-col">
+          <div className="relative flex flex-col">
             {children}
           </div>
-          <footer className="w-full border-t border-gray-100 py-3 mt-0 bg-white text-center text-[11px] text-gray-500">
+          <footer className="w-full border-t border-gray-100 pt-3 pb-1 mt-0 bg-white text-center text-[11px] text-gray-500">
             <div className="mb-2">Track your important moments with Now & Then.</div>
             <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
               <div className="flex flex-row flex-wrap justify-center gap-x-2 w-full mb-2">
