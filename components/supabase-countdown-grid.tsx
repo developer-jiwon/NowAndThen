@@ -405,7 +405,7 @@ export default function SupabaseCountdownGrid({
   // Show search results or empty state
   if (filteredCountdowns.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center py-2">
+      <div className="flex-1 flex items-center justify-center pt-2 pb-0 -mb-8">
         <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
           <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
             {showHidden 
