@@ -361,7 +361,7 @@ export default function CountdownCard({
       >
         {/* Title section */}
         <div className="w-full mb-1 min-h-[22px] flex items-center justify-center">
-          <h3 className="text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
             {headerTitle}
           </h3>
         </div>
@@ -377,7 +377,7 @@ export default function CountdownCard({
               exit="exit"
               className="flex items-center justify-center"
             >
-              <span className={`text-2xl sm:text-3xl font-bold font-serif text-center ${isCountUp ? 'text-red-500' : 'text-green-600'}`}>
+              <span className={`text-xl sm:text-2xl md:text-3xl font-bold font-serif text-center ${isCountUp ? 'text-red-500' : 'text-green-600'}`}>
                 <span className="inline-block mr-1">
                   {timeRemaining.isCountUp ? "+" : "−"}
                 </span>
@@ -385,15 +385,15 @@ export default function CountdownCard({
               </span>
             </motion.div>
           </AnimatePresence>
-          <span className="text-[11px] uppercase mt-1 font-medium tracking-wide text-gray-600 text-center">
+          <span className="text-[10px] sm:text-[11px] uppercase mt-1 font-medium tracking-wide text-gray-600 text-center">
             {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
         {/* Footer with date */}
         <div className="w-full flex items-center justify-center mt-3">
           <div className="flex items-center justify-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full">
-            <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
-            <p className="text-[12px] text-gray-600 whitespace-nowrap">
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+            <p className="text-[11px] sm:text-[12px] text-gray-600 whitespace-nowrap">
               {formatDateString(exactDate)}
             </p>
           </div>
