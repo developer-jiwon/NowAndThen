@@ -218,8 +218,6 @@ export default function RootLayout({
                 <span className="text-gray-300">|</span>
                 <a href="/guide" className="hover:underline">Guide</a>
                 <span className="text-gray-300">|</span>
-                <a href="/blog" className="hover:underline">Blog</a>
-                <span className="text-gray-300">|</span>
                 <a href="/templates" className="hover:underline">Templates</a>
                 <span className="text-gray-300">|</span>
                 <a href="/faq" className="hover:underline">FAQ</a>

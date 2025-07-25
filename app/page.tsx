@@ -108,31 +108,31 @@ export default function Home() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="pinned">
+          <TabsContent value="pinned" className="flex flex-col flex-1">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="pinned" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="general">
+          <TabsContent value="general" className="flex flex-col flex-1">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="general" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="personal">
+          <TabsContent value="personal" className="flex flex-col flex-1">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="personal" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="custom">
+          <TabsContent value="custom" className="flex flex-col flex-1">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="custom" activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
           </TabsContent>
           
-          <TabsContent value="hidden">
+          <TabsContent value="hidden" className="flex flex-col">
             <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
               <SupabaseCountdownGrid category="hidden" showHidden={true} activeTab={activeTab} setActiveTab={setActiveTab} />
             </Suspense>
@@ -140,9 +140,9 @@ export default function Home() {
         </Tabs>
         
         {/* AdSense for main page with substantial content */}
-        <div className="mt-6">
+        <div className="mt-6 w-full max-w-4xl mx-auto px-4">
           <AdSenseComponent 
-            className="flex justify-center"
+            className="flex justify-center w-full min-w-[320px]"
             adFormat="auto"
             pageType="content"
           />

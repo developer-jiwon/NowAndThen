@@ -34,8 +34,6 @@ export default function NotFound() {
               <span className="hidden sm:inline text-gray-300">•</span>
               <Link href="/faq" className="text-blue-600 hover:underline">FAQ</Link>
               <span className="hidden sm:inline text-gray-300">•</span>
-              <Link href="/blog" className="text-blue-600 hover:underline">Blog</Link>
-              <span className="hidden sm:inline text-gray-300">•</span>
               <Link href="/contact" className="text-blue-600 hover:underline">Contact</Link>
             </div>
           </div>

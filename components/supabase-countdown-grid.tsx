@@ -43,6 +43,13 @@ export default function SupabaseCountdownGrid({
     triggerOnce: true,
     threshold: 0.1,
   });
+  const [showSamples, setShowSamples] = useState(() => {
+    // localStorage에서 샘플 표시 여부 확인
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('showSamples') !== 'false';
+    }
+    return true;
+  });
 
   // Filter countdowns based on hidden state and search query
   const filteredCountdowns = countdowns.filter(countdown => {
@@ -253,42 +260,129 @@ export default function SupabaseCountdownGrid({
     }
   }
 
-  if (filteredCountdowns.length === 0 && !showAddForm) {
-    if (category === 'custom') {
-      // custom 탭은 무조건 Add Timer 폼만 보여줌
-      return (
-        <div className="mb-4 flex justify-center">
-          <div className="max-w-sm w-full">
-            <CountdownForm 
-              onSubmit={handleAddCountdown}
-              onCancel={() => setShowAddForm(false)}
-              submitButtonText="Create Timer"
-            />
-          </div>
-        </div>
-      );
-    }
-    // 나머지 탭은 No timers yet 메시지 + Add Timer 버튼
+  if (filteredCountdowns.length === 0 && !showAddForm && showSamples && category === 'pinned') {
+    // 샘플 타이머 데이터 (Countdown 타입에 맞게)
+    const sampleCountdowns = [
+      {
+        id: 'sample1',
+        title: 'Project Deadline',
+        date: '2024-07-31',
+        description: 'Complete MVP for launch',
+        hidden: false,
+        pinned: false,
+        originalCategory: 'general' as const,
+      },
+      {
+        id: 'sample2',
+        title: "Friend's Birthday",
+        date: '2024-08-15',
+        description: "Prepare for Jimin's birthday party",
+        hidden: false,
+        pinned: false,
+        originalCategory: 'personal' as const,
+      },
+      {
+        id: 'sample3',
+        title: 'Workout Routine',
+        date: '2024-07-10',
+        description: 'Every Mon/Wed/Fri',
+        hidden: false,
+        pinned: false,
+        originalCategory: 'personal' as const,
+      },
+      {
+        id: 'sample4',
+        title: 'Exam D-day',
+        date: '2024-09-01',
+        description: 'Prepare for TOEIC exam',
+        hidden: false,
+        pinned: false,
+        originalCategory: 'general' as const,
+      },
+      {
+        id: 'sample5',
+        title: 'Anniversary',
+        date: '2024-10-10',
+        description: '1000 days together',
+        hidden: false,
+        pinned: false,
+        originalCategory: 'personal' as const,
+      },
+    ];
+
+    // 샘플 카드 편집 핸들러
+    const handleSampleEdit = (sample: any) => {
+      // 샘플 데이터를 실제 DB에 저장
+      handleAddCountdown({
+        title: sample.title,
+        date: sample.date,
+        description: sample.description,
+        category: sample.originalCategory,
+      });
+    };
+
+    // 샘플 카드 삭제 핸들러 (화면에서만 제거)
+    const handleSampleRemove = (sampleId: string) => {
+      // 샘플은 DB에 없으므로 화면에서만 제거 (실제로는 아무것도 안함)
+      console.log('Sample removed:', sampleId);
+    };
+
+    // 모든 샘플 삭제 핸들러
+    const handleClearAllSamples = () => {
+      setShowSamples(false);
+      // localStorage에 상태 저장
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('showSamples', 'false');
+      }
+    };
+
     return (
-      <div className="flex flex-col items-center justify-center py-2">
-        <div className="bg-white border border-gray-200 rounded-lg p-3 max-w-xs w-full text-center shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">No timers yet</h3>
-          <p className="text-gray-600 text-xs mb-2">
-            Add a timer to keep track of what matters most.
-          </p>
-          <ul className="text-left text-gray-700 text-xs mb-2 list-disc list-inside mx-auto max-w-[200px]">
-            <li>Project deadline</li>
-            <li>Family/friend birthday</li>
-            <li>Workout routine</li>
-            <li>Exam D-day</li>
-            <li>Anniversary or event</li>
-          </ul>
-          <Button 
+      <div className="flex flex-col items-center justify-center pt-2 pb-6 w-full">
+        <div className="mb-6 mt-0 text-[10px] text-gray-400">These are sample timers. Click edit to convert to real timer, or clear all samples.</div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 w-full max-w-4xl">
+          {sampleCountdowns.map((sample) => (
+            <CountdownCard
+              key={sample.id}
+              countdown={sample}
+              onRemove={handleSampleRemove}
+              onToggleVisibility={() => {}} // 샘플에서는 비활성화
+              onTogglePin={() => {}} // 샘플에서는 비활성화
+              onEdit={() => handleSampleEdit(sample)}
+              onDuplicate={() => {}} // 샘플에서는 비활성화
+              category={sample.originalCategory || 'general'}
+            />
+          ))}
+        </div>
+        <div className="flex gap-3 mt-6">
+          <Button
+            variant="outline"
             onClick={() => setActiveTab('custom')}
-            className="w-full h-7 text-xs font-medium rounded-md bg-gray-900 text-white hover:bg-gray-800"
+            className="h-7 text-xs font-medium rounded-md bg-gray-800 text-white hover:bg-gray-700 border-gray-800 px-4"
           >
             Add Timer
           </Button>
+          <Button
+            variant="outline"
+            onClick={handleClearAllSamples}
+            className="h-7 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-4"
+          >
+            Clear Samples
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Custom 탭에서는 바로 폼 표시
+  if (category === 'custom' && filteredCountdowns.length === 0 && !showAddForm) {
+    return (
+      <div className="mb-4 flex justify-center">
+        <div className="max-w-sm w-full">
+          <CountdownForm 
+            onSubmit={handleAddCountdown}
+            onCancel={() => setShowAddForm(false)}
+            submitButtonText="Create Timer"
+          />
         </div>
       </div>
     );
@@ -311,16 +405,18 @@ export default function SupabaseCountdownGrid({
   // Show search results or empty state
   if (filteredCountdowns.length === 0) {
     return (
-      <div className="text-center py-8">
-        <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
-          <h3 className="text-lg font-medium text-gray-800 mb-2">
+      <div className="flex-1 flex items-center justify-center py-2">
+        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
+          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
             {showHidden 
-              ? "No Hidden Timers" 
-              : `No ${category.charAt(0).toUpperCase() + category.slice(1)} Timers`}
+              ? "No hidden timers" 
+              : category === 'pinned'
+              ? "No timers yet"
+              : `No ${category} timers`}
           </h3>
-          <p className="text-gray-600 text-sm mb-6">
+          <p className="text-gray-600 text-xs mb-3 text-center">
             {category === 'pinned' 
-              ? "Pin important timers." 
+              ? "Add a timer to keep track of what matters most."
               : category === 'general'
               ? "Track deadlines and goals."
               : category === 'personal'
@@ -330,13 +426,28 @@ export default function SupabaseCountdownGrid({
               : "Create custom timers."}
           </p>
           
-          {!showHidden && category !== 'general' && category !== 'personal' && (
-            <Button 
-              onClick={() => setActiveTab('custom')}
-              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 text-sm"
-            >
-              Add Timer
-            </Button>
+          {category === 'pinned' && (
+            <div className="mb-3 flex justify-center">
+              <ul className="text-gray-500 space-y-0.5 text-xs text-left">
+                <li>• Project deadline</li>
+                <li>• Family/friend birthday</li>
+                <li>• Workout routine</li>
+                <li>• Exam D-day</li>
+                <li>• Anniversary or event</li>
+              </ul>
+            </div>
+          )}
+          
+          {!showHidden && (
+            <div className="text-center">
+              <Button 
+                onClick={() => setActiveTab('custom')}
+                variant="outline"
+                className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
+              >
+                Add Timer
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -399,95 +510,67 @@ export default function SupabaseCountdownGrid({
       })()}
 
       {/* Search Results or Empty State */}
-      <div className="grid gap-3 md:gap-4">
-        {filteredCountdowns.length === 0 ? (
-          searchQuery ? (
-            <div className="text-center py-8">
-              <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">No search results</h3>
-                <p className="text-gray-600 text-sm">
-                  No timers found for "{searchQuery}"
-                </p>
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="mt-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs px-3 py-1 rounded-md"
-                >
-                  Clear search
-                </button>
-              </div>
+      {filteredCountdowns.length === 0 ? (
+        searchQuery ? (
+          <div className="text-center py-8">
+            <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
+              <h3 className="text-lg font-medium text-gray-800 mb-2">No search results</h3>
+              <p className="text-gray-600 text-sm">
+                No timers found for "{searchQuery}"
+              </p>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="mt-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs px-3 py-1 rounded-md"
+              >
+                Clear search
+              </button>
             </div>
-          ) : category === 'custom' ? (
-            // Custom 탭에서는 기본적으로 폼 표시
-            <div className="mb-4 flex justify-center">
-              <div className="max-w-sm w-full">
-                <CountdownForm 
-                  onSubmit={handleAddCountdown}
-                  onCancel={() => setShowAddForm(false)}
-                  submitButtonText="Create Timer"
-                />
-              </div>
+          </div>
+        ) : category === 'custom' ? (
+          // Custom 탭에서는 기본적으로 폼 표시
+          <div className="mb-4 flex justify-center">
+            <div className="max-w-sm w-full">
+              <CountdownForm 
+                onSubmit={handleAddCountdown}
+                onCancel={() => setShowAddForm(false)}
+                submitButtonText="Create Timer"
+              />
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">
-                  {showHidden 
-                    ? "No Hidden Timers" 
-                    : `No ${category.charAt(0).toUpperCase() + category.slice(1)} Timers`}
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  {category === 'pinned' 
-                    ? "Pin important timers." 
-                    : category === 'general'
-                    ? "Track deadlines and goals."
-                    : category === 'personal'
-                    ? "Personal milestones."
-                    : showHidden
-                    ? "Hidden timers appear here."
-                    : "Create custom timers."}
-                </p>
-                
-                {!showHidden && category !== 'general' && category !== 'personal' && (
-                  <Button 
-                    onClick={() => setActiveTab('custom')}
-                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 text-sm"
-                  >
-                    Add Timer
-                  </Button>
-                )}
-              </div>
-            </div>
-          )
+          </div>
         ) : (
-          <>
-            <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
-              {filteredCountdowns.map((countdown) => (
-                <CountdownCard
-                  key={countdown.id}
-                  countdown={countdown}
-                  onRemove={handleRemove}
-                  onToggleVisibility={handleToggleVisibility}
-                  onTogglePin={handleTogglePin}
-                  onEdit={handleEdit}
-                  onDuplicate={handleDuplicate}
-                  category={category}
-                />
-              ))}
+          <div className="flex-1 flex items-center justify-center py-2">
+            {/* 빈 상태 - 아무것도 표시하지 않음 */}
+          </div>
+        )
+      ) : (
+        <div className="grid gap-3 md:gap-4">
+          <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
+            {filteredCountdowns.map((countdown) => (
+              <CountdownCard
+                key={countdown.id}
+                countdown={countdown}
+                onRemove={handleRemove}
+                onToggleVisibility={handleToggleVisibility}
+                onTogglePin={handleTogglePin}
+                onEdit={handleEdit}
+                onDuplicate={handleDuplicate}
+                category={category}
+              />
+            ))}
+          </div>
+          
+          {/* Only show ads when there's substantial content */}
+          {filteredCountdowns.length >= 8 && inView && (
+            <div ref={adRef} className="mt-8">
+              <AdSenseComponent 
+                className="flex justify-center my-6"
+                adFormat="auto"
+                pageType="app"
+              />
             </div>
-            
-            {/* Only show ads when there's substantial content */}
-            {filteredCountdowns.length >= 8 && inView && (
-              <div ref={adRef} className="mt-8">
-                <AdSenseComponent 
-                  className="flex justify-center my-6"
-                  adFormat="auto"
-                  pageType="app"
-                />
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 } 

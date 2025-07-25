@@ -67,6 +67,16 @@ export default function AdSenseComponent({
     // Don't load ads if not approved or no content
     if (!isAdSenseApproved || !hasContent) return;
     
+    // Check if container is wide enough for ads
+    if (adRef.current) {
+      const containerWidth = adRef.current.offsetWidth;
+      if (containerWidth < 320) {
+        console.log(`Container too narrow for ads: ${containerWidth}px (minimum: 320px)`);
+        setAdStatus('container-too-small');
+        return;
+      }
+    }
+    
     const loadAd = () => {
       try {
         // Check if adsbygoogle is available and the element exists
@@ -136,7 +146,7 @@ export default function AdSenseComponent({
   }
 
   // Don't show anything if no content or ad errors
-  if (!hasContent || adError || adStatus === 'unfilled' || adStatus === 'no-content') {
+  if (!hasContent || adError || adStatus === 'unfilled' || adStatus === 'no-content' || adStatus === 'container-too-small') {
     return null;
   }
 
@@ -162,12 +172,7 @@ export default function AdSenseComponent({
         className="adsbygoogle"
         style={{ 
           display: "block", 
-          textAlign: "center",
-          minHeight: "100px",
-          backgroundColor: "#f8f9fa",
-          border: "1px solid #e9ecef",
-          borderRadius: "8px",
-          padding: "20px"
+          textAlign: "center"
         }}
         data-ad-client="ca-pub-4588308927468413"
         data-ad-slot={adSlot}
