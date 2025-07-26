@@ -157,16 +157,16 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 w-full max-w-xs sm:max-w-md mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 w-full max-w-xs sm:max-w-md mx-auto">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-sm">Title</FormLabel>
+              <FormLabel className="text-sm font-medium text-gray-700">Title</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <FormControl>
-                  <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full" />
+                  <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full h-9" />
                 </FormControl>
               </div>
               <FormMessage />
@@ -182,7 +182,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             
             return (
               <FormItem className="space-y-2">
-                <FormLabel className="text-sm">Date</FormLabel>
+                <FormLabel className="text-sm font-medium text-gray-700">Date</FormLabel>
                 <div className="w-full max-w-xs sm:max-w-md mx-auto">
                   {/* Quick preset buttons */}
                   <div className="flex gap-1 mb-2 max-w-xs sm:max-w-md">
@@ -195,7 +195,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      className="w-full px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors font-medium"
                     >
                       Today
                     </button>
@@ -209,7 +209,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+                      className="w-full px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors font-medium"
                     >
                       Tomorrow
                     </button>
@@ -275,14 +275,14 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           name="category"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-sm">Category</FormLabel>
+              <FormLabel className="text-sm font-medium text-gray-700">Category</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-8 w-full">
+                    <SelectTrigger className="h-9 w-full">
                       <SelectValue placeholder="Choose category" />
                     </SelectTrigger>
                   </FormControl>
@@ -297,11 +297,11 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-2">
-          <Button type="submit" className="w-full bg-white border border-input hover:bg-gray-50 focus:bg-gray-50 text-gray-800 h-7 text-sm">
+        <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-3 pt-2">
+          <Button type="submit" className="w-full bg-slate-700 hover:bg-slate-800 hover:text-white text-white border-0 h-9 text-sm font-medium shadow-sm !important" style={{backgroundColor: '#374151', color: 'white'}}>
             {submitButtonText}
           </Button>
-          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-7 text-sm">
+          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-9 text-sm font-medium border-gray-200 hover:bg-gray-50">
             Cancel
           </Button>
         </div>

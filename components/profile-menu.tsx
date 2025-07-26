@@ -90,7 +90,7 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
       )}
       {open === 'signin' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-4 max-w-[270px] w-full relative">
+          <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-3 max-w-[240px] w-full relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               onClick={() => setOpen('none')}
@@ -98,20 +98,84 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
               <span className="sr-only">Close</span>
               ×
             </button>
-            <h2 className="text-lg font-semibold text-center mb-3 text-gray-900 font-merriweather">Sign in</h2>
+            <h2 className="text-base font-semibold text-center mb-2 text-gray-900 font-merriweather">Sign in</h2>
             <Auth
               supabaseClient={supabaseClient}
               appearance={{
                 theme: ThemeSupa,
                 style: {
-                  button: { fontFamily: 'Merriweather, serif', fontSize: '13px', padding: '6px 12px' },
-                  label: { fontFamily: 'Merriweather, serif', fontSize: '13px' },
-                  input: { fontFamily: 'Merriweather, serif', fontSize: '13px' },
-                  anchor: { fontFamily: 'Merriweather, serif', fontSize: '13px' },
-                  message: { fontFamily: 'Merriweather, serif', fontSize: '12px' },
-                  container: { fontFamily: 'Merriweather, serif' },
-                  loader: { fontFamily: 'Merriweather, serif' },
+                  button: { 
+                    fontFamily: 'Inter, system-ui, sans-serif', 
+                    fontSize: '12px', 
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    border: '1px solid #e5e7eb',
+                    backgroundColor: '#ffffff',
+                    color: '#374151',
+                    fontWeight: '500',
+                    minHeight: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                    transition: 'all 0.2s ease'
+                  },
+                  label: { 
+                    fontFamily: 'Inter, system-ui, sans-serif', 
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    color: '#374151'
+                  },
+                  input: { 
+                    fontFamily: 'Inter, system-ui, sans-serif', 
+                    fontSize: '12px',
+                    padding: '6px 10px',
+                    borderRadius: '4px',
+                    border: '1px solid #d1d5db',
+                    minHeight: '32px'
+                  },
+                  anchor: { 
+                    fontFamily: 'Inter, system-ui, sans-serif', 
+                    fontSize: '11px',
+                    color: '#6b7280'
+                  },
+                  message: { 
+                    fontFamily: 'Inter, system-ui, sans-serif', 
+                    fontSize: '11px',
+                    color: '#6b7280'
+                  },
+                  container: { 
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    padding: '0',
+                    margin: '0'
+                  },
+                  loader: { 
+                    fontFamily: 'Inter, system-ui, sans-serif'
+                  },
+                  divider: {
+                    margin: '12px 0',
+                    borderColor: '#e5e7eb'
+                  }
                 },
+                variables: {
+                  default: {
+                    colors: {
+                      brand: '#374151',
+                      brandAccent: '#1f2937',
+                      inputBackground: '#ffffff',
+                      inputBorder: '#d1d5db',
+                      inputLabelText: '#374151',
+                      inputText: '#374151',
+                      inputPlaceholder: '#9ca3af',
+                      messageText: '#6b7280',
+                      messageTextDanger: '#dc2626',
+                      anchorTextColor: '#6b7280',
+                      anchorTextHoverColor: '#374151',
+                      dividerBackground: '#e5e7eb'
+                    }
+                  }
+                }
               }}
               providers={["google"]}
               theme="light"

@@ -5,11 +5,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-200/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-white/70 backdrop-blur border border-pink-100/60 shadow hover:shadow-pink-200/60 hover:bg-pink-50/80 active:bg-pink-100/80",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-white/70 backdrop-blur border border-slate-100/60 shadow hover:shadow-slate-200/60 hover:bg-slate-50/80 active:bg-slate-100/80",
   {
     variants: {
       variant: {
-        default: "bg-white/70 text-pink-600 border-pink-100/60 hover:bg-pink-50/80 hover:text-pink-700 active:bg-pink-100/80",
+        default: "bg-white/70 text-slate-700 border-slate-200/60 hover:bg-slate-50/80 hover:text-slate-800 active:bg-slate-100/80",
         destructive:
           "bg-red-100/80 text-red-700 border-red-200 hover:bg-red-200/80 hover:text-red-800 active:bg-red-300/80",
         outline:
@@ -17,7 +17,7 @@ const buttonVariants = cva(
         secondary:
           "bg-blue-100/80 text-blue-700 border-blue-200 hover:bg-blue-200/80 hover:text-blue-800 active:bg-blue-300/80",
         ghost: "hover:bg-gray-100/60 hover:text-gray-700",
-        link: "text-pink-500 underline-offset-4 hover:underline",
+        link: "text-slate-600 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
