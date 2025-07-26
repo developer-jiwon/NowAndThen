@@ -405,7 +405,7 @@ export default function SupabaseCountdownGrid({
   // General 탭만 특별 처리
   if (filteredCountdowns.length === 0 && !showAddForm && category === 'general') {
     return (
-      <div className="flex items-center justify-center pt-1 pb-0 -mb-4">
+      <div className="flex items-center justify-center pt-0 pb-0 -mb-6">
         <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
           <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
             No general timers
