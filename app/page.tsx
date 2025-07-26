@@ -49,8 +49,8 @@ export default function Home() {
         
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
-        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
-          <div className="relative rounded-2xl bg-white/70 backdrop-blur-xl border border-gray-100 shadow-lg p-4 flex flex-col items-center overflow-hidden"
+        <div className="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
+          <div className="relative rounded-2xl bg-white/70 backdrop-blur-xl border border-gray-100 shadow-lg p-3 sm:p-4 flex flex-col items-center overflow-hidden"
             style={{
               boxShadow: "0 4px 16px 0 rgba(236, 72, 153, 0.08), 0 1px 4px 0 rgba(59, 130, 246, 0.06)"
             }}
