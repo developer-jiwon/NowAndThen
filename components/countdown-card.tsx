@@ -361,7 +361,7 @@ export default function CountdownCard({
       >
         {/* Title section */}
         <div className="w-full mb-1 min-h-[22px] flex items-center justify-center">
-          <h3 className="text-sm sm:text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
+          <h3 className="text-xs sm:text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
             {headerTitle}
           </h3>
         </div>
