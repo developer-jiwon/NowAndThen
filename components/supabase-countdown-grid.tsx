@@ -436,6 +436,40 @@ export default function SupabaseCountdownGrid({
     );
   }
 
+  // Personal 탭만 특별 처리
+  if (filteredCountdowns.length === 0 && !showAddForm && category === 'personal') {
+    return (
+      <div className="flex items-center justify-center pt-0 pb-0 -mb-4 -mt-2">
+        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
+          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
+            No personal timers
+          </h3>
+          <p className="text-gray-600 text-xs mb-3 text-center">
+            Personal milestones.
+          </p>
+          <div className="mb-3 flex justify-center">
+            <ul className="text-gray-500 space-y-0.5 text-xs text-left">
+              <li>• Project deadline</li>
+              <li>• Family/friend birthday</li>
+              <li>• Workout routine</li>
+              <li>• Exam D-day</li>
+              <li>• Anniversary or event</li>
+            </ul>
+          </div>
+          <div className="text-center">
+            <Button 
+              onClick={() => setActiveTab('custom')}
+              variant="outline"
+              className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
+            >
+              Add Timer
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Show search results or empty state for other tabs
   if (filteredCountdowns.length === 0) {
     return (
