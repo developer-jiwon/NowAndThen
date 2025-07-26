@@ -28,22 +28,24 @@ export async function GET() {
         >
           <h1
             style={{
-              fontSize: '64px',
+              fontSize: '72px',
               fontWeight: 'bold',
               color: '#1a1a1a',
-              margin: '0 0 16px 0',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              margin: '0 0 20px 0',
+              fontFamily: 'Merriweather, serif',
+              letterSpacing: '-0.02em',
             }}
           >
             Now & Then
           </h1>
           <p
             style={{
-              fontSize: '32px',
+              fontSize: '28px',
               color: '#666666',
               margin: '0 0 24px 0',
               fontFamily: 'Inter, system-ui, sans-serif',
               fontWeight: '400',
+              letterSpacing: '0.01em',
             }}
           >
             Countdown Timer & Deadline Tracker
@@ -52,27 +54,17 @@ export async function GET() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              marginTop: '32px',
+              justifyContent: 'center',
+              marginTop: '24px',
             }}
           >
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: '#2a2a2a',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            />
             <span
               style={{
-                fontSize: '24px',
-                color: '#2a2a2a',
+                fontSize: '20px',
+                color: '#666666',
                 fontFamily: 'Inter, system-ui, sans-serif',
-                fontWeight: '500',
+                fontWeight: '400',
+                letterSpacing: '0.02em',
               }}
             >
               Professional time management tool
