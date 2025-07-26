@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Now & Then Team" }],
   creator: "Now & Then",
   publisher: "Now & Then",
-  metadataBase: new URL('https://nowandthen.app'),
+  metadataBase: new URL('https://www.now-then.dev'),
   alternates: {
-    canonical: 'https://nowandthen.app',
+    canonical: 'https://www.now-then.dev',
   },
   robots: {
     index: true,
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://nowandthen.app',
+    url: 'https://www.now-then.dev',
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     siteName: 'Now & Then',
     images: [
       {
-        url: 'https://nowandthen.app/api/og',
+        url: 'https://www.now-then.dev/api/og',
         width: 1200,
         height: 630,
         alt: 'Now & Then - Countdown Timer App',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     creator: '@nowandthenapp',
-    images: ['https://nowandthen.app/api/og'],
+    images: ['https://www.now-then.dev/api/og'],
   },
   icons: {
     icon: [
@@ -81,7 +81,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
-        <link rel="canonical" href="https://nowandthen.app" />
+        <link rel="canonical" href="https://www.now-then.dev" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
