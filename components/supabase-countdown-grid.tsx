@@ -37,7 +37,7 @@ export default function SupabaseCountdownGrid({
   } = useCountdowns(category);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+
   const gridRef = useRef<HTMLDivElement>(null);
   const { ref: adRef, inView } = useInView({
     triggerOnce: true,
@@ -51,12 +51,10 @@ export default function SupabaseCountdownGrid({
     return true;
   });
 
-  // Filter countdowns based on hidden state and search query
+  // Filter countdowns based on hidden state
   const filteredCountdowns = countdowns.filter(countdown => {
     const matchesVisibility = showHidden ? countdown.hidden : !countdown.hidden;
-    const matchesSearch = searchQuery.trim() === "" || 
-      countdown.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesVisibility && matchesSearch;
+    return matchesVisibility;
   });
 
   // Sort pinned countdowns to the top
@@ -338,7 +336,7 @@ export default function SupabaseCountdownGrid({
 
     return (
       <div className="flex flex-col items-center justify-center pt-2 pb-6 w-full">
-        <div className="mb-6 mt-0 text-[10px] text-gray-400">These are sample timers. Click edit to convert to real timer, or clear all samples.</div>
+        <div className="mb-6 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 w-full max-w-4xl">
           {sampleCountdowns.map((sample) => (
             <CountdownCard
@@ -473,7 +471,7 @@ export default function SupabaseCountdownGrid({
   // Hidden 탭만 특별 처리
   if (filteredCountdowns.length === 0 && !showAddForm && showHidden) {
     return (
-      <div className="flex items-center justify-center pt-0 pb-0 -mb-2 -mt-6">
+      <div className="flex items-center justify-center pt-0 pb-0 -mb-4 -mt-6">
         <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
           <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
             No hidden timers
@@ -558,31 +556,7 @@ export default function SupabaseCountdownGrid({
 
   return (
     <div className="w-full">
-      {/* Single search bar for all categories except custom */}
-      {category !== 'custom' && sortedCountdowns.length > 0 && (
-        <div className="mb-4 flex justify-center w-full">
-          <div className="relative w-full max-w-[320px]">
-            <input
-              type="text"
-              placeholder="Search timers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-9 pl-3 pr-8 rounded-lg bg-white border border-gray-200 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all duration-200"
-            />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" /></svg>
-            </span>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+
       
       {/* Add Form */}
       {showAddForm && (
@@ -611,24 +585,9 @@ export default function SupabaseCountdownGrid({
         ) : null;
       })()}
 
-      {/* Search Results or Empty State */}
+      {/* Empty State */}
       {filteredCountdowns.length === 0 ? (
-        searchQuery ? (
-          <div className="text-center py-8">
-            <div className="bg-gray-50 rounded-lg p-6 max-w-sm mx-auto">
-              <h3 className="text-lg font-medium text-gray-800 mb-2">No search results</h3>
-              <p className="text-gray-600 text-sm">
-                No timers found for "{searchQuery}"
-              </p>
-              <button
-                onClick={() => setSearchQuery("")}
-                className="mt-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs px-3 py-1 rounded-md"
-              >
-                Clear search
-              </button>
-            </div>
-          </div>
-        ) : category === 'custom' ? (
+        category === 'custom' ? (
           // Custom 탭에서는 기본적으로 폼 표시
           <div className="mb-4 flex justify-center">
             <div className="max-w-sm w-full">

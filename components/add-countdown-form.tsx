@@ -286,7 +286,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                       <SelectValue placeholder="Choose category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent position="popper" side="bottom" align="start" className="w-full">
                     <SelectItem value="general">General</SelectItem>
                     <SelectItem value="personal">Personal</SelectItem>
                   </SelectContent>
