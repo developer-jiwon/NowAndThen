@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: 'Now & Then',
     images: [
       {
-        url: 'https://www.now-then.dev/api/og',
+        url: 'https://www.now-then.dev/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Now & Then - Countdown Timer App',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     creator: '@nowandthenapp',
-    images: ['https://www.now-then.dev/api/og'],
+    images: ['https://www.now-then.dev/og-image.png'],
   },
   icons: {
     icon: [
