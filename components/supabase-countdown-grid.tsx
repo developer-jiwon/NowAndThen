@@ -402,7 +402,41 @@ export default function SupabaseCountdownGrid({
     );
   }
 
-  // Show search results or empty state
+  // General 탭만 특별 처리
+  if (filteredCountdowns.length === 0 && !showAddForm && category === 'general') {
+    return (
+      <div className="flex items-center justify-center pt-1 pb-0 -mb-4">
+        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
+          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
+            No general timers
+          </h3>
+          <p className="text-gray-600 text-xs mb-3 text-center">
+            Track deadlines and goals.
+          </p>
+          <div className="mb-3 flex justify-center">
+            <ul className="text-gray-500 space-y-0.5 text-xs text-left">
+              <li>• Project deadline</li>
+              <li>• Family/friend birthday</li>
+              <li>• Workout routine</li>
+              <li>• Exam D-day</li>
+              <li>• Anniversary or event</li>
+            </ul>
+          </div>
+          <div className="text-center">
+            <Button 
+              onClick={() => setActiveTab('custom')}
+              variant="outline"
+              className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
+            >
+              Add Timer
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show search results or empty state for other tabs
   if (filteredCountdowns.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center pt-2 pb-0 -mb-8">
