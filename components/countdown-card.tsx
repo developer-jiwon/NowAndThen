@@ -313,7 +313,7 @@ export default function CountdownCard({
         style={{ minHeight: '20px' }}
       >
         <div
-          className={`w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full ${isPinned ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700' : 'bg-gray-700 border-gray-700 hover:bg-gray-800 hover:border-gray-800'} text-white border shadow-sm active:bg-gray-900 transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${isPinned ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700' : 'bg-gray-700 border-gray-700 hover:bg-gray-800 hover:border-gray-800'} text-white border shadow-sm active:bg-gray-900 transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return;
             if (onTogglePin) {
@@ -321,37 +321,37 @@ export default function CountdownCard({
             }
           }}
         >
-          <Pin className={`w-3.5 h-3.5 sm:w-4 sm:h-4`} />
+          <Pin className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
         </div>
         <div
-          className={`w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full ${countdown.hidden ? 'bg-amber-600 border-amber-600 hover:bg-amber-700 hover:border-amber-700' : 'bg-gray-600 border-gray-600 hover:bg-gray-700 hover:border-gray-700'} text-white border shadow-sm active:bg-gray-800 transition-all duration-150 p-0`}
+          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${countdown.hidden ? 'bg-amber-600 border-amber-600 hover:bg-amber-700 hover:border-amber-700' : 'bg-gray-600 border-gray-600 hover:bg-gray-700 hover:border-gray-700'} text-white border shadow-sm active:bg-gray-800 transition-all duration-150 p-0`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
-          {category === "hidden" ? <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : (countdown.hidden ? <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />)}
+          {category === "hidden" ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : (countdown.hidden ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" />)}
         </div>
         {onEdit && (
           <div
-            className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-500 text-white border border-gray-500 shadow-sm hover:bg-gray-600 hover:border-gray-600 active:bg-gray-700 transition-all duration-150 p-0"
+            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-500 text-white border border-gray-500 shadow-sm hover:bg-gray-600 hover:border-gray-600 active:bg-gray-700 transition-all duration-150 p-0"
             onClick={() => onEdit(countdown.id)}
           >
-            <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
         )}
         {onDuplicate && (
           <div
-            className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-600 text-white border border-gray-600 shadow-sm hover:bg-gray-700 hover:border-gray-700 active:bg-gray-800 transition-all duration-150 p-0"
+            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-600 text-white border border-gray-600 shadow-sm hover:bg-gray-700 hover:border-gray-700 active:bg-gray-800 transition-all duration-150 p-0"
             onClick={() => onDuplicate(countdown.id)}
           >
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </div>
         )}
         <div
-          className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-400 text-white border border-gray-400 shadow-sm hover:bg-gray-500 hover:border-gray-500 active:bg-gray-600 transition-all duration-150 p-0"
+          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-400 text-white border border-gray-400 shadow-sm hover:bg-gray-500 hover:border-gray-500 active:bg-gray-600 transition-all duration-150 p-0"
           onClick={handleDeleteClick}
         >
-          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
         </div>
       </div>
       
