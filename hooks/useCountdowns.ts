@@ -19,6 +19,7 @@ export function useCountdowns(category: string) {
     isCountUp: row.is_count_up,
     hidden: row.hidden,
     pinned: row.pinned,
+    memo: row.memo,
     originalCategory: row.category as "custom" | "general" | "personal",
   }), []);
 
@@ -31,6 +32,7 @@ export function useCountdowns(category: string) {
     is_count_up: countdown.isCountUp,
     hidden: countdown.hidden,
     pinned: countdown.pinned,
+    memo: countdown.memo,
     category: countdown.originalCategory,
   }), []);
 

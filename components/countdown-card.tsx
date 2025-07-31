@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeOff, Trash2, Pin, PinOff, Edit, X, Check, Calendar } from "lucide-react"
+import { Eye, EyeOff, Trash2, Pin, PinOff, Edit, X, Check, Calendar, MessageSquare } from "lucide-react"
 import type { Countdown, TimeRemaining } from "@/lib/types"
 import { calculateTimeRemaining, isDateInPast, standardizeDate, formatDateString } from "@/lib/countdown-utils"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
@@ -124,13 +124,13 @@ const countupNumberVariants = {
   }
 };
 
-// 1. Smaller, more compact action buttons
-const actionBtnBase = "w-4 h-4 rounded border border-gray-200 bg-white flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-100 transition-colors duration-150 p-0.5";
-const actionBtnActive = "bg-gray-800 text-white border-gray-800";
-const actionBtnPinned = "bg-[#166534] text-white border-[#166534] hover:bg-[#15803d] hover:border-[#15803d]"; // dark forest green for pinned
-const actionBtnRed = "bg-red-50 border-red-200 text-red-600 hover:bg-red-100";
-const actionBtnGreen = "bg-green-50 border-green-200 text-green-600 hover:bg-green-100";
-const actionBtnGray = "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100";
+// 1. Smaller, more compact action buttons with Fern Green gradient
+const actionBtnBase = "w-4 h-4 rounded border border-[#4E724C]/30 bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white flex items-center justify-center cursor-pointer shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] transition-all duration-150 p-0.5";
+const actionBtnActive = "bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48]";
+const actionBtnPinned = "bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48]"; // Fern Green gradient for pinned
+const actionBtnRed = "bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48]";
+const actionBtnGreen = "bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48]";
+const actionBtnGray = "bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48]";
 
 interface CountdownCardProps {
   countdown: Countdown
@@ -139,6 +139,7 @@ interface CountdownCardProps {
   onTogglePin?: (id: string) => void
   onEdit?: (id: string) => void
   onDuplicate?: (id: string) => void
+  onUpdateMemo?: (id: string, memo: string) => void
   category: string
 }
 
@@ -149,6 +150,7 @@ export default function CountdownCard({
   onTogglePin,
   onEdit,
   onDuplicate,
+  onUpdateMemo,
   category,
 }: CountdownCardProps) {
   // Use the exact date from the countdown
@@ -197,6 +199,14 @@ export default function CountdownCard({
   });
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showMemo, setShowMemo] = useState(false);
+  const [isEditingMemo, setIsEditingMemo] = useState(false);
+  const [memoText, setMemoText] = useState(countdown.memo || "");
+
+  // Sync memoText with countdown.memo when it changes
+  useEffect(() => {
+    setMemoText(countdown.memo || "");
+  }, [countdown.memo]);
 
   // Update the time remaining every second
   useEffect(() => {
@@ -236,6 +246,21 @@ export default function CountdownCard({
 
   const cancelDelete = () => {
     setShowDeleteConfirm(false);
+  };
+
+  const handleMemoSave = async () => {
+    if (onUpdateMemo) {
+      await onUpdateMemo(countdown.id, memoText);
+    }
+    setIsEditingMemo(false);
+    // Force re-render by updating local state
+    setShowMemo(false);
+    setTimeout(() => setShowMemo(true), 100);
+  };
+
+  const handleMemoCancel = () => {
+    setMemoText(countdown.memo || "");
+    setIsEditingMemo(false);
   };
 
   // Choose the appropriate animation variants based on countdown/countup type
@@ -313,7 +338,7 @@ export default function CountdownCard({
         style={{ minHeight: '20px' }}
       >
         <div
-          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${isPinned ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700' : 'bg-gray-700 border-gray-700 hover:bg-gray-800 hover:border-gray-800'} text-white border shadow-sm active:bg-gray-900 transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
           onClick={() => {
             if (category === 'hidden') return;
             if (onTogglePin) {
@@ -324,14 +349,14 @@ export default function CountdownCard({
           <Pin className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
         </div>
         <div
-          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${countdown.hidden ? 'bg-amber-600 border-amber-600 hover:bg-amber-700 hover:border-amber-700' : 'bg-gray-600 border-gray-600 hover:bg-gray-700 hover:border-gray-700'} text-white border shadow-sm active:bg-gray-800 transition-all duration-150 p-0`}
+          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
           onClick={() => onToggleVisibility(countdown.id)}
         >
           {category === "hidden" ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : (countdown.hidden ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" />)}
         </div>
         {onEdit && (
           <div
-            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-500 text-white border border-gray-500 shadow-sm hover:bg-gray-600 hover:border-gray-600 active:bg-gray-700 transition-all duration-150 p-0"
+            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
             onClick={() => onEdit(countdown.id)}
           >
             <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -339,7 +364,7 @@ export default function CountdownCard({
         )}
         {onDuplicate && (
           <div
-            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-600 text-white border border-gray-600 shadow-sm hover:bg-gray-700 hover:border-gray-700 active:bg-gray-800 transition-all duration-150 p-0"
+            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
             onClick={() => onDuplicate(countdown.id)}
           >
             <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -348,10 +373,16 @@ export default function CountdownCard({
           </div>
         )}
         <div
-          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-400 text-white border border-gray-400 shadow-sm hover:bg-gray-500 hover:border-gray-500 active:bg-gray-600 transition-all duration-150 p-0"
+          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
           onClick={handleDeleteClick}
         >
           <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        </div>
+        <div
+          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${memoText ? 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]' : 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]'} text-white border shadow-sm active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
+          onClick={() => setShowMemo(!showMemo)}
+        >
+          <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
         </div>
       </div>
       
@@ -390,6 +421,67 @@ export default function CountdownCard({
             {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
+        {/* Memo section */}
+        <AnimatePresence>
+          {showMemo && (
+            <motion.div 
+              className="w-full mt-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="border-t border-gray-100 pt-2">
+                {isEditingMemo ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={memoText}
+                      onChange={(e) => setMemoText(e.target.value)}
+                      placeholder="Enter your memo..."
+                      maxLength={300}
+                      className="w-full text-[11px] sm:text-[12px] p-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      rows={3}
+                    />
+                    <div className="flex gap-1">
+                      <button
+                        onClick={handleMemoSave}
+                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleMemoCancel}
+                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                                ) : (
+                  <div className="space-y-1">
+                    {memoText ? (
+                      <div className="text-[11px] sm:text-[12px] text-gray-700 bg-gray-50 p-2 rounded-md overflow-x-auto overflow-y-auto max-w-full max-h-20">
+                        <div className="whitespace-pre-wrap break-words">
+                          {memoText}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] sm:text-[12px] text-gray-500 italic">
+                        No memo
+                      </p>
+                    )}
+                    <button
+                      onClick={() => setIsEditingMemo(true)}
+                      className="text-[10px] sm:text-[11px] text-blue-500 hover:text-blue-600 transition-colors"
+                    >
+                      {memoText ? 'Edit' : 'Add memo'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Footer with date */}
         <div className="w-full flex items-center justify-center mt-3">
           <div className="flex items-center justify-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full">

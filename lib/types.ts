@@ -3,6 +3,7 @@ export interface Countdown {
   title: string
   date: string
   description?: string
+  memo?: string
   hidden: boolean
   pinned?: boolean
   originalCategory?: "custom" | "general" | "personal" // "custom" is deprecated but kept for backward compatibility

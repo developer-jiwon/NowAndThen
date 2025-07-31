@@ -177,6 +177,26 @@ export default function SupabaseCountdownGrid({
     setEditingCountdownId(null);
   };
 
+  const handleUpdateMemo = async (id: string, memo: string) => {
+    if (!user) return;
+    const countdown = countdowns.find(c => c.id === id);
+    if (!countdown) return;
+    
+    try {
+      console.log('Updating memo for countdown:', id, 'memo:', memo);
+      await updateCountdown(
+        { ...countdown, memo },
+        user.id
+      );
+      console.log('Memo updated successfully');
+      
+      // Force refresh the data
+      await loadCountdowns(user.id);
+    } catch (error) {
+      console.error('Error updating memo:', error);
+    }
+  };
+
   const handleAddCountdown = async (values: any) => {
     if (!user) return;
     
@@ -347,6 +367,7 @@ export default function SupabaseCountdownGrid({
               onTogglePin={() => {}} // 샘플에서는 비활성화
               onEdit={() => handleSampleEdit(sample)}
               onDuplicate={() => {}} // 샘플에서는 비활성화
+              onUpdateMemo={() => {}} // 샘플에서는 비활성화
               category={sample.originalCategory || 'general'}
             />
           ))}
@@ -615,6 +636,7 @@ export default function SupabaseCountdownGrid({
                 onTogglePin={handleTogglePin}
                 onEdit={handleEdit}
                 onDuplicate={handleDuplicate}
+                onUpdateMemo={handleUpdateMemo}
                 category={category}
               />
             ))}

@@ -7,6 +7,7 @@ import { Clock } from "@/components/ui/clock"
 import ProfileMenu from "@/components/profile-menu";
 import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
+import UpdatePopup from "@/components/update-popup";
 // import Link from "next/link";
 import AdSenseComponent from "@/components/AdSenseComponent";
 
@@ -14,6 +15,7 @@ export default function Home() {
   const user = useUser();
   const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
   const [activeTab, setActiveTab] = useState("pinned");
+  const [showUpdatePopup, setShowUpdatePopup] = useState(false);
   
   useEffect(() => {
     // Check for hash in URL to set active tab
@@ -21,11 +23,26 @@ export default function Home() {
     if (hash && ['pinned', 'general', 'personal', 'custom', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
+    
+    // Show update popup for v1.0
+    const hasSeenUpdate = localStorage.getItem('nowandthen-v1-update');
+    if (!hasSeenUpdate) {
+      setTimeout(() => {
+        setShowUpdatePopup(true);
+      }, 1000); // Show after 1 second
+    }
   }, []);
+  
+  const handleCloseUpdatePopup = () => {
+    setShowUpdatePopup(false);
+    localStorage.setItem('nowandthen-v1-update', 'true');
+  };
 
   return (
-    <main className="bg-white flex flex-col items-centersm:p-3 mt-20">
-      <div className="container mx-auto max-w-6xl flex flex-col">
+    <>
+      <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} />
+      <main className="bg-white flex flex-col items-centersm:p-3 mt-20">
+        <div className="container mx-auto max-w-6xl flex flex-col">
         <div className="flex flex-col items-center w-full mb-4">
           <div className="flex items-center justify-center gap-2 mb-3">
             <h1 className="font-merriweather text-2xl sm:text-3xl font-bold text-gray-900">Now & Then</h1>
@@ -50,34 +67,22 @@ export default function Home() {
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
-          <div className="relative rounded-2xl bg-white/70 backdrop-blur-xl border border-gray-100 shadow-lg p-3 sm:p-4 flex flex-col items-center overflow-hidden"
-            style={{
-              boxShadow: "0 4px 16px 0 rgba(236, 72, 153, 0.08), 0 1px 4px 0 rgba(59, 130, 246, 0.06)"
-            }}
-          >
-            {/* 글로시 하이라이트 */}
-            <div className="absolute left-4 top-2 w-1/3 h-4 bg-white/60 rounded-full blur-[2px] opacity-60 pointer-events-none" />
-            {/* <h1 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">
-              Master Your <span className="text-pink-200">Time</span>
-            </h1> */}
-            <div className="flex justify-center mb-2">
-              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-pink-100 via-white/80 to-blue-100 opacity-60" />
-            </div>
-            <p className="text-sm text-gray-600 mb-3 font-normal text-center" style={{letterSpacing: '0.01em'}}>
+          <div className="rounded-2xl bg-[#E5C8CD] border border-[#E5C8CD]/30 p-3 sm:p-4 flex flex-col items-center">
+            <p className="text-sm text-[#4A2C3A] mb-3 font-normal text-center" style={{letterSpacing: '0.01em'}}>
               Never miss what matters.<br />
-              <span className="text-xs block mt-1 text-gray-400">Effortless, beautiful, and always in sync.</span>
+              <span className="text-xs block mt-1 text-[#4A2C3A]/70">Effortless, beautiful, and always in sync.</span>
             </p>
-            <ul className="flex flex-col sm:flex-row justify-center gap-4 text-xs text-gray-500 font-normal">
+            <ul className="flex flex-col sm:flex-row justify-center gap-4 text-xs text-[#4A2C3A] font-normal">
               <li className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-pink-100/80 shadow-sm" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
                 Visual countdowns
               </li>
               <li className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-blue-100/80 shadow-sm" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
                 Cross-device sync
               </li>
               <li className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-white/80 border border-gray-200 shadow-sm" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
                 Smart organization
               </li>
             </ul>
@@ -148,7 +153,8 @@ export default function Home() {
           />
         </div>
       </div>
-    </main>
+      </main>
+    </>
   )
 }
 

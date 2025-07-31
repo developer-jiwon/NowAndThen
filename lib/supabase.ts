@@ -23,6 +23,7 @@ export type Database = {
           is_count_up: boolean;
           hidden: boolean;
           pinned: boolean;
+          memo?: string;
           category: string;
           created_at: string;
           updated_at: string;
@@ -35,6 +36,7 @@ export type Database = {
           is_count_up?: boolean;
           hidden?: boolean;
           pinned?: boolean;
+          memo?: string;
           category?: string;
           created_at?: string;
           updated_at?: string;
@@ -47,6 +49,7 @@ export type Database = {
           is_count_up?: boolean;
           hidden?: boolean;
           pinned?: boolean;
+          memo?: string;
           category?: string;
           created_at?: string;
           updated_at?: string;
