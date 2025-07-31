@@ -439,19 +439,19 @@ export default function CountdownCard({
                       onChange={(e) => setMemoText(e.target.value)}
                       placeholder="Enter your memo..."
                       maxLength={300}
-                      className="w-full text-[11px] sm:text-[12px] p-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full text-[11px] sm:text-[12px] p-2 border border-[#4E724C]/30 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
                       rows={3}
                     />
                     <div className="flex gap-1">
                       <button
                         onClick={handleMemoSave}
-                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] text-white rounded-md hover:from-[#5A7F58] hover:to-[#4A6A48] transition-all duration-200"
                       >
                         Save
                       </button>
                       <button
                         onClick={handleMemoCancel}
-                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-white text-[#4E724C] rounded-md hover:bg-[#4E724C]/5 border border-[#4E724C]/30 hover:border-[#4E724C] transition-all duration-200"
                       >
                         Cancel
                       </button>
@@ -472,7 +472,7 @@ export default function CountdownCard({
                     )}
                     <button
                       onClick={() => setIsEditingMemo(true)}
-                      className="text-[10px] sm:text-[11px] text-blue-500 hover:text-blue-600 transition-colors"
+                      className="text-[10px] sm:text-[11px] text-[#4E724C] hover:text-[#3A5A38] transition-colors"
                     >
                       {memoText ? 'Edit' : 'Add memo'}
                     </button>
