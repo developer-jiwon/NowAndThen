@@ -308,8 +308,8 @@ export default function CountdownCard({
         )}
       </AnimatePresence>
       
-      {/* Action buttons: floating outside top-right like a bookmark/tab */}
-      <div className="absolute -top-3 -right-2 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
+      {/* Action buttons: floating outside top-left like a bookmark/tab */}
+      <div className="absolute -top-3 -left-2 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
         style={{ minHeight: '20px' }}
       >
         <div
