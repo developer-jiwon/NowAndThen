@@ -38,6 +38,8 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
       memoDesc: 'Add and edit personal memos for each countdown.',
       designTitle: 'New Design',
       designDesc: 'Enhanced UI with Fern Green gradient buttons and Tea Rose color scheme.',
+      emptyStateTitle: 'Beautiful Empty States',
+      emptyStateDesc: 'Inspiring empty state designs for each tab with custom icons and helpful suggestions.',
       confirm: 'Got it',
       version: 'Version 1.0 • August 2025'
     },
@@ -48,6 +50,8 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
       memoDesc: '각 카운트다운에 개인 메모를 추가하고 편집할 수 있습니다.',
       designTitle: '새로운 디자인',
       designDesc: 'Fern Green 그라데이션 버튼과 Tea Rose 색상 조합으로 더욱 세련된 UI를 제공합니다.',
+      emptyStateTitle: '아름다운 빈 상태',
+      emptyStateDesc: '각 탭별 맞춤형 아이콘과 유용한 제안이 포함된 영감을 주는 빈 상태 디자인.',
       confirm: '확인',
       version: '버전 1.0 • 2025년 8월'
     }
@@ -119,6 +123,20 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
                   <h3 className="font-semibold text-gray-900 text-sm">{currentContent.designTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
                     {currentContent.designDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.emptyStateTitle}</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentContent.emptyStateDesc}
                   </p>
                 </div>
               </div>

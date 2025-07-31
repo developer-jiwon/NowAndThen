@@ -157,16 +157,21 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 w-full max-w-xs sm:max-w-md mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 w-full max-w-xs sm:max-w-md mx-auto bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-6">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-medium text-gray-700">Title</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Title</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <FormControl>
-                  <Input placeholder="Enter timer title" {...field} maxLength={20} className="w-full h-9" />
+                  <Input 
+                    placeholder="Enter timer title" 
+                    {...field} 
+                    maxLength={20} 
+                    className="w-full h-10 border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200" 
+                  />
                 </FormControl>
               </div>
               <FormMessage />
@@ -182,7 +187,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             
             return (
               <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-medium text-gray-700">Date</FormLabel>
+                <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Date</FormLabel>
                 <div className="w-full max-w-xs sm:max-w-md mx-auto">
                   {/* Quick preset buttons */}
                   <div className="flex gap-1 mb-2 max-w-xs sm:max-w-md">
@@ -195,7 +200,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors font-medium"
+                      className="w-full px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-lg text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
                     >
                       Today
                     </button>
@@ -209,7 +214,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors font-medium"
+                      className="w-full px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-lg text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
                     >
                       Tomorrow
                     </button>
@@ -221,7 +226,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         type="text"
                         value={field.value}
                         onChange={(e) => handleDateChange(e, field.onChange)}
-                        className="h-8 flex-1 text-center"
+                        className="h-10 flex-1 text-center border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200"
                         placeholder="YYYYMMDD"
                       />
                     </FormControl>
@@ -230,7 +235,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 px-2"
+                          className="h-10 px-3 border-[#4E724C]/30 hover:border-[#4E724C] hover:bg-[#4E724C]/5 transition-all duration-200"
                         >
                           <CalendarIcon className="h-4 w-4" />
                         </Button>
@@ -275,14 +280,14 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           name="category"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-medium text-gray-700">Category</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Category</FormLabel>
               <div className="w-full max-w-xs sm:max-w-md mx-auto">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-9 w-full">
+                    <SelectTrigger className="h-10 w-full border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200">
                       <SelectValue placeholder="Choose category" />
                     </SelectTrigger>
                   </FormControl>
@@ -298,10 +303,10 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
         />
 
         <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-3 pt-2">
-          <Button type="submit" className="w-full bg-slate-700 hover:bg-slate-800 hover:text-white text-white border-0 h-9 text-sm font-medium shadow-sm !important" style={{backgroundColor: '#374151', color: 'white'}}>
+          <Button type="submit" className="w-full bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-10 text-sm font-medium rounded-lg shadow-sm transition-all duration-200">
             {submitButtonText}
           </Button>
-          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-9 text-sm font-medium border-gray-200 hover:bg-gray-50">
+          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-10 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-lg transition-all duration-200">
             Cancel
           </Button>
         </div>

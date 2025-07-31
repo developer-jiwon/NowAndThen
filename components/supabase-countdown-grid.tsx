@@ -421,141 +421,136 @@ export default function SupabaseCountdownGrid({
     );
   }
 
-  // General 탭만 특별 처리
-  if (filteredCountdowns.length === 0 && !showAddForm && category === 'general') {
-    return (
-      <div className="flex items-center justify-center pt-0 pb-0 -mb-6">
-        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
-          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
-            No general timers
-          </h3>
-          <p className="text-gray-600 text-xs mb-3 text-center">
-            Track deadlines and goals.
-          </p>
-          <div className="mb-3 flex justify-center">
-            <ul className="text-gray-500 space-y-0.5 text-xs text-left">
-              <li>• Project deadline</li>
-              <li>• Family/friend birthday</li>
-              <li>• Workout routine</li>
-              <li>• Exam D-day</li>
-              <li>• Anniversary or event</li>
-            </ul>
-          </div>
-          <div className="text-center">
-            <Button 
-              onClick={() => setActiveTab('custom')}
-              variant="outline"
-              className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
-            >
-              Add Timer
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  // Personal 탭만 특별 처리
-  if (filteredCountdowns.length === 0 && !showAddForm && category === 'personal') {
-    return (
-      <div className="flex items-center justify-center pt-0 pb-0 -mb-4 -mt-2">
-        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
-          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
-            No personal timers
-          </h3>
-          <p className="text-gray-600 text-xs mb-3 text-center">
-            Personal milestones.
-          </p>
-          <div className="mb-3 flex justify-center">
-            <ul className="text-gray-500 space-y-0.5 text-xs text-left">
-              <li>• Project deadline</li>
-              <li>• Family/friend birthday</li>
-              <li>• Workout routine</li>
-              <li>• Exam D-day</li>
-              <li>• Anniversary or event</li>
-            </ul>
-          </div>
-          <div className="text-center">
-            <Button 
-              onClick={() => setActiveTab('custom')}
-              variant="outline"
-              className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
-            >
-              Add Timer
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Hidden 탭만 특별 처리
-  if (filteredCountdowns.length === 0 && !showAddForm && showHidden) {
-    return (
-      <div className="flex items-center justify-center pt-0 pb-0 -mb-0 -mt-6">
-        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
-          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
-            No hidden timers
-          </h3>
-          <p className="text-gray-600 text-xs mb-3 text-center">
-            Hidden timers appear here.
-          </p>
-          <div className="mb-3 flex justify-center">
-            <ul className="text-gray-500 space-y-0.5 text-xs text-left">
-              <li>• Project deadline</li>
-              <li>• Family/friend birthday</li>
-              <li>• Workout routine</li>
-              <li>• Exam D-day</li>
-              <li>• Anniversary or event</li>
-            </ul>
-          </div>
-          <div className="text-center">
-            <Button 
-              onClick={() => setActiveTab('custom')}
-              variant="outline"
-              className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
-            >
-              Add Timer
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Show search results or empty state for other tabs
   if (filteredCountdowns.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center pt-2 pb-0 -mb-8">
-        <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 max-w-[320px] w-full flex flex-col items-center justify-center">
-          <h3 className="text-base font-medium text-gray-800 mb-1 text-center">
+      <div className={`flex-1 flex items-center justify-center ${
+        category === 'general' ? 'pt-0 pb-0 -mb-6' :
+        category === 'personal' ? 'pt-0 pb-0 -mb-4 -mt-2' :
+        showHidden ? 'pt-0 pb-0 -mb-0 -mt-6' :
+        'pt-2 pb-0 -mb-8'
+      }`}>
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-6 max-w-[320px] w-full flex flex-col items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#4E724C]/10 to-[#3A5A38]/10 flex items-center justify-center mb-4">
+            {showHidden ? (
+              <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3l18 18M9 9a3 3 0 015.83 1.28L15.54 15.54a3 3 0 01-5.83-1.28L9 9z" />
+              </svg>
+            ) : category === 'general' ? (
+              <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            ) : category === 'personal' ? (
+              <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            ) : category === 'custom' ? (
+              <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
+          </div>
+          
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
             {showHidden 
-              ? "No hidden timers" 
+              ? "Nothing hidden" 
               : category === 'pinned'
-              ? "No timers yet"
+              ? "Start your journey"
+              : category === 'general'
+              ? "Ready to organize"
+              : category === 'personal'
+              ? "Your story begins"
+              : category === 'custom'
+              ? "Create something unique"
               : `No ${category} timers`}
           </h3>
-          <p className="text-gray-600 text-xs mb-3 text-center">
+          
+          <p className="text-gray-600 text-sm mb-4 text-center leading-relaxed">
             {category === 'pinned' 
-              ? "Add a timer to keep track of what matters most."
+              ? "Pin your most important moments and keep them close."
               : category === 'general'
-              ? "Track deadlines and goals."
+              ? "Track deadlines, goals, and important milestones."
               : category === 'personal'
-              ? "Personal milestones."
+              ? "Your personal milestones and special moments."
+              : category === 'custom'
+              ? "Design your own unique countdowns and track what matters to you."
               : showHidden
-              ? "Hidden timers appear here."
-              : "Create custom timers."}
+              ? "Hidden timers will appear here when you need them."
+              : "Create custom timers for your unique needs."}
           </p>
           
           {category === 'pinned' && (
-            <div className="mb-3 flex justify-center">
-              <ul className="text-gray-500 space-y-0.5 text-xs text-left">
-                <li>• Project deadline</li>
-                <li>• Family/friend birthday</li>
-                <li>• Workout routine</li>
-                <li>• Exam D-day</li>
-                <li>• Anniversary or event</li>
-              </ul>
+            <div className="mb-4 w-full">
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Project deadlines</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Birthdays & anniversaries</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Fitness goals</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Exam preparation</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {category === 'general' && (
+            <div className="mb-4 w-full">
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Work deadlines</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Project milestones</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Meeting schedules</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Goal targets</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {category === 'personal' && (
+            <div className="mb-4 w-full">
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Personal goals</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Health milestones</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Learning targets</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <span>Life events</span>
+                </div>
+              </div>
             </div>
           )}
           
@@ -563,10 +558,9 @@ export default function SupabaseCountdownGrid({
             <div className="text-center">
               <Button 
                 onClick={() => setActiveTab('custom')}
-                variant="outline"
-                className="bg-gray-900 text-white hover:bg-gray-800 border-gray-900 px-3 h-6 text-xs font-medium rounded shadow-sm"
+                className="bg-gradient-to-r from-[#4E724C] to-[#3A5A38] text-white hover:from-[#5A7F58] hover:to-[#4A6A48] border-0 px-6 py-2 text-sm font-medium rounded-lg shadow-sm transition-all duration-200"
               >
-                Add Timer
+                Create Timer
               </Button>
             </div>
           )}
@@ -608,22 +602,9 @@ export default function SupabaseCountdownGrid({
 
       {/* Empty State */}
       {filteredCountdowns.length === 0 ? (
-        category === 'custom' ? (
-          // Custom 탭에서는 기본적으로 폼 표시
-          <div className="mb-4 flex justify-center">
-            <div className="max-w-sm w-full">
-              <CountdownForm 
-                onSubmit={handleAddCountdown}
-                onCancel={() => setShowAddForm(false)}
-                submitButtonText="Create Timer"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center py-2">
-            {/* 빈 상태 - 아무것도 표시하지 않음 */}
-          </div>
-        )
+        <div className="flex-1 flex items-center justify-center py-2">
+          {/* 빈 상태 - 아무것도 표시하지 않음 */}
+        </div>
       ) : (
         <div className="grid gap-3 md:gap-4">
           <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
