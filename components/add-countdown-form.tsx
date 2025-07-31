@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -66,6 +67,9 @@ export const formSchema = z.object({
     required_error: "Please select a category",
     invalid_type_error: "Invalid category selected",
   }).default("general"),
+  memo: z.string().max(300, {
+    message: "Memo cannot exceed 300 characters"
+  }).optional(),
   isCountUp: z.boolean().optional(),
 })
 
@@ -88,6 +92,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
       title: "",
       date: "",
       category: "general",
+      memo: "",
     },
   })
 
@@ -107,6 +112,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
       title: "",
       date: "",
       category: "general",
+      memo: "",
     });
   };
 
@@ -302,6 +308,27 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="memo"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Memo (Optional)</FormLabel>
+              <div className="w-full max-w-xs sm:max-w-md mx-auto">
+                <FormControl>
+                  <Textarea 
+                    placeholder="Add a personal note about this timer..." 
+                    {...field} 
+                    maxLength={300}
+                    className="w-full min-h-[80px] border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200 resize-none"
+                  />
+                </FormControl>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-3 pt-2">
           <Button type="submit" className="w-full bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-10 text-sm font-medium rounded-lg shadow-sm transition-all duration-200">
             {submitButtonText}
@@ -334,6 +361,7 @@ export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
       hidden: false,
       pinned: false,
       originalCategory: values.category,
+      memo: values.memo || "",
     }
     
     try {
