@@ -25,12 +25,12 @@ export default function Home() {
     }
     
     // Show update popup for v1.0
-    const hasSeenUpdate = localStorage.getItem('nowandthen-v1-update');
-    if (!hasSeenUpdate) {
-      setTimeout(() => {
-        setShowUpdatePopup(true);
-      }, 1000); // Show after 1 second
-    }
+    // const hasSeenUpdate = localStorage.getItem('nowandthen-v1-update');
+    // if (!hasSeenUpdate) {
+    //   setTimeout(() => {
+    //     setShowUpdatePopup(true);
+    //   }, 1000); // Show after 1 second
+    // }
   }, []);
   
   const handleCloseUpdatePopup = () => {
@@ -40,7 +40,7 @@ export default function Home() {
 
   return (
     <>
-      <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} />
+      {/* <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} /> */}
       <main className="bg-white flex flex-col items-centersm:p-3 mt-20">
         <div className="container mx-auto max-w-6xl flex flex-col">
         <div className="flex flex-col items-center w-full mb-4">

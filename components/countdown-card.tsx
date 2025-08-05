@@ -228,11 +228,8 @@ export default function CountdownCard({
   
   const isPinned = countdown.pinned || false;
 
-  // Determine header title - only show special text for tomorrow
-  let headerTitle = countdown.title;
-  if (isTomorrow) {
-    headerTitle = "Tomorrow";
-  }
+  // Use the original title always
+  const headerTitle = countdown.title;
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
