@@ -227,8 +227,8 @@ export default function SupabaseCountdownGrid({
     return (
       <div className="w-full flex justify-center items-center py-8">
         <div className="flex items-center">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading your timers...</span>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="ml-2 text-sm">Loading your timers...</span>
         </div>
       </div>
     );

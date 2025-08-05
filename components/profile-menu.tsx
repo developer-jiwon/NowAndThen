@@ -14,6 +14,7 @@ interface ProfileMenuProps {
 export default function ProfileMenu({ size }: ProfileMenuProps) {
   const user = useUser();
   const [open, setOpen] = useState<'none' | 'main' | 'signin'>('none');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const supabaseClient = useSupabaseClient();
   const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
 
@@ -22,12 +23,16 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
     window.location.reload();
   };
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = () => {
+    setShowDeleteConfirm(true);
+    setOpen('none');
+  };
+
+  const confirmDeleteAccount = async () => {
     if (!user) {
       alert('No user found. Please sign in first.');
       return;
     }
-    if (!window.confirm("Are you sure you want to delete your account and all your data? This action cannot be undone.")) return;
     try {
       if (user.id) {
         await supabase.from('countdowns').delete().eq('user_id', user.id);
@@ -48,6 +53,10 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
       alert('An error occurred while deleting your account.');
       console.error(err);
     }
+  };
+
+  const cancelDeleteAccount = () => {
+    setShowDeleteConfirm(false);
   };
 
   // Size classes
@@ -90,15 +99,21 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
       )}
       {open === 'signin' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-3 max-w-[240px] w-full relative">
+          <div className="bg-white/90 backdrop-blur-md border border-gray-200/60 rounded-2xl shadow-xl p-6 max-w-[280px] w-full relative">
             <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
               onClick={() => setOpen('none')}
             >
               <span className="sr-only">Close</span>
               ×
             </button>
-            <h2 className="text-base font-semibold text-center mb-2 text-gray-900 font-merriweather">Sign in</h2>
+            <div className="text-center mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#4E724C] to-[#3A5A38] rounded-full flex items-center justify-center mx-auto mb-3">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900 font-merriweather">Welcome Back</h2>
+              <p className="text-xs text-gray-500 mt-1">Sign in to sync your timers</p>
+            </div>
             <Auth
               supabaseClient={supabaseClient}
               appearance={{
@@ -106,20 +121,21 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
                 style: {
                   button: { 
                     fontFamily: 'Inter, system-ui, sans-serif', 
-                    fontSize: '12px', 
-                    padding: '8px 16px',
-                    borderRadius: '6px',
+                    fontSize: '13px', 
+                    padding: '12px 20px',
+                    borderRadius: '10px',
                     border: '1px solid #e5e7eb',
                     backgroundColor: '#ffffff',
                     color: '#374151',
-                    fontWeight: '500',
-                    minHeight: '36px',
+                    fontWeight: '600',
+                    minHeight: '44px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
-                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                    transition: 'all 0.2s ease'
+                    gap: '10px',
+                    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1)',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer'
                   },
                   label: { 
                     fontFamily: 'Inter, system-ui, sans-serif', 
@@ -182,6 +198,37 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
               showLinks={false}
               onlyThirdPartyProviders={true}
             />
+          </div>
+        </div>
+      )}
+      
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-lg p-4 max-w-[300px] w-full relative">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Account</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Are you sure you want to delete your account and all your data? This action cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  onClick={cancelDeleteAccount}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="flex-1 px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={confirmDeleteAccount}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -66,13 +66,13 @@ export default function Home() {
         
         {/* Welcome content and feature highlights */}
         {/* Master Your Time 안내 박스만 max-w-xl로 넓힘 */}
-        <div className="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
-          <div className="rounded-2xl bg-[#E5C8CD] border border-[#E5C8CD]/30 p-3 sm:p-4 flex flex-col items-center">
-            <p className="text-sm text-[#4A2C3A] mb-3 font-normal text-center" style={{letterSpacing: '0.01em'}}>
+        <div className="w-full max-w-[280px] sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
+          <div className="rounded-2xl bg-[#E5C8CD] border border-[#E5C8CD]/30 p-2.5 sm:p-4 flex flex-col items-center">
+            <p className="text-xs sm:text-sm text-[#4A2C3A] mb-2.5 sm:mb-3 font-normal text-center" style={{letterSpacing: '0.01em'}}>
               Never miss what matters.<br />
-              <span className="text-xs block mt-1 text-[#4A2C3A]/70">Effortless, beautiful, and always in sync.</span>
+              <span className="text-[10px] sm:text-xs block mt-1 text-[#4A2C3A]/70">Effortless, beautiful, and always in sync.</span>
             </p>
-            <ul className="flex flex-col sm:flex-row justify-center gap-4 text-xs text-[#4A2C3A] font-normal">
+            <ul className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-[#4A2C3A] font-normal">
               <li className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
                 Visual countdowns
