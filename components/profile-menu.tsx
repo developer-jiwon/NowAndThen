@@ -19,8 +19,15 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
   const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
+    console.log('Logout button clicked');
+    try {
+      await supabase.auth.signOut();
+      console.log('Sign out successful');
+      window.location.reload();
+    } catch (error) {
+      console.error('Sign out error:', error);
+      alert('Failed to sign out. Please try again.');
+    }
   };
 
   const handleDeleteAccount = () => {
