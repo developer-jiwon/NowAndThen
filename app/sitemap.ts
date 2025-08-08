@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nowandthen.app'
+  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.now-then.dev'
   const baseUrl = rawSiteUrl.endsWith('/') ? rawSiteUrl.slice(0, -1) : rawSiteUrl
 
   return [
