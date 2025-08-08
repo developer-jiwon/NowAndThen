@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import Script from "next/script";
 import { Briefcase, PartyPopper, Dumbbell, BookOpen, PiggyBank, Palette } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import AdSenseComponent from "@/components/AdSenseComponent";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
   title: "Templates | Now & Then",
   description: "Quick countdown timer ideas for common use cases.",
   keywords: "countdown templates, timer ideas, deadline examples",
+  alternates: { canonical: "/templates" },
 };
 
 interface Template {
@@ -96,6 +98,14 @@ const templates: Template[] = [
 export default function Templates() {
   return (
     <main className="max-w-4xl mx-auto py-8 px-4">
+      <Script id="ld-templates-article" type="application/ld+json">{JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Timer Templates for Common Use Cases",
+        author: { "@type": "Person", name: "Now & Then Team" },
+        datePublished: "2025-01-01",
+        dateModified: "2025-01-01"
+      })}</Script>
       <Link href="/" className="inline-block mb-6 text-sm text-gray-500 hover:text-gray-700 transition-colors">
         ← Back
       </Link>

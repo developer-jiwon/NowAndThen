@@ -1,16 +1,26 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import Script from "next/script";
 import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
   title: "Guide | Now & Then",
   description: "Master countdown timers with advanced tips and strategies for maximum productivity.",
   keywords: "timer guide, countdown tutorial, time management, productivity tips",
+  alternates: { canonical: "/guide" },
 };
 
 export default function Guide() {
   return (
     <main className="max-w-2xl mx-auto py-8 px-4">
+      <Script id="ld-guide-article" type="application/ld+json">{JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "How to Use Countdowns for Projects",
+        author: { "@type": "Person", name: "Now & Then Team" },
+        datePublished: "2025-01-01",
+        dateModified: "2025-01-01"
+      })}</Script>
       <Link href="/" className="inline-block mb-6 text-sm text-gray-500 hover:text-gray-700 transition-colors">
         ← Back
       </Link>

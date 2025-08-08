@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "About | Now & Then",
   description: "Learn about Now & Then - a powerful yet simple countdown timer app for tracking deadlines and important moments.",
   keywords: "countdown timer, deadlines, time tracking, productivity, goals",
+  alternates: { canonical: "/about" },
 };
 
 export default function About() {

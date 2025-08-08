@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
+  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nowandthen.app'
+  const baseUrl = rawSiteUrl.endsWith('/') ? rawSiteUrl.slice(0, -1) : rawSiteUrl
   return {
     rules: [
       {
@@ -24,7 +26,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/admin/', '/_next/', '/private/'],
     },
     ],
-    sitemap: 'https://nowandthen.app/sitemap.xml',
-    host: 'https://nowandthen.app',
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   }
 }

@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Cookie Policy | Now & Then",
   description: "Learn about how we use cookies and similar technologies on Now & Then countdown timer platform, including advertising and analytics cookies.",
   keywords: "cookie policy, cookies, tracking, advertising, analytics, privacy",
+  alternates: { canonical: "/cookie-policy" },
 };
 
 export default function CookiePolicy() {

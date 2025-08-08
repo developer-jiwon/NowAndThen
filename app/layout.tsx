@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
+import Script from "next/script"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
@@ -10,6 +11,10 @@ const merriweather = Merriweather({
   variable: "--font-merriweather",
 })
 
+// Resolve site URL from environment to avoid hardcoding
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.now-then.dev'
+const siteUrl = rawSiteUrl.endsWith('/') ? rawSiteUrl.slice(0, -1) : rawSiteUrl
+
 export const metadata: Metadata = {
   title: "Now & Then - Countdown Timer & Deadline Tracker",
   description: "Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies.",
@@ -17,9 +22,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Now & Then Team" }],
   creator: "Now & Then",
   publisher: "Now & Then",
-  metadataBase: new URL('https://www.now-then.dev'),
+  metadataBase: new URL(siteUrl),
   alternates: {
-    canonical: 'https://www.now-then.dev',
+    canonical: siteUrl,
   },
   robots: {
     index: true,
@@ -35,13 +40,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://www.now-then.dev',
+    url: siteUrl,
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     siteName: 'Now & Then',
     images: [
       {
-        url: 'https://www.now-then.dev/og-image.png',
+        url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
         alt: 'Now & Then - Countdown Timer App',
@@ -53,7 +58,7 @@ export const metadata: Metadata = {
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     creator: '@nowandthenapp',
-    images: ['https://www.now-then.dev/og-image.png'],
+    images: [`${siteUrl}/og-image.png`],
   },
   icons: {
     icon: [
@@ -81,131 +86,97 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
-        <link rel="canonical" href="https://www.now-then.dev" />
+        <link rel="canonical" href={siteUrl} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#E5C8CD" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="application-name" content="Now & Then" />
         <meta name="description" content="Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies." />
         
         {/* Google Search Console Verification - Replace with your actual verification code */}
-        <meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />
-        
-        {/* Google Analytics 4 */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+        <meta name="google-site-verification" content="ELL-x5tIpqAhOb58cy_wsdVCh6csVzbl_VJt1pgOotM" />
+        {/* Consent Mode v2 default (must run before any gtag/ad scripts) */}
+        <Script id="consent-default" strategy="afterInteractive">{
+          `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+          });
+          `
+        }</Script>
+
+        {/* Google Analytics 4 (optional via env) */}
+        {process.env.NEXT_PUBLIC_GA_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">{
+              `
               window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
+              function gtag(){dataLayer.push(arguments);} 
               gtag('js', new Date());
-              gtag('config', 'GA_MEASUREMENT_ID');
-            `,
-          }}
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+              `
+            }</Script>
+          </>
+        ) : null}
+
+        {/* Google AdSense global script (present for pre-approval; ad slots gated elsewhere) */}
+        <Script
+          id="adsense-global"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4588308927468413'}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-        
-        {/* Structured Data for AdSense */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Now & Then",
-              "description": "Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.",
-              "url": "https://nowandthen.app",
-              "applicationCategory": "ProductivityApplication",
-              "operatingSystem": "Web",
-              "browserRequirements": "Requires JavaScript. Requires HTML5.",
-              "softwareVersion": "1.0",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "creator": {
-                "@type": "Organization",
-                "name": "Now & Then Team",
-                "url": "https://nowandthen.app",
-                "contactPoint": {
-                  "@type": "ContactPoint",
-                  "email": "dev.jiwonnie@gmail.com",
-                  "contactType": "Customer Service"
-                }
-              },
-              "featureList": [
-                "Countdown timers",
-                "Deadline tracking", 
-                "Goal management",
-                "Cross-device sync",
-                "Timer categories",
-                "Progress tracking"
-              ]
-            })
-          }}
-        />
-        
+
+        {/* WebApplication Schema (site-wide) */}
+        <Script id="ld-webapp" type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Now & Then",
+          description: "Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.",
+          url: siteUrl,
+          applicationCategory: "ProductivityApplication",
+          operatingSystem: "Web",
+          browserRequirements: "Requires JavaScript. Requires HTML5.",
+          softwareVersion: "1.0",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+          creator: {
+            "@type": "Organization",
+            name: "Now & Then Team",
+            url: siteUrl,
+            contactPoint: { "@type": "ContactPoint", email: "dev.jiwonnie@gmail.com", contactType: "Customer Service" }
+          },
+          featureList: [
+            "Countdown timers",
+            "Deadline tracking",
+            "Goal management",
+            "Cross-device sync",
+            "Timer categories",
+            "Progress tracking"
+          ]
+        })}</Script>
+
         {/* Organization Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Now & Then",
-              "url": "https://nowandthen.app",
-              "logo": "https://nowandthen.app/favicon.svg",
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "email": "dev.jiwonnie@gmail.com",
-                "contactType": "Customer Service"
-              },
-              "sameAs": [
-                "https://nowandthen.app"
-              ]
-            })
-          }}
-        />
-        
-        {/* FAQ Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "Do I need to sign in?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "No, but signing in syncs your timers across devices."
-                  }
-                },
-                {
-                  "@type": "Question", 
-                  "name": "Is my data private?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes. Local storage for anonymous use, encrypted cloud for signed-in users."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What's the difference between categories?",
-                  "acceptedAnswer": {
-                    "@type": "Answer", 
-                    "text": "Pinned for urgent deadlines, General for work tasks, Personal for life events, Custom for anything else."
-                  }
-                }
-              ]
-            })
-          }}
-        />
+        <Script id="ld-org" type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Now & Then",
+          url: siteUrl,
+          logo: `${siteUrl}/favicon.svg`,
+          contactPoint: { "@type": "ContactPoint", email: "dev.jiwonnie@gmail.com", contactType: "Customer Service" },
+          sameAs: [siteUrl]
+        })}</Script>
       </head>
-      <body className={`${merriweather.variable} flex flex-col`}>
+      <body className={`${merriweather.variable} flex flex-col`}> 
         <SupabaseProvider>
           <div className="relative flex flex-col">
             {children}

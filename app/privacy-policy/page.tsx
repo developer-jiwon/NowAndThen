@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy | Now & Then",
   description: "Learn how we collect, use, and protect your personal information when you use Now & Then countdown timer platform.",
   keywords: "privacy policy, data protection, GDPR, personal information, data security",
+  alternates: { canonical: "/privacy-policy" },
 };
 
 export default function PrivacyPolicy() {

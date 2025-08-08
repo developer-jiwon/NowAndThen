@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Contact Us | Now & Then",
   description: "Get in touch with the Now & Then team. We'd love to hear from you about countdown timers and time management.",
   keywords: "contact, support, feedback, now and then, countdown timer",
+  alternates: { canonical: "/contact" },
 };
 
 export default function Contact() {

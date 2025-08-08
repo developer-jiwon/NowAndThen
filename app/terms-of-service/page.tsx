@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Terms of Service | Now & Then",
   description: "Read our Terms of Service to understand the rules and guidelines for using Now & Then countdown timer platform.",
   keywords: "terms of service, legal, terms and conditions, user agreement",
+  alternates: { canonical: "/terms-of-service" },
 };
 
 export default function TermsOfService() {

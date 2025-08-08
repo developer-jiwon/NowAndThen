@@ -151,7 +151,7 @@ export default function AdSenseComponent({
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={{ minHeight: 280 }}>
       <Script
         id="adsense-script"
         async
@@ -170,10 +170,7 @@ export default function AdSenseComponent({
       <ins 
         ref={adRef}
         className="adsbygoogle"
-        style={{ 
-          display: "block", 
-          textAlign: "center"
-        }}
+        style={{ display: "block", textAlign: "center", minHeight: 250 }}
         data-ad-client="ca-pub-4588308927468413"
         data-ad-slot={adSlot}
         data-ad-format={adFormat}

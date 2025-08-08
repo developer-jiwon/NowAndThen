@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "FAQ | Now & Then",
   description: "Quick answers to common countdown timer questions.",
   keywords: "FAQ, countdown timer help, questions",
+  alternates: { canonical: "/faq" },
 };
 
 interface FAQItem {
@@ -78,6 +80,21 @@ const faqItems: FAQItem[] = [
 export default function FAQ() {
   return (
     <main className="max-w-2xl mx-auto py-8 px-4">
+      <Script id="ld-faq" type="application/ld+json">{JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: (
+          [
+            { question: "Do I need to sign in?", answer: "No, but signing in syncs your timers across devices." },
+            { question: "Is my data private?", answer: "Yes. Local storage for anonymous use, encrypted cloud for signed-in users." },
+            { question: "What's the difference between categories?", answer: "Pinned for urgent deadlines, General for work tasks, Personal for life events, Custom for anything else." }
+          ]
+        ).map(q => ({
+          "@type": "Question",
+          name: q.question,
+          acceptedAnswer: { "@type": "Answer", text: q.answer }
+        }))
+      })}</Script>
       <Link href="/" className="inline-block mb-6 text-sm text-gray-500 hover:text-gray-700 transition-colors">
         ← Back
       </Link>
