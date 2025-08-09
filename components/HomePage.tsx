@@ -59,7 +59,7 @@ export default function HomePage() {
           </div>
           <LoginButton />
           <div className="text-center mt-2">
-            <a href="/whats-new" className="text-[11px] sm:text-xs text-[#4E724C] hover:underline">What’s New</a>
+            <a href="/whats-new" className="text-[11px] sm:text-xs text-[#4E724C] hover:underline">Updates</a>
           </div>
         </div>
         
