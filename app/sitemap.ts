@@ -59,5 +59,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    // Template detail pages intentionally excluded from sitemap to avoid thin-page indexing
+    // What's New / Release notes
+    {
+      url: `${baseUrl}/whats-new`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
   ]
 }

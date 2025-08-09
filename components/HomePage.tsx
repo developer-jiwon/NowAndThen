@@ -58,6 +58,9 @@ export default function HomePage() {
             )}
           </div>
           <LoginButton />
+          <div className="text-center mt-2">
+            <a href="/whats-new" className="text-[11px] sm:text-xs text-[#4E724C] hover:underline">What’s New</a>
+          </div>
         </div>
         
         <div className="w-full max-w-[280px] sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>

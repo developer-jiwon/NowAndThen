@@ -194,6 +194,8 @@ export default function RootLayout({
                 <a href="/faq" className="hover:underline">FAQ</a>
                 <span className="text-gray-300">|</span>
                 <a href="/contact" className="hover:underline">Contact</a>
+                <span className="text-gray-300">|</span>
+                <a href="/whats-new" className="hover:underline">What’s New</a>
               </div>
               <div className="flex flex-row flex-wrap justify-center gap-x-2 w-full mb-2">
                 <a href="/terms-of-service" className="hover:underline">Terms of Service</a>

@@ -121,11 +121,7 @@ export default function Templates() {
             <CardHeader className="flex flex-row items-center gap-3 pb-2">
               <div>{template.emoji}</div>
               <div>
-                <CardTitle className="text-lg font-semibold">
-                  <Link href={`/templates/${template.id}`} className="hover:underline">
-                    {template.title}
-                  </Link>
-                </CardTitle>
+                <CardTitle className="text-lg font-semibold">{template.title}</CardTitle>
                 <CardDescription>{template.description}</CardDescription>
               </div>
             </CardHeader>
@@ -139,6 +135,7 @@ export default function Templates() {
                   </div>
                 </div>
               ))}
+              {/* detail pages removed; keep concise examples only */}
             </div>
             </CardContent>
           </Card>
