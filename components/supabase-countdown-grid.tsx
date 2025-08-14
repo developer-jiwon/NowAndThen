@@ -592,7 +592,7 @@ export default function SupabaseCountdownGrid({
   return (
     <div className="w-full">
       {/* Sort controls */}
-      <div className="flex items-center justify-start px-4 mb-4">
+      <div className="flex items-center justify-start px-4 mb-2 mt-0 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="flex gap-1">
           <button
             className={`px-2 py-1 text-[11px] rounded-md border ${sortMode==='lowest'?'bg-[#4E724C] text-white border-[#4E724C]':'bg-white text-[#4E724C] border-[#4E724C]/30'} transition`}

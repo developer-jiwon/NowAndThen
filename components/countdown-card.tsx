@@ -339,8 +339,8 @@ export default function CountdownCard({
         )}
       </AnimatePresence>
       
-      {/* Action buttons: floating outside top-left like a bookmark/tab */}
-      <div className="absolute -top-3 -left-2 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
+      {/* Action buttons: keep inside top-left to avoid overlap with sticky controls */}
+      <div className="absolute top-1 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
         style={{ minHeight: '20px' }}
       >
         <div
