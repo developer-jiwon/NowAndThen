@@ -1,4 +1,4 @@
-const CACHE_NAME = 'now-and-then-v2';
+const CACHE_NAME = 'now-and-then-v3';
 const OFFLINE_URL = '/offline';
 
 self.addEventListener('install', (event) => {
@@ -15,18 +15,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // HTML navigations: network-first with offline fallback
+  // Only use offline fallback for HTML navigations. If it's an image (like apple-touch-icon)
+  // let the network handle it to avoid serving the HTML offline page for image requests.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(OFFLINE_URL))
-    );
+    const accept = request.headers.get('accept') || '';
+    const isHtml = accept.includes('text/html');
+    if (isHtml) {
+      event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+      return;
+    }
+    // Not HTML navigation (e.g., direct PNG), fall through to default network behavior
     return;
   }
 
   // Avoid caching apple-touch-icon to prevent stale A2HS icon on iOS
   const url = new URL(request.url);
   if (url.pathname.includes('apple-touch-icon')) {
-    return; // fall through to network default
+    return; // allow default network behavior
   }
 
   // Static assets/API: cache-first, then network fallback and cache update
