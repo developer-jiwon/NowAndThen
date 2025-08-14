@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     background_color: '#FFFFFF',
-    theme_color: '#E5C8CD',
+    theme_color: '#FFFFFF',
     icons: [
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
