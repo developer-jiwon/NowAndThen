@@ -11,8 +11,14 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#FFFFFF',
     theme_color: '#E5C8CD',
     icons: [
+      { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
-      { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+      // Provide a set of PNGs. Even if the file is the same, declare common sizes explicitly.
+      { src: '/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png', purpose: 'any' },
+      { src: '/apple-touch-icon.png?v=2', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/apple-touch-icon.png?v=2', sizes: '256x256', type: 'image/png', purpose: 'any' },
+      { src: '/apple-touch-icon.png?v=2', sizes: '384x384', type: 'image/png', purpose: 'any' },
+      { src: '/apple-touch-icon.png?v=2', sizes: '512x512', type: 'image/png', purpose: 'any' }
     ],
   }
 }

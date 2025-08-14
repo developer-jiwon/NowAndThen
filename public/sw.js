@@ -1,4 +1,4 @@
-const CACHE_NAME = 'now-and-then-v1';
+const CACHE_NAME = 'now-and-then-v2';
 const OFFLINE_URL = '/offline';
 
 self.addEventListener('install', (event) => {
@@ -21,6 +21,12 @@ self.addEventListener('fetch', (event) => {
       fetch(request).catch(() => caches.match(OFFLINE_URL))
     );
     return;
+  }
+
+  // Avoid caching apple-touch-icon to prevent stale A2HS icon on iOS
+  const url = new URL(request.url);
+  if (url.pathname.includes('apple-touch-icon')) {
+    return; // fall through to network default
   }
 
   // Static assets/API: cache-first, then network fallback and cache update

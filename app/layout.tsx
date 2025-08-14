@@ -66,7 +66,12 @@ export const metadata: Metadata = {
       { url: '/icons/nowandthen-icon.svg', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      // Add cache-busting query to avoid stale iOS cached icon
+      { url: '/apple-touch-icon.png?v=2', sizes: '180x180' },
+      // Provide multiple declared sizes (iOS will pick best; all point to same asset)
+      { url: '/apple-touch-icon.png?v=2', sizes: '120x120' },
+      { url: '/apple-touch-icon.png?v=2', sizes: '152x152' },
+      { url: '/apple-touch-icon.png?v=2', sizes: '167x167' },
     ],
   },
   category: 'productivity',
@@ -87,7 +92,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" type="image/svg+xml" href="/icons/nowandthen-icon.svg" sizes="any" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        {/* iOS A2HS icon with cache-busting */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png?v=2" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png?v=2" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png?v=2" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="canonical" href={siteUrl} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
