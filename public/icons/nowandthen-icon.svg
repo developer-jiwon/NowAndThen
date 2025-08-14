@@ -18,30 +18,34 @@
 
   <!-- Countdown ring base -->
   <g transform="translate(256 256)" filter="url(#shadow)">
-    <!-- Calendar page -->
-    <rect x="-160" y="-170" width="320" height="320" rx="36" fill="#FFFFFF" fill-opacity="0.98"/>
-    <!-- Header bar in brand pink -->
-    <rect x="-160" y="-170" width="320" height="86" rx="36" fill="url(#gHand)"/>
-    <!-- Binding holes -->
-    <circle cx="-96" cy="-138" r="10" fill="#FFFFFF" fill-opacity="0.9"/>
-    <circle cx="96" cy="-138" r="10" fill="#FFFFFF" fill-opacity="0.9"/>
+    <!-- Calendar page (smaller & perfectly centered) -->
+    <rect x="-150" y="-138" width="300" height="288" rx="48" fill="#FFFFFF" fill-opacity="0.98"/>
+    <!-- Header bar in brand pink (perfectly centered radius) -->
+    <rect x="-150" y="-138" width="300" height="84" rx="42" fill="url(#gHand)"/>
+    <!-- Binding holes (cute, larger) -->
+    <circle cx="-90" cy="-96" r="12" fill="#FFFFFF" fill-opacity="0.95"/>
+    <circle cx="90" cy="-96" r="12" fill="#FFFFFF" fill-opacity="0.95"/>
 
-    <!-- 4x3 date grid (rounded squares) -->
+    <!-- 4x3 date grid (circles for a cuter look) -->
     <g fill="#E7CCD2">
-      <rect x="-120" y="-60" width="28" height="28" rx="8"/>
-      <rect x="-60" y="-60" width="28" height="28" rx="8"/>
-      <rect x="0" y="-60" width="28" height="28" rx="8"/>
-      <rect x="60" y="-60" width="28" height="28" rx="8"/>
-
-      <rect x="-120" y="0" width="28" height="28" rx="8"/>
-      <rect x="-60" y="0" width="28" height="28" rx="8"/>
-      <rect x="0" y="0" width="28" height="28" rx="8"/>
-      <rect x="60" y="0" width="28" height="28" rx="8"/>
-
-      <rect x="-120" y="60" width="28" height="28" rx="8"/>
-      <rect x="-60" y="60" width="28" height="28" rx="8"/>
-      <rect x="0" y="60" width="28" height="28" rx="8"/>
-      <rect x="60" y="60" width="28" height="28" rx="8"/>
+      <!-- centered rows -->
+      <!-- row 1 (above center) -->
+      <circle cx="-90" cy="-8" r="12"/>
+      <circle cx="-30" cy="-8" r="12"/>
+      <circle cx="30" cy="-8" r="12"/>
+      <circle cx="90" cy="-8" r="12"/>
+      <!-- row 2 (center) -->
+      <circle cx="-90" cy="52" r="12"/>
+      <circle cx="-30" cy="52" r="12"/>
+      <circle cx="30" cy="52" r="12"/>
+      <circle cx="90" cy="52" r="12"/>
+      <!-- row 3 (below center) -->
+      <circle cx="-90" cy="112" r="12"/>
+      <circle cx="-30" cy="112" r="12"/>
+      <circle cx="30" cy="112" r="12"/>
+      <circle cx="90" cy="112" r="12"/>
+      <!-- cute highlight on center row -->
+      <circle cx="30" cy="52" r="12" fill="#DDB7BF"/>
     </g>
   </g>
 
