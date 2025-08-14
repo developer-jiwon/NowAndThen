@@ -5,7 +5,7 @@ import { useAnonymousAuth } from "@/hooks/useAnonymousAuth"
 import { useCountdowns } from "@/hooks/useCountdowns"
 import CountdownCard from "@/components/countdown-card"
 import { Button } from "@/components/ui/button"
-import { Plus, Loader2 } from "lucide-react"
+import { Plus, Loader2, Trash2 } from "lucide-react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form"
@@ -373,9 +373,9 @@ export default function SupabaseCountdownGrid({
     };
 
     return (
-      <div className="flex flex-col items-center justify-center pt-2 pb-2 w-full">
-        <div className="mb-4 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 w-full max-w-4xl mb-2">
+      <div className="flex flex-col items-center justify-center pt-1 pb-3 w-full">
+        <div className="mb-5 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 px-4 w-full max-w-4xl mb-0">
           {sampleCountdowns.map((sample) => (
             <CountdownCard
               key={sample.id}
@@ -390,19 +390,21 @@ export default function SupabaseCountdownGrid({
             />
           ))}
         </div>
-        <div className="flex gap-2 mt-6 mb-0 self-center">
+        <div className="flex gap-2 mt-4 mb-0 self-center">
           <Button
             variant="outline"
             onClick={() => setActiveTab('custom')}
-            className="h-7 text-[12px] font-medium rounded-full bg-[#4E724C] text-white hover:bg-[#3A5A38] border-0 px-3 py-1 shadow-none"
+            className="h-7 text-[12px] font-medium rounded-full px-3 border border-[#4E724C] text-[#3A5A38] bg-white hover:bg-[#4E724C]/10 shadow-none flex items-center gap-1.5"
           >
+            <Plus className="w-3.5 h-3.5" />
             Add Timer
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={handleClearAllSamples}
-            className="h-7 text-[12px] font-medium rounded-full bg-transparent text-red-600 hover:text-red-700 hover:bg-red-50 border-0 px-2 py-1 shadow-none"
+            className="h-7 text-[12px] font-medium rounded-full px-3 border border-gray-300 text-gray-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50/40 shadow-none flex items-center gap-1.5"
           >
+            <Trash2 className="w-3.5 h-3.5" />
             Clear Samples
           </Button>
         </div>
