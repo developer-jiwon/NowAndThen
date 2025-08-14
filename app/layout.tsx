@@ -93,11 +93,12 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/icons/nowandthen-icon.svg" sizes="any" />
         {/* iOS A2HS icons. Provide plain path first (some iOS versions ignore querystrings). */}
-        {/* Prefer a fresh route path to bypass stale CDN caches */}
+        {/* Serve real static PNGs */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png" />
-        {/* Fallbacks */}
+        <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="canonical" href={siteUrl} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
