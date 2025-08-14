@@ -170,9 +170,11 @@ export function useCountdowns(category: string) {
       }
 
       const updatedCountdown = transformCountdown(data);
-      setCountdowns(prev => 
-        prev.map(c => c.id === countdown.id ? updatedCountdown : c)
-      );
+      // Optimistically merge just-updated fields to avoid race with realtime payload order
+      setCountdowns(prev => prev.map(c => {
+        if (c.id !== countdown.id) return c;
+        return { ...c, ...updatedCountdown };
+      }));
       return updatedCountdown;
     } catch (err) {
       console.error('Error in updateCountdown:', err);

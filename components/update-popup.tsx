@@ -32,28 +32,28 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
 
   const content = {
     en: {
-      title: 'Now & Then v1.0',
-      subtitle: 'New features have been added!',
-      memoTitle: 'Memo Feature',
-      memoDesc: 'Add and edit personal memos for each countdown.',
-      designTitle: 'New Design',
-      designDesc: 'Enhanced UI with Fern Green gradient buttons and Tea Rose color scheme.',
-      emptyStateTitle: 'Beautiful Empty States',
-      emptyStateDesc: 'Inspiring empty state designs for each tab with custom icons and helpful suggestions.',
-      confirm: 'Got it',
-      version: 'Version 1.0 • August 2025'
+      title: 'Now & Then v1.1',
+      subtitle: 'Fresh improvements that make the app feel faster and easier.',
+      memoTitle: 'Better memos',
+      memoDesc: 'Saved memos show instantly and open by default when present.',
+      designTitle: 'New app icon & PWA',
+      designDesc: 'Installable app with offline page, and a cute calendar icon for Home Screen.',
+      emptyStateTitle: 'Smart sorting',
+      emptyStateDesc: 'Quickly sort by Lowest/Highest to see the most urgent timers.',
+      confirm: 'Nice',
+      version: 'Version 1.1 • August 2025'
     },
     ko: {
-      title: 'Now & Then v1.0',
-      subtitle: '새로운 기능들이 추가되었습니다!',
-      memoTitle: '메모 기능',
-      memoDesc: '각 카운트다운에 개인 메모를 추가하고 편집할 수 있습니다.',
-      designTitle: '새로운 디자인',
-      designDesc: 'Fern Green 그라데이션 버튼과 Tea Rose 색상 조합으로 더욱 세련된 UI를 제공합니다.',
-      emptyStateTitle: '아름다운 빈 상태',
-      emptyStateDesc: '각 탭별 맞춤형 아이콘과 유용한 제안이 포함된 영감을 주는 빈 상태 디자인.',
-      confirm: '확인',
-      version: '버전 1.0 • 2025년 8월'
+      title: 'Now & Then v1.1',
+      subtitle: '더 빠르고 편해진 업데이트를 소개합니다.',
+      memoTitle: '메모 개선',
+      memoDesc: '저장 즉시 화면에 반영되고, 메모가 있으면 기본으로 펼쳐져요.',
+      designTitle: '앱 아이콘 & PWA',
+      designDesc: '홈 화면에 설치 가능, 오프라인 페이지 지원, 캘린더 아이콘 적용.',
+      emptyStateTitle: '빠른 정렬',
+      emptyStateDesc: 'Lowest/Highest로 가장 급한 타이머를 바로 확인.',
+      confirm: '좋아요',
+      version: '버전 1.1 • 2025년 8월'
     }
   };
 

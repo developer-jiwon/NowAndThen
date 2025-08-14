@@ -37,9 +37,11 @@ export default function SupabaseCountdownGrid({
   } = useCountdowns(category);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
+  // Sort controls only
+  const [sortMode, setSortMode] = useState<'lowest' | 'highest'>('lowest');
 
   const gridRef = useRef<HTMLDivElement>(null);
-  const { ref: adRef, inView } = useInView({
+  const { ref: inViewRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
@@ -57,12 +59,30 @@ export default function SupabaseCountdownGrid({
     return matchesVisibility;
   });
 
-  // Sort pinned countdowns to the top
-  const sortedCountdowns = [...filteredCountdowns].sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return 0;
-  });
+  // No additional view filter; keep all visible items
+  const modeFilteredCountdowns = filteredCountdowns;
+
+  // Helper: absolute days distance from today (for sorting)
+  const dayMs = 24 * 60 * 60 * 1000;
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const getAbsDays = (c: Countdown) => {
+    const d = new Date(c.date);
+    d.setHours(0, 0, 0, 0);
+    const diff = Math.round((d.getTime() - todayStart.getTime()) / dayMs);
+    return Math.abs(diff);
+  };
+
+  // Sort pinned countdowns to the top, and apply optional value sort (lowest/highest)
+  const baseArr = [...modeFilteredCountdowns];
+  const compareByValue = (a: Countdown, b: Countdown) => {
+    const av = getAbsDays(a);
+    const bv = getAbsDays(b);
+    return sortMode === 'lowest' ? av - bv : bv - av;
+  };
+  const pinnedItems = baseArr.filter(c => c.pinned).sort(compareByValue);
+  const otherItems = baseArr.filter(c => !c.pinned).sort(compareByValue);
+  const sortedCountdowns = [...pinnedItems, ...otherItems];
 
   useLayoutEffect(() => {
     if (!gridRef.current) return;
@@ -189,9 +209,7 @@ export default function SupabaseCountdownGrid({
         user.id
       );
       console.log('Memo updated successfully');
-      
-      // Force refresh the data
-      await loadCountdowns(user.id);
+      // No forced reload; state already updated optimistically in hook
     } catch (error) {
       console.error('Error updating memo:', error);
     }
@@ -278,7 +296,7 @@ export default function SupabaseCountdownGrid({
     }
   }
 
-  if (filteredCountdowns.length === 0 && !showAddForm && showSamples && category === 'pinned') {
+  if (sortedCountdowns.length === 0 && !showAddForm && showSamples && category === 'pinned') {
     // 샘플 타이머 데이터 (Countdown 타입에 맞게)
     const sampleCountdowns = [
       {
@@ -393,7 +411,7 @@ export default function SupabaseCountdownGrid({
   }
 
   // Custom 탭에서는 바로 폼 표시
-  if (category === 'custom' && filteredCountdowns.length === 0 && !showAddForm) {
+  if (category === 'custom' && sortedCountdowns.length === 0 && !showAddForm) {
     return (
       <div className="mb-4 flex justify-center">
         <div className="max-w-sm w-full">
@@ -424,7 +442,7 @@ export default function SupabaseCountdownGrid({
 
 
   // Show search results or empty state for other tabs
-  if (filteredCountdowns.length === 0) {
+  if (sortedCountdowns.length === 0) {
     return (
       <div className={`flex-1 flex items-center justify-center ${
         category === 'general' ? 'pt-0 pb-0 -mb-6' :
@@ -571,7 +589,19 @@ export default function SupabaseCountdownGrid({
 
   return (
     <div className="w-full">
-
+      {/* Sort controls */}
+      <div className="flex items-center justify-start px-4 mb-4">
+        <div className="flex gap-1">
+          <button
+            className={`px-2 py-1 text-[11px] rounded-md border ${sortMode==='lowest'?'bg-[#4E724C] text-white border-[#4E724C]':'bg-white text-[#4E724C] border-[#4E724C]/30'} transition`}
+            onClick={() => setSortMode('lowest')}
+          >Lowest</button>
+          <button
+            className={`px-2 py-1 text-[11px] rounded-md border ${sortMode==='highest'?'bg-[#4E724C] text-white border-[#4E724C]':'bg-white text-[#4E724C] border-[#4E724C]/30'} transition`}
+            onClick={() => setSortMode('highest')}
+          >Highest</button>
+        </div>
+      </div>
       
       {/* Add Form */}
       {showAddForm && (
@@ -601,14 +631,14 @@ export default function SupabaseCountdownGrid({
       })()}
 
       {/* Empty State */}
-      {filteredCountdowns.length === 0 ? (
+      {sortedCountdowns.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-2">
           {/* 빈 상태 - 아무것도 표시하지 않음 */}
         </div>
       ) : (
         <div className="grid gap-3 md:gap-4">
           <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
-            {filteredCountdowns.map((countdown) => (
+            {sortedCountdowns.map((countdown) => (
               <CountdownCard
                 key={countdown.id}
                 countdown={countdown}
@@ -624,8 +654,8 @@ export default function SupabaseCountdownGrid({
           </div>
           
           {/* Only show ads when there's substantial content */}
-          {filteredCountdowns.length >= 8 && inView && (
-            <div ref={adRef} className="mt-8">
+          {sortedCountdowns.length >= 8 && (
+            <div ref={inViewRef} className="mt-8">
               <AdSenseComponent 
                 className="flex justify-center my-6"
                 adFormat="auto"

@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SupabaseCountdownGrid from "@/components/supabase-countdown-grid"
 import { Suspense, useEffect, useState } from "react"
 import { Clock } from "@/components/ui/clock"
+import { Calendar as CalendarIcon } from "lucide-react"
 import ProfileMenu from "@/components/profile-menu";
 import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
@@ -21,22 +22,20 @@ export default function HomePage() {
     if (hash && ['pinned', 'general', 'personal', 'custom', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
-    // const hasSeenUpdate = localStorage.getItem('nowandthen-v1-update');
-    // if (!hasSeenUpdate) {
-    //   setTimeout(() => {
-    //     setShowUpdatePopup(true);
-    //   }, 1000);
-    // }
+    const hasSeen = localStorage.getItem('nowandthen-v1.1');
+    if (!hasSeen) {
+      setTimeout(() => setShowUpdatePopup(true), 600);
+    }
   }, []);
   
   const handleCloseUpdatePopup = () => {
     setShowUpdatePopup(false);
-    localStorage.setItem('nowandthen-v1-update', 'true');
+    localStorage.setItem('nowandthen-v1.1', 'true');
   };
 
   return (
     <>
-      {/* <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} /> */}
+      <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} />
       <main className="bg-white flex flex-col items-centersm:p-3 mt-20">
         <div className="container mx-auto max-w-6xl flex flex-col">
         <div className="flex flex-col items-center w-full mb-4">
@@ -59,7 +58,10 @@ export default function HomePage() {
           </div>
           <LoginButton />
           <div className="text-center mt-2">
-            <a href="/whats-new" className="text-[11px] sm:text-xs text-[#4E724C] hover:underline">Updates</a>
+            <a href="/whats-new" className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#4E724C] hover:underline">
+              <CalendarIcon className="w-3.5 h-3.5" />
+              <span>Change history</span>
+            </a>
           </div>
         </div>
         

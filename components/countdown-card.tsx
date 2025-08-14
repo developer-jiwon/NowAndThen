@@ -199,14 +199,24 @@ export default function CountdownCard({
   });
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showMemo, setShowMemo] = useState(false);
+  // Default: show memo if there is one
+  const [showMemo, setShowMemo] = useState<boolean>(!!(countdown.memo && countdown.memo.trim() !== ""));
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoText, setMemoText] = useState(countdown.memo || "");
 
-  // Sync memoText with countdown.memo when it changes
+  // Sync memoText with countdown.memo when it changes, but don't override while editing
   useEffect(() => {
-    setMemoText(countdown.memo || "");
-  }, [countdown.memo]);
+    if (!isEditingMemo) {
+      setMemoText(countdown.memo || "");
+    }
+  }, [countdown.memo, isEditingMemo]);
+
+  // Keep memo section open by default when memo exists; close when cleared
+  useEffect(() => {
+    if (isEditingMemo) return;
+    const hasMemo = !!(countdown.memo && countdown.memo.trim() !== "");
+    setShowMemo(hasMemo);
+  }, [countdown.memo, isEditingMemo]);
 
   // Update the time remaining every second
   useEffect(() => {
@@ -250,9 +260,8 @@ export default function CountdownCard({
       await onUpdateMemo(countdown.id, memoText);
     }
     setIsEditingMemo(false);
-    // Force re-render by updating local state
-    setShowMemo(false);
-    setTimeout(() => setShowMemo(true), 100);
+    // Keep showing the just-saved value locally to avoid flicker if server returns stale data briefly
+    setMemoText((prev) => prev);
   };
 
   const handleMemoCancel = () => {
