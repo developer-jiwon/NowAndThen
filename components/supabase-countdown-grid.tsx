@@ -450,8 +450,8 @@ export default function SupabaseCountdownGrid({
         showHidden ? 'pt-0 pb-0 -mb-0 -mt-6' :
         'pt-2 pb-0 -mb-8'
       }`}>
-        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-6 max-w-[320px] w-full flex flex-col items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#4E724C]/10 to-[#3A5A38]/10 flex items-center justify-center mb-4">
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-4 w-[280px] sm:w-[300px] inline-flex flex-col items-center justify-center mx-auto shrink-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4E724C]/10 to-[#3A5A38]/10 flex items-center justify-center mb-3">
             {showHidden ? (
               <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3l18 18M9 9a3 3 0 015.83 1.28L15.54 15.54a3 3 0 01-5.83-1.28L9 9z" />
@@ -475,7 +475,7 @@ export default function SupabaseCountdownGrid({
             )}
           </div>
           
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+          <h3 className="text-base font-semibold text-gray-900 mb-1.5 text-center">
             {showHidden 
               ? "Nothing hidden" 
               : category === 'pinned'
@@ -489,7 +489,7 @@ export default function SupabaseCountdownGrid({
               : `No ${category} timers`}
           </h3>
           
-          <p className="text-gray-600 text-sm mb-4 text-center leading-relaxed">
+          <p className="text-gray-600 text-xs mb-3 text-center leading-relaxed">
             {category === 'pinned' 
               ? "Pin your most important moments and keep them close."
               : category === 'general'
@@ -504,22 +504,22 @@ export default function SupabaseCountdownGrid({
           </p>
           
           {category === 'pinned' && (
-            <div className="mb-4 w-full">
+            <div className="mb-4">
               <div className="grid grid-cols-1 gap-2 text-xs">
                 <div className="flex items-center gap-2 text-gray-600">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <div className="w-1 h-1 rounded-full bg-[#4E724C]"></div>
                   <span>Project deadlines</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <div className="w-1 h-1 rounded-full bg-[#4E724C]"></div>
                   <span>Birthdays & anniversaries</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <div className="w-1 h-1 rounded-full bg-[#4E724C]"></div>
                   <span>Fitness goals</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
+                  <div className="w-1 h-1 rounded-full bg-[#4E724C]"></div>
                   <span>Exam preparation</span>
                 </div>
               </div>
@@ -527,7 +527,7 @@ export default function SupabaseCountdownGrid({
           )}
           
           {category === 'general' && (
-            <div className="mb-4 w-full">
+            <div className="mb-4">
               <div className="grid grid-cols-1 gap-2 text-xs">
                 <div className="flex items-center gap-2 text-gray-600">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
@@ -550,7 +550,7 @@ export default function SupabaseCountdownGrid({
           )}
           
           {category === 'personal' && (
-            <div className="mb-4 w-full">
+            <div className="mb-4">
               <div className="grid grid-cols-1 gap-2 text-xs">
                 <div className="flex items-center gap-2 text-gray-600">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#4E724C]"></div>
