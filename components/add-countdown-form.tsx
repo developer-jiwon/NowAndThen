@@ -163,20 +163,20 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 w-full max-w-xs sm:max-w-md mx-auto bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2 w-full max-w-md sm:max-w-lg mx-auto bg-gradient-to-br from-gray-50 to-white rounded-md border border-gray-100 shadow-sm p-3 sm:p-4">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Title</FormLabel>
-              <div className="w-full max-w-xs sm:max-w-md mx-auto">
+            <FormItem className="space-y-1">
+              <FormLabel className="text-xs font-medium text-[#4A2C3A]">Title</FormLabel>
+              <div className="w-full">
                 <FormControl>
                   <Input 
                     placeholder="Enter timer title" 
                     {...field} 
                     maxLength={20} 
-                    className="w-full h-10 border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200" 
+                    className="w-full h-9 text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200" 
                   />
                 </FormControl>
               </div>
@@ -192,11 +192,11 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             const inputRef = useRef<HTMLInputElement>(null);
             
             return (
-              <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Date</FormLabel>
-                <div className="w-full max-w-xs sm:max-w-md mx-auto">
+            <FormItem className="space-y-1">
+              <FormLabel className="text-xs font-medium text-[#4A2C3A]">Date</FormLabel>
+                <div className="w-full">
                   {/* Quick preset buttons */}
-                  <div className="flex gap-1 mb-2 max-w-xs sm:max-w-md">
+                  <div className="flex gap-1 mb-1.5 w-full">
                     <button
                       type="button"
                       onClick={() => {
@@ -206,7 +206,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-lg text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
+                      className="w-full px-2.5 py-1 text-[11px] bg-white hover:bg-gray-50 rounded-md text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
                     >
                       Today
                     </button>
@@ -220,7 +220,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         setIsCountUp(isPastDate);
                         setDateChanged(true);
                       }}
-                      className="w-full px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-lg text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
+                      className="w-full px-2.5 py-1 text-[11px] bg-white hover:bg-gray-50 rounded-md text-[#4E724C] transition-all duration-200 font-medium border border-[#4E724C]/40 hover:border-[#4E724C] shadow-sm"
                     >
                       Tomorrow
                     </button>
@@ -232,7 +232,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         type="text"
                         value={field.value}
                         onChange={(e) => handleDateChange(e, field.onChange)}
-                        className="h-10 flex-1 text-center border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200"
+                        className="h-9 flex-1 text-center text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200"
                         placeholder="YYYYMMDD"
                       />
                     </FormControl>
@@ -241,9 +241,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-10 px-3 border-[#4E724C]/30 hover:border-[#4E724C] hover:bg-[#4E724C]/5 transition-all duration-200"
+                          className="h-9 px-2 border-[#4E724C]/30 hover:border-[#4E724C] hover:bg-[#4E724C]/5 transition-all duration-200"
                         >
-                          <CalendarIcon className="h-4 w-4" />
+                          <CalendarIcon className="h-3.5 w-3.5" />
                         </Button>
                       </PopoverTrigger>
                                               <PopoverContent className="w-auto p-0" align="start" side="top" sideOffset={4}>
@@ -266,7 +266,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   </div>
                 </div>
                 {dateChanged && field.value && dateRegex.test(field.value) && (
-                  <div className="w-full max-w-xs sm:max-w-md mx-auto mt-8 px-3 py-1 rounded-md text-xs font-medium text-center"
+                  <div className="w-full mt-2 px-2 py-0.5 rounded-md text-[11px] font-medium text-center"
                     style={{ backgroundColor: isCountUp ? 'rgba(241,192,192,0.25)' : 'rgba(139,207,190,0.25)' }}>
                     {isCountUp ? (
                       <><Clock className="h-3 w-3 mr-1 inline" /> Count Up</>
@@ -285,15 +285,15 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Category</FormLabel>
-              <div className="w-full max-w-xs sm:max-w-md mx-auto">
+            <FormItem className="space-y-1">
+              <FormLabel className="text-xs font-medium text-[#4A2C3A]">Category</FormLabel>
+              <div className="w-full">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-10 w-full border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200">
+                    <SelectTrigger className="h-9 w-full text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200">
                       <SelectValue placeholder="Choose category" />
                     </SelectTrigger>
                   </FormControl>
@@ -312,15 +312,15 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="memo"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-semibold text-[#4A2C3A]">Memo (Optional)</FormLabel>
-              <div className="w-full max-w-xs sm:max-w-md mx-auto">
+            <FormItem className="space-y-1">
+              <FormLabel className="text-xs font-medium text-[#4A2C3A]">Memo (Optional)</FormLabel>
+              <div className="w-full">
                 <FormControl>
                   <Textarea 
                     placeholder="Add a personal note about this timer..." 
                     {...field} 
                     maxLength={300}
-                    className="w-full min-h-[80px] border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-lg transition-all duration-200 resize-none"
+                    className="w-full min-h-[64px] text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200 resize-none"
                   />
                 </FormControl>
               </div>
@@ -329,11 +329,11 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-xs sm:max-w-md mx-auto space-y-3 pt-2">
-          <Button type="submit" className="w-full bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-10 text-sm font-medium rounded-lg shadow-sm transition-all duration-200">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex gap-2 pt-2">
+          <Button type="submit" className="flex-1 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-9 text-sm font-medium rounded-md shadow-sm transition-all duration-200">
             {submitButtonText}
           </Button>
-          <Button type="button" onClick={onCancel} variant="outline" className="w-full h-10 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-lg transition-all duration-200">
+          <Button type="button" onClick={onCancel} variant="outline" className="flex-1 h-9 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-md transition-all duration-200">
             Cancel
           </Button>
         </div>
@@ -391,12 +391,12 @@ export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
   }
 
   return (
-    <Card className="max-w-[280px] mx-auto">
-      <CardHeader className="pb-1 pt-3 px-4">
+    <Card className="max-w-[320px] sm:max-w-[360px] mx-auto">
+      <CardHeader className="pb-1 pt-2 px-3">
         <CardTitle className="text-base font-medium">Create Timer</CardTitle>
         <CardDescription className="text-sm">Set up your countdown or count-up timer</CardDescription>
       </CardHeader>
-      <CardContent className="pt-2 px-4">
+      <CardContent className="pt-1 px-3 pb-3">
         {showSuccess && (
           <div className="mb-2 py-1 text-xs text-center text-green-600 animate-fade-in-out">
             Timer created successfully

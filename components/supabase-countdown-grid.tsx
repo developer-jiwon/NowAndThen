@@ -390,18 +390,18 @@ export default function SupabaseCountdownGrid({
             />
           ))}
         </div>
-        <div className="flex gap-3 mt-6">
+        <div className="flex gap-2 mt-2 mb-0 self-center">
           <Button
             variant="outline"
             onClick={() => setActiveTab('custom')}
-            className="h-7 text-xs font-medium rounded-md bg-gray-800 text-white hover:bg-gray-700 border-gray-800 px-4"
+            className="h-7 text-[12px] font-medium rounded-full bg-[#4E724C] text-white hover:bg-[#3A5A38] border-0 px-3 py-1 shadow-none"
           >
             Add Timer
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleClearAllSamples}
-            className="h-7 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-4"
+            className="h-7 text-[12px] font-medium rounded-full bg-transparent text-red-600 hover:text-red-700 hover:bg-red-50 border-0 px-2 py-1 shadow-none"
           >
             Clear Samples
           </Button>
@@ -413,7 +413,7 @@ export default function SupabaseCountdownGrid({
   // Custom 탭에서는 바로 폼 표시
   if (category === 'custom' && sortedCountdowns.length === 0 && !showAddForm) {
     return (
-      <div className="mb-4 flex justify-center">
+      <div className="my-2 flex justify-center">
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}
@@ -427,7 +427,7 @@ export default function SupabaseCountdownGrid({
 
   if (showAddForm) {
     return (
-      <div className="mb-4 flex justify-center">
+      <div className="my-2 flex justify-center">
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}
@@ -576,7 +576,7 @@ export default function SupabaseCountdownGrid({
             <div className="text-center">
               <Button 
                 onClick={() => setActiveTab('custom')}
-                className="bg-gradient-to-r from-[#4E724C] to-[#3A5A38] text-white hover:from-[#5A7F58] hover:to-[#4A6A48] border-0 px-6 py-2 text-sm font-medium rounded-lg shadow-sm transition-all duration-200"
+                className="bg-transparent border-0 shadow-none px-0 py-0 text-[11px] text-[#3A5A38] hover:text-[#2F4A2E] font-medium underline-offset-2 hover:underline"
               >
                 Create Timer
               </Button>
