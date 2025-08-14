@@ -373,7 +373,7 @@ export default function SupabaseCountdownGrid({
     };
 
     return (
-      <div className="flex flex-col items-center justify-center pt-1 pb-3 w-full">
+      <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
         <div className="mb-5 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 px-4 w-full max-w-4xl mb-0">
           {sampleCountdowns.map((sample) => (
@@ -390,7 +390,7 @@ export default function SupabaseCountdownGrid({
             />
           ))}
         </div>
-        <div className="flex gap-2 mt-4 mb-0 self-center">
+        <div className="flex gap-2 mt-10 mb-0 self-center">
           <Button
             variant="outline"
             onClick={() => setActiveTab('custom')}
