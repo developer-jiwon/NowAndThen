@@ -4,6 +4,7 @@ import Script from "next/script"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -85,7 +86,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+        <link rel="icon" type="image/svg+xml" href="/icons/nowandthen-icon.svg" sizes="any" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/nowandthen-icon.svg" />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="canonical" href={siteUrl} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#E5C8CD" />
@@ -178,6 +181,7 @@ export default function RootLayout({
       </head>
       <body className={`${merriweather.variable} flex flex-col`}> 
         <SupabaseProvider>
+          <ServiceWorkerRegister />
           <div className="relative flex flex-col">
             {children}
           </div>
