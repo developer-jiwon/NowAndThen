@@ -65,31 +65,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        <div className="w-full max-w-[280px] sm:max-w-sm md:max-w-md mx-auto px-4 mb-4" style={{fontFamily: 'Inter, Pretendard, sans-serif'}}>
-          <div className="rounded-2xl bg-[#E5C8CD] border border-[#E5C8CD]/30 p-2.5 sm:p-4 flex flex-col items-center">
-            <p className="text-xs sm:text-sm text-[#4A2C3A] mb-2.5 sm:mb-3 font-normal text-center" style={{letterSpacing: '0.01em'}}>
-              Never miss what matters.<br />
-              <span className="text-[10px] sm:text-xs block mt-1 text-[#4A2C3A]/70">Effortless, beautiful, and always in sync.</span>
-            </p>
-            <ul className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-[#4A2C3A] font-normal">
-              <li className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
-                Visual countdowns
-              </li>
-              <li className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
-                Cross-device sync
-              </li>
-              <li className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4A2C3A]" />
-                Smart organization
-              </li>
-            </ul>
-          </div>
-          <div className="mt-3 w-full flex justify-center">
-            {/* <AdSenseComponent /> */}
-          </div>
-        </div>
+        {/* Removed the pink promo card for a cleaner hero. */}
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex w-full max-w-sm mx-auto justify-center space-x-4 mb-4 bg-transparent border-b border-gray-200 focus-visible:ring-0 focus-visible:ring-offset-0">

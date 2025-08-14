@@ -413,7 +413,7 @@ export default function SupabaseCountdownGrid({
   // Custom 탭에서는 바로 폼 표시
   if (category === 'custom' && sortedCountdowns.length === 0 && !showAddForm) {
     return (
-      <div className="my-2 flex justify-center">
+      <div className="my-0 flex justify-center">
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}
@@ -427,7 +427,7 @@ export default function SupabaseCountdownGrid({
 
   if (showAddForm) {
     return (
-      <div className="my-2 flex justify-center">
+      <div className="my-0 flex justify-center">
         <div className="max-w-sm w-full">
           <CountdownForm 
             onSubmit={handleAddCountdown}

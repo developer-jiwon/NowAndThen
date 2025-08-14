@@ -391,12 +391,12 @@ export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
   }
 
   return (
-    <Card className="max-w-[320px] sm:max-w-[360px] mx-auto">
-      <CardHeader className="pb-1 pt-2 px-3">
+    <Card className="max-w-[340px] sm:max-w-[380px] mx-auto">
+      <CardHeader className="pb-0 pt-2 px-3">
         <CardTitle className="text-base font-medium">Create Timer</CardTitle>
         <CardDescription className="text-sm">Set up your countdown or count-up timer</CardDescription>
       </CardHeader>
-      <CardContent className="pt-1 px-3 pb-3">
+      <CardContent className="pt-1 px-3 pb-2">
         {showSuccess && (
           <div className="mb-2 py-1 text-xs text-center text-green-600 animate-fade-in-out">
             Timer created successfully
