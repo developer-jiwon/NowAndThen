@@ -340,7 +340,7 @@ export default function CountdownCard({
       </AnimatePresence>
       
       {/* Action buttons: keep inside top-left to avoid overlap with sticky controls */}
-      <div className="absolute top-1 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
+      <div className="absolute top-0.5 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
         style={{ minHeight: '20px' }}
       >
         <div
@@ -394,7 +394,7 @@ export default function CountdownCard({
       
       {/* Card with illustrative style */}
       <div 
-        className="flex flex-col min-h-[120px] p-0" 
+        className="flex flex-col min-h-[120px] p-0 mt-4" 
         style={borderStyle}
       >
         {/* Title section */}

@@ -390,7 +390,7 @@ export default function SupabaseCountdownGrid({
             />
           ))}
         </div>
-        <div className="flex gap-2 mt-10 mb-0 self-center">
+        <div className="flex gap-2 mt-6 mb-0 self-center">
           <Button
             variant="outline"
             onClick={() => setActiveTab('custom')}
