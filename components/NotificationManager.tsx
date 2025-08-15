@@ -3,7 +3,7 @@
 import { useUser } from "@supabase/auth-helpers-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, BellOff, Settings, X, Calendar, Clock } from "lucide-react";
+import { Bell, BellOff, Settings, X, Calendar, Clock, CheckCircle, Heart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import NotificationPreferences from "./NotificationPreferences";
@@ -22,6 +22,8 @@ export default function NotificationManager() {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPWA, setIsPWA] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: true,
     threeDays: true,
@@ -423,21 +425,18 @@ export default function NotificationManager() {
                       }
                     }
                     
-                    toast.success('Settings saved!');
-                    
-                    // Show toast confirmation instead of alert
+                    // Show cute success popup
                     if (settings.dailySummary) {
                       const currentTime = new Date().toLocaleTimeString('en-US', { 
                         hour12: false, 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       });
-                      toast.success(`Daily Summary 설정됨 (${settings.dailySummaryTime})`, {
-                        description: `현재 시간: ${currentTime} - 설정한 시간에 타이머 요약 알림이 옵니다`
-                      });
+                      setSuccessMessage(`${settings.dailySummaryTime}에 타이머 요약이 찾아갈게요! (현재 ${currentTime})`);
                     } else {
-                      toast.success('알림 설정이 저장되었습니다');
+                      setSuccessMessage('알림 설정이 저장되었습니다');
                     }
+                    setShowSuccessPopup(true);
                     
                     setShowSettings(false);
                     
@@ -458,6 +457,31 @@ export default function NotificationManager() {
                 type="button"
               >
                 Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl">
+            <div className="text-center">
+              <div className="mb-4 flex justify-center">
+                <CheckCircle className="w-12 h-12 text-[#4E724C]" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                설정 완료
+              </h3>
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                {successMessage}
+              </p>
+              <Button
+                onClick={() => setShowSuccessPopup(false)}
+                className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200"
+              >
+                확인
               </Button>
             </div>
           </div>

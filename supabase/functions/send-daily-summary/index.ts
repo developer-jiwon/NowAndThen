@@ -55,15 +55,16 @@ serve(async (req) => {
 
     console.log('Starting daily summary notifications...')
 
-    // 매일 요약 알림이 활성화된 사용자들 찾기 - 일단 모든 사용자 가져와서 필터링
+    // Service Role로 RLS 무시하고 모든 구독 가져오기
     const { data: allSubscriptions, error: subsError } = await supabaseClient
       .from('push_subscriptions')
       .select('*')
-      .not('fcm_token', 'is', null)
 
     const subscriptions = allSubscriptions?.filter(sub => {
       const prefs = sub.notification_preferences
-      return prefs && (prefs.dailySummary === true || prefs.dailySummary === 'true')
+      const hasFcmToken = sub.fcm_token && sub.fcm_token !== null
+      const hasDailySummary = prefs && (prefs.dailySummary === true || prefs.dailySummary === 'true')
+      return hasFcmToken && hasDailySummary
     }) || []
 
     if (subsError) {
@@ -74,10 +75,22 @@ serve(async (req) => {
       })
     }
 
+    console.log('=== DEBUG INFO ===')
     console.log('All subscriptions found:', allSubscriptions?.length || 0)
     console.log('Subscriptions with FCM token:', allSubscriptions?.filter(sub => sub.fcm_token !== null).length || 0)
-    console.log('Sample subscription:', allSubscriptions?.[0])
+    console.log('Sample subscription:', JSON.stringify(allSubscriptions?.[0], null, 2))
     console.log('Found subscriptions with daily summary enabled:', subscriptions?.length || 0)
+    
+    // Check each subscription individually
+    allSubscriptions?.forEach((sub, index) => {
+      console.log(`Subscription ${index}:`, {
+        user_id: sub.user_id,
+        has_fcm_token: !!sub.fcm_token,
+        dailySummary: sub.notification_preferences?.dailySummary,
+        dailySummaryType: typeof sub.notification_preferences?.dailySummary
+      })
+    })
+
 
     let notificationsSent = 0
     let errors = 0
@@ -183,7 +196,7 @@ serve(async (req) => {
         }
 
         if (!hasContent) {
-          summaryText = '예정된 타이머가 없습니다.'
+          summaryText = '일주일 안에 예정된 타이머가 없습니다.'
         }
 
         const payload: NotificationPayload = {
