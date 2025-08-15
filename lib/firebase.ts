@@ -26,7 +26,10 @@ const app = (hasFirebaseConfig && firebaseConfig) ? initializeApp(firebaseConfig
 export const messaging = (typeof window !== 'undefined' && app) ? getMessaging(app) : null;
 
 export const requestNotificationPermission = async () => {
-  if (typeof window === 'undefined' || !messaging) return null;
+  if (typeof window === 'undefined' || !messaging || !hasFirebaseConfig) {
+    console.log('Firebase not configured, skipping notification setup');
+    return null;
+  }
   
   try {
     const permission = await Notification.requestPermission();
