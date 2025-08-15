@@ -148,17 +148,27 @@ serve(async (req) => {
         let hasContent = false
 
         if (todayTimers.length > 0) {
-          summaryText += `📅 오늘: ${todayTimers.map(t => t.title).join(', ')}\n`
+          const todayDisplay = todayTimers.slice(0, 3).map(t => t.title).join(', ')
+          summaryText += `오늘: ${todayDisplay}`
+          if (todayTimers.length > 3) {
+            summaryText += ` 외 ${todayTimers.length - 3}개`
+          }
+          summaryText += '\n'
           hasContent = true
         }
 
         if (tomorrowTimers.length > 0) {
-          summaryText += `📍 내일: ${tomorrowTimers.map(t => t.title).join(', ')}\n`
+          const tomorrowDisplay = tomorrowTimers.slice(0, 3).map(t => t.title).join(', ')
+          summaryText += `내일: ${tomorrowDisplay}`
+          if (tomorrowTimers.length > 3) {
+            summaryText += ` 외 ${tomorrowTimers.length - 3}개`
+          }
+          summaryText += '\n'
           hasContent = true
         }
 
         if (thisWeekTimers.length > 0) {
-          summaryText += `📋 이번 주: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`
+          summaryText += `이번 주: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`
           if (thisWeekTimers.length > 3) {
             summaryText += ` 외 ${thisWeekTimers.length - 3}개`
           }
@@ -166,13 +176,11 @@ serve(async (req) => {
         }
 
         if (!hasContent) {
-          summaryText = '예정된 타이머가 없습니다. 좋은 하루 되세요! 😊'
-        } else {
-          summaryText += '\n\n좋은 하루 되세요! 🌟'
+          summaryText = '예정된 타이머가 없습니다.'
         }
 
         const payload: NotificationPayload = {
-          title: '📅 오늘의 타이머 요약',
+          title: '오늘의 타이머 요약',
           body: summaryText,
           url: '/'
         }

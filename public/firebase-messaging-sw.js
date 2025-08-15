@@ -225,9 +225,9 @@ function checkDailySummary() {
 
 function sendDailySummaryNotification() {
   // Service Worker cannot access localStorage, so send a generic notification
-  let summaryText = '오늘도 목표를 향해 나아가세요! 💪';
+  let summaryText = '오늘도 목표를 향해 나아가세요!';
   
-  const notificationTitle = '📅 오늘의 타이머 요약';
+  const notificationTitle = '오늘의 타이머 요약';
   const notificationOptions = {
     body: summaryText,
     icon: '/icon-192x192.png',

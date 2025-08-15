@@ -135,20 +135,24 @@ serve(async (req) => {
             shouldNotify = true
             
             if (targetHours >= 24 * 7) {
-              notificationTitle = `${Math.round(targetHours / 24)}일 전 알림`
-              notificationBody = `${timer.title}이 ${Math.round(targetHours / 24)}일 후 마감됩니다`
+              const days = Math.round(targetHours / 24)
+              notificationTitle = `${days}일 전 알림`
+              notificationBody = `${timer.title}까지 ${days}일 남았습니다`
             } else if (targetHours >= 24) {
-              notificationTitle = `${Math.round(targetHours / 24)}일 전 알림`
-              notificationBody = `${timer.title}이 ${Math.round(targetHours / 24)}일 후 마감됩니다`
+              const days = Math.round(targetHours / 24)
+              notificationTitle = `${days}일 전 알림`
+              notificationBody = `${timer.title}까지 ${days}일 남았습니다`
             } else if (targetHours >= 1) {
-              notificationTitle = `${Math.round(targetHours)}시간 전 알림`
-              notificationBody = `${timer.title}이 ${Math.round(targetHours)}시간 후 마감됩니다!`
+              const hours = Math.round(targetHours)
+              notificationTitle = `${hours}시간 전 알림`
+              notificationBody = `${timer.title}까지 ${hours}시간 남았습니다`
             } else if (targetHours > 0) {
-              notificationTitle = `${Math.round(targetHours * 60)}분 전 알림`
-              notificationBody = `${timer.title}이 ${Math.round(targetHours * 60)}분 후 마감됩니다!`
+              const minutes = Math.round(targetHours * 60)
+              notificationTitle = `${minutes}분 전 알림`
+              notificationBody = `${timer.title}까지 ${minutes}분 남았습니다`
             } else {
-              notificationTitle = '타이머 도달!'
-              notificationBody = `${timer.title} 시간이 되었습니다!`
+              notificationTitle = '시간 도달'
+              notificationBody = `${timer.title} 시간입니다`
             }
             break
           }
@@ -157,8 +161,8 @@ serve(async (req) => {
         // 정확한 시간 도달 체크 (0시간 설정이 있는 경우)
         if (!shouldNotify && hoursBefore.includes(0) && hoursUntil <= 0.1 && hoursUntil >= -0.1) {
           shouldNotify = true
-          notificationTitle = '타이머 도달!'
-          notificationBody = `${timer.title} 시간이 되었습니다!`
+          notificationTitle = '시간 도달'
+          notificationBody = `${timer.title} 시간입니다`
         }
 
         if (!shouldNotify) continue

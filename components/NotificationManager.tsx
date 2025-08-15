@@ -3,7 +3,7 @@
 import { useUser } from "@supabase/auth-helpers-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, BellOff, Settings, X } from "lucide-react";
+import { Bell, BellOff, Settings, X, Calendar, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import NotificationPreferences from "./NotificationPreferences";
@@ -148,7 +148,7 @@ export default function NotificationManager() {
       console.log('Sending test notification directly...');
       
       if (Notification.permission === 'granted') {
-        new Notification('📅 Daily Summary Test', {
+        new Notification('Daily Summary Test', {
           body: `Test notification for ${settings.dailySummaryTime}. Current time: ${currentTime}`,
           icon: '/favicon.ico'
         });
@@ -230,6 +230,7 @@ export default function NotificationManager() {
               <Settings className="w-3 h-3 mr-1" />
               Settings
             </Button>
+{/* Test button temporarily hidden for production
             <Button
               variant="outline"
               size="sm"
@@ -239,6 +240,7 @@ export default function NotificationManager() {
             >
               Test
             </Button>
+            */}
             <Button
               variant="outline"
               size="sm"
@@ -331,7 +333,10 @@ export default function NotificationManager() {
                       {/* Daily Summary Section */}
                       <div className="border-t pt-4 mt-4">
                         <div className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
-                          <span className="text-sm font-medium text-gray-900">Daily Summary</span>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-[#4E724C]" />
+                            <span className="text-sm font-medium text-gray-900">Daily Summary</span>
+                          </div>
                           <button
                             onClick={() => setSettings(prev => ({ ...prev, dailySummary: !prev.dailySummary }))}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4E724C] focus:ring-offset-2 ${
@@ -349,6 +354,7 @@ export default function NotificationManager() {
                         {settings.dailySummary && (
                           <div className="ml-4 mt-2 p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center gap-2">
+                              <Clock className="w-3 h-3 text-gray-500" />
                               <span className="text-xs text-gray-600">Notification time:</span>
                               <input
                                 type="time"
