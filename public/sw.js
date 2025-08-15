@@ -157,27 +157,33 @@ async function checkCountdownsAndNotify() {
   try {
     // Get notification settings from localStorage (we'll need to sync this)
     const settings = await getNotificationSettings();
-    
-    if (!settings || !settings.oneDay && !settings.threeDays && !settings.sevenDays) {
+
+    if (!settings || (!settings.oneDay && !settings.threeDays && !settings.sevenDays && !settings.dailySummary)) {
       return; // No notifications enabled
     }
 
     // Get current countdowns from IndexedDB or localStorage
     const countdowns = await getCountdowns();
-    
+
     if (!countdowns || countdowns.length === 0) {
       return;
     }
 
     const now = new Date();
-    
+
+    // Check daily summary first
+    if (settings.dailySummary) {
+      await checkDailySummary(countdowns, now, settings.dailySummaryTime);
+    }
+
+    // Check countdown notifications
     countdowns.forEach(countdown => {
       if (!countdown.targetDate) return;
-      
+
       const targetDate = new Date(countdown.targetDate);
       const diffTime = targetDate.getTime() - now.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       // Send notifications based on settings
       if (settings.oneDay && diffDays === 1) {
         sendNotification(countdown, 'tomorrow', 'Clock');
@@ -187,9 +193,99 @@ async function checkCountdownsAndNotify() {
         sendNotification(countdown, 'week', 'CalendarDays');
       }
     });
-    
+
   } catch (error) {
     console.warn('Failed to check countdowns:', error);
+  }
+}
+
+// Check and send daily summary notification
+async function checkDailySummary(countdowns, now, summaryTime) {
+  try {
+    const currentTime = now.toTimeString().slice(0, 5); // "HH:MM" format
+    
+    if (currentTime === summaryTime) {
+      // Check if we already sent today's summary
+      const today = now.toDateString();
+      const lastSummaryDate = localStorage.getItem('lastDailySummaryDate');
+      
+      if (lastSummaryDate !== today) {
+        await sendDailySummaryNotification(countdowns);
+        localStorage.setItem('lastDailySummaryDate', today);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to check daily summary:', error);
+  }
+}
+
+// Send daily summary notification
+async function sendDailySummaryNotification(countdowns) {
+  try {
+    const now = new Date();
+    const today = now.toDateString();
+    
+    // Filter countdowns for today and upcoming
+    const todayCountdowns = countdowns.filter(c => {
+      if (!c.targetDate) return false;
+      const targetDate = new Date(c.targetDate);
+      const diffTime = targetDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 30; // Show next 30 days
+    });
+
+    if (todayCountdowns.length === 0) {
+      return;
+    }
+
+    // Sort by urgency (closest first)
+    todayCountdowns.sort((a, b) => {
+      const aDate = new Date(a.targetDate);
+      const bDate = new Date(b.targetDate);
+      return aDate.getTime() - bDate.getTime();
+    });
+
+    // Create summary message
+    const urgentCountdowns = todayCountdowns.slice(0, 3); // Show top 3
+    let summaryText = `You have ${todayCountdowns.length} active countdowns.`;
+    
+    if (urgentCountdowns.length > 0) {
+      const closest = urgentCountdowns[0];
+      const targetDate = new Date(closest.targetDate);
+      const diffTime = targetDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        summaryText += ` ${closest.title} is today!`;
+      } else if (diffDays === 1) {
+        summaryText += ` ${closest.title} is tomorrow!`;
+      } else {
+        summaryText += ` Next: ${closest.title} in ${diffDays} days.`;
+      }
+    }
+
+    // Send notification
+    const notification = new Notification('Daily Countdown Summary', {
+      body: summaryText,
+      icon: `/icons/nowandthen-icon.svg`,
+      badge: `/icons/nowandthen-icon.svg`,
+      tag: 'daily-summary',
+      requireInteraction: false,
+      silent: false,
+      vibrate: [200, 100, 200],
+      data: {
+        type: 'daily-summary',
+        count: todayCountdowns.length
+      }
+    });
+
+    // Auto close after 10 seconds
+    setTimeout(() => {
+      notification.close();
+    }, 10000);
+
+  } catch (error) {
+    console.warn('Failed to send daily summary:', error);
   }
 }
 
@@ -243,7 +339,9 @@ async function getNotificationSettings() {
   return {
     oneDay: true,
     threeDays: true,
-    sevenDays: false
+    sevenDays: false,
+    dailySummary: false, // Default to false
+    dailySummaryTime: '09:00' // Default to 9 AM
   };
 }
 
