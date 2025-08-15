@@ -106,8 +106,7 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // Only use offline fallback for HTML navigations. If it's an image (like apple-touch-icon)
-  // let the network handle it to avoid serving the HTML offline page for image requests.
+  // Only use offline fallback for HTML navigations
   if (request.mode === 'navigate') {
     const accept = request.headers.get('accept') || '';
     const isHtml = accept.includes('text/html');
@@ -115,7 +114,7 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
       return;
     }
-    // Not HTML navigation (e.g., direct PNG), fall through to default network behavior
+    // Not HTML navigation, fall through to default network behavior
     return;
   }
 
@@ -125,16 +124,26 @@ self.addEventListener('fetch', (event) => {
     return; // allow default network behavior
   }
 
-  // Static assets/API: cache-first, then network fallback and cache update
+  // Only cache GET requests, never cache POST/PUT/DELETE
+  if (request.method !== 'GET') {
+    return; // let the network handle non-GET requests
+  }
+
+  // Static assets: cache-first, then network fallback
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
+      
       return fetch(request)
         .then((response) => {
-          // Only cache GET requests, not POST/PUT/DELETE
-          if (request.method === 'GET' && response.status === 200) {
+          // Only cache successful GET responses
+          if (response.status === 200 && response.type === 'basic') {
             const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone).catch((error) => {
+                console.warn('Cache put failed:', error);
+              });
+            });
           }
           return response;
         })
