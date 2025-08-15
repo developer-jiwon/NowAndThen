@@ -60,7 +60,12 @@ export default function NotificationPreferences({ isOpen, onClose, onSave }: Not
         .from('push_subscriptions')
         .select('notification_preferences')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle() // Use maybeSingle instead of single to handle no rows
+
+      if (error) {
+        console.warn('Failed to load notification preferences:', error.message)
+        return
+      }
 
       if (data?.notification_preferences) {
         setSettings({
@@ -71,7 +76,7 @@ export default function NotificationPreferences({ isOpen, onClose, onSave }: Not
         })
       }
     } catch (error) {
-      console.error('Error loading preferences:', error)
+      console.warn('Error loading preferences:', error)
     }
   }
 
