@@ -201,9 +201,7 @@ export default function NotificationPreferences({ isOpen, onClose, onSave }: Not
                   <SelectValue placeholder="알림 시간 추가..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {TIME_OPTIONS.filter(option => 
-                    !settings.custom_times.includes(option.value)
-                  ).map((option) => (
+                  {TIME_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value.toString()}>
                       {option.label}
                     </SelectItem>
