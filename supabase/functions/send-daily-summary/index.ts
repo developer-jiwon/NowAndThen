@@ -61,9 +61,10 @@ serve(async (req) => {
       .select('*')
       .not('fcm_token', 'is', null)
 
-    const subscriptions = allSubscriptions?.filter(sub => 
-      sub.notification_preferences?.dailySummary === true
-    ) || []
+    const subscriptions = allSubscriptions?.filter(sub => {
+      const prefs = sub.notification_preferences
+      return prefs && (prefs.dailySummary === true || prefs.dailySummary === 'true')
+    }) || []
 
     if (subsError) {
       console.error('Error fetching subscriptions:', subsError)
@@ -75,6 +76,7 @@ serve(async (req) => {
 
     console.log('All subscriptions found:', allSubscriptions?.length || 0)
     console.log('Subscriptions with FCM token:', allSubscriptions?.filter(sub => sub.fcm_token !== null).length || 0)
+    console.log('Sample subscription:', allSubscriptions?.[0])
     console.log('Found subscriptions with daily summary enabled:', subscriptions?.length || 0)
 
     let notificationsSent = 0

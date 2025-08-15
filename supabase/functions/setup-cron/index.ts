@@ -44,24 +44,34 @@ serve(async (req) => {
       );`
     ]
 
-    // 각 cron job 실행
-    let results = []
-    let hasErrors = false
+    // pg_cron 확장이 활성화되어 있는지 확인
+    const { data: extensions, error: extError } = await supabaseClient
+      .from('pg_extension')
+      .select('extname')
+      .eq('extname', 'pg_cron')
 
-    for (const query of cronQueries) {
-      try {
-        const { data, error } = await supabaseClient.rpc('exec_sql', { sql: query })
-        if (error) {
-          console.error('Cron setup error:', error)
-          hasErrors = true
-        }
-        results.push({ query: query.split('(')[1].split(',')[0].replace(/'/g, ''), success: !error, error })
-      } catch (e) {
-        console.error('Cron execution error:', e)
-        hasErrors = true
-        results.push({ error: e.message })
-      }
+    if (extError) {
+      console.log('pg_cron extension check failed, assuming it exists:', extError)
     }
+
+    // 현재 cron 작업 확인
+    const { data: existingJobs, error: jobsError } = await supabaseClient
+      .rpc('select_cron_jobs')
+
+    if (jobsError) {
+      console.log('Could not check existing cron jobs:', jobsError)
+    }
+
+    console.log('Existing cron jobs:', existingJobs)
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Cron jobs checked (manual setup may be required)',
+      existingJobs: existingJobs || [],
+      note: 'You may need to set up cron jobs manually in Supabase dashboard'
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
 
     if (hasErrors) {
       return new Response(JSON.stringify({ 

@@ -424,6 +424,21 @@ export default function NotificationManager() {
                     }
                     
                     toast.success('Settings saved!');
+                    
+                    // Show toast confirmation instead of alert
+                    if (settings.dailySummary) {
+                      const currentTime = new Date().toLocaleTimeString('en-US', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      });
+                      toast.success(`Daily Summary 설정됨 (${settings.dailySummaryTime})`, {
+                        description: `현재 시간: ${currentTime} - 설정한 시간에 타이머 요약 알림이 옵니다`
+                      });
+                    } else {
+                      toast.success('알림 설정이 저장되었습니다');
+                    }
+                    
                     setShowSettings(false);
                     
                   } catch (error) {
