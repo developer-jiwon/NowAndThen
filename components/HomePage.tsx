@@ -87,33 +87,23 @@ export default function HomePage() {
           </TabsList>
 
           <TabsContent value="pinned" className="flex flex-col flex-1">
-            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="pinned" activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Suspense>
+            <SupabaseCountdownGrid category="pinned" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
 
           <TabsContent value="general" className="flex flex-col flex-1">
-            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="general" activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Suspense>
+            <SupabaseCountdownGrid category="general" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
 
           <TabsContent value="personal" className="flex flex-col flex-1">
-            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="personal" activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Suspense>
+            <SupabaseCountdownGrid category="personal" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
 
           <TabsContent value="custom" className="flex flex-col flex-1">
-            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="custom" activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Suspense>
+            <SupabaseCountdownGrid category="custom" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
           
           <TabsContent value="hidden" className="flex flex-col">
-            <Suspense fallback={<div className="flex justify-center items-center py-2">Loading timers...</div>}>
-              <SupabaseCountdownGrid category="hidden" showHidden={true} activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Suspense>
+            <SupabaseCountdownGrid category="hidden" showHidden={true} activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
         </Tabs>
         

@@ -245,19 +245,12 @@ export default function SupabaseCountdownGrid({
   };
 
   if (authLoading || dataLoading) {
-    return (
-      <div className="w-full flex justify-center items-center py-8">
-        <div className="flex items-center">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="ml-2 text-sm">Loading your timers...</span>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   if (error) {
     return (
-      <div className="w-full flex justify-center py-8">
+      <div className="w-full flex justify-center">
         <div className="text-center">
           <p className="text-red-500 mb-4">Unable to load timers: {error}</p>
           <Button 
@@ -273,7 +266,7 @@ export default function SupabaseCountdownGrid({
 
   if (!user) {
     return (
-      <div className="w-full flex justify-center py-8">
+      <div className="w-full flex justify-center">
         <div className="text-center">
           <p className="text-gray-500">Connecting to your account...</p>
         </div>
