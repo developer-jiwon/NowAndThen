@@ -95,7 +95,7 @@ export default function NotificationManager() {
         .from('push_subscriptions')
         .select('id')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle() // Use maybeSingle instead of single to handle no rows
       
       if (error) {
         // Log error but don't throw - this prevents 406 errors from breaking the app
