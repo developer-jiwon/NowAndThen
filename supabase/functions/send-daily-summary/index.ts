@@ -21,7 +21,7 @@ const sendFCMNotification = async (fcmToken: string, payload: NotificationPayloa
     notification: {
       title: payload.title,
       body: payload.body,
-      icon: '/icon-192x192.png',
+      icon: '/favicon.ico',
       click_action: payload.url || '/'
     },
     data: {

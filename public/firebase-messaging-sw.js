@@ -230,8 +230,8 @@ function sendDailySummaryNotification() {
   const notificationTitle = '오늘의 타이머 요약';
   const notificationOptions = {
     body: summaryText,
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
     actions: [
       { action: 'view', title: 'View App' },
       { action: 'dismiss', title: 'Dismiss' }
@@ -290,8 +290,8 @@ if (messaging) {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
       body: payload.notification.body,
-      icon: '/icon-192x192.png',
-      badge: '/badge-72x72.png',
+      icon: '/favicon.ico',
+      badge: '/favicon.ico',
       actions: [
         { action: 'view', title: 'View Timer' },
         { action: 'dismiss', title: 'Dismiss' }
