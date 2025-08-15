@@ -41,6 +41,16 @@ export const requestNotificationPermission = async () => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
+      // Service Worker가 등록되지 않은 경우 직접 등록
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          console.log('Service Worker registered successfully');
+        } catch (swError) {
+          console.warn('Service Worker registration failed, continuing without it:', swError);
+        }
+      }
+      
       const token = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
       });

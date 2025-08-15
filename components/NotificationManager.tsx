@@ -85,10 +85,53 @@ export default function NotificationManager() {
     if (!user) return;
 
     try {
-      // FCM 토큰은 firebase.ts에서 처리됨
-      console.log('Notification permission granted for user:', user.id);
+      const { requestNotificationPermission } = await import('@/lib/firebase');
+      const fcmToken = await requestNotificationPermission();
+      
+      if (fcmToken) {
+        console.log('FCM Token received:', fcmToken);
+        
+        // Supabase에 FCM 토큰 저장 (update 우선, 실패시 insert)
+        let { error } = await supabase
+          .from('push_subscriptions')
+          .update({
+            fcm_token: fcmToken,
+            notification_preferences: {
+              ...settings,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+          
+        // 업데이트 실패시 새로 생성
+        if (error) {
+          const { error: insertError } = await supabase
+            .from('push_subscriptions')
+            .insert({
+              user_id: user.id,
+              fcm_token: fcmToken,
+              notification_preferences: {
+                ...settings,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+              }
+            });
+          error = insertError;
+        }
+          
+        if (error) {
+          console.error('Error saving FCM token:', error);
+          toast.error('Failed to register for notifications');
+        } else {
+          console.log('FCM token saved successfully');
+          toast.success('Successfully registered for notifications!');
+        }
+      } else {
+        console.log('No FCM token received');
+      }
     } catch (error) {
       console.error('Error registering for notifications:', error);
+      toast.error('Failed to register for notifications');
     }
   };
 
@@ -99,32 +142,19 @@ export default function NotificationManager() {
 
   const sendTestNotification = async () => {
     try {
-      // Get current time and compare with custom time setting
       const now = new Date();
-      const currentTime = now.toTimeString().slice(0, 5); // "HH:MM" format
+      const currentTime = now.toTimeString().slice(0, 5);
       
-      console.log('Current time:', currentTime);
-      console.log('Custom time setting:', settings.dailySummaryTime);
+      console.log('Sending test notification directly...');
       
-      // Check if service worker is available
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        // Send message to service worker to trigger test notification
-        navigator.serviceWorker.controller.postMessage({
-          type: 'test-notification',
-          customTime: settings.dailySummaryTime
+      if (Notification.permission === 'granted') {
+        new Notification('📅 Daily Summary Test', {
+          body: `Test notification for ${settings.dailySummaryTime}. Current time: ${currentTime}`,
+          icon: '/favicon.ico'
         });
         toast.success('Test notification sent!');
       } else {
-        // Fallback: send notification directly
-        if (Notification.permission === 'granted') {
-          new Notification('Test Notification', {
-            body: `Custom time: ${settings.dailySummaryTime} | Current time: ${currentTime}`,
-            icon: '/icons/nowandthen-icon.svg'
-          });
-          toast.success('Test notification sent!');
-        } else {
-          toast.error('Notification permission not granted');
-        }
+        toast.error('Notification permission not granted');
       }
     } catch (error) {
       console.error('Failed to send test notification:', error);
@@ -199,6 +229,15 @@ export default function NotificationManager() {
             >
               <Settings className="w-3 h-3 mr-1" />
               Settings
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={sendTestNotification}
+              className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
+              title="Test notification now"
+            >
+              Test
             </Button>
             <Button
               variant="outline"
@@ -328,58 +367,55 @@ export default function NotificationManager() {
             
             <div className="flex gap-3 mt-8">
               <Button
-                onClick={(e) => {
+                onClick={async (e) => {
                   console.log('=== SAVE BUTTON CLICKED ===');
-                  console.log('Save button clicked!');
-                  console.log('Current settings:', settings);
-                  console.log('Button element:', e.target);
                   
                   try {
                     // Save to localStorage
                     localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
-                    console.log('Settings saved successfully!');
                     
-                    // Get user timezone and current time
                     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    const now = new Date();
-                    const currentTime = now.toLocaleString('en-US', { timeZone: userTimezone });
-                    const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
-                    const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
-                    const currentTimeFormatted = `${currentHour}:${currentMinute}`;
                     
-                    console.log('=== SAVE BUTTON CLICKED - DETAILED INFO ===');
-                    console.log('User timezone:', userTimezone);
-                    console.log('Current time in user timezone:', currentTime);
-                    console.log('Current time (HH:MM):', currentTimeFormatted);
-                    console.log('Daily summary time setting:', settings.dailySummaryTime);
-                    console.log('Time difference:', `${settings.dailySummaryTime} - ${currentTimeFormatted}`);
+                    // Update Supabase with new settings
+                    if (user) {
+                      const { error } = await supabase
+                        .from('push_subscriptions')
+                        .update({
+                          notification_preferences: {
+                            ...settings,
+                            timezone: userTimezone
+                          },
+                          updated_at: new Date().toISOString()
+                        })
+                        .eq('user_id', user.id);
+                        
+                      if (error) {
+                        console.error('Error updating notification preferences:', error);
+                      } else {
+                        console.log('Notification preferences updated in database');
+                      }
+                    }
                     
-                                          // Send settings and timezone to Service Worker
-                      if ('serviceWorker' in navigator) {
-                        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                        
-                        // Wait for Service Worker to be ready
-                        navigator.serviceWorker.ready.then((registration) => {
-                          if (registration.active) {
-                            registration.active.postMessage({
-                              type: 'update-settings',
-                              settings: settings,
-                              userTimezone: userTimezone
-                            });
-                            console.log('Settings + timezone sent to Service Worker via ready');
-                          }
-                        });
-                        
-                        // Also try direct controller
-                        if (navigator.serviceWorker.controller) {
-                          navigator.serviceWorker.controller.postMessage({
+                    // Send settings to Service Worker
+                    if ('serviceWorker' in navigator) {
+                      navigator.serviceWorker.ready.then((registration) => {
+                        if (registration.active) {
+                          registration.active.postMessage({
                             type: 'update-settings',
                             settings: settings,
                             userTimezone: userTimezone
                           });
-                          console.log('Settings + timezone sent to Service Worker via controller');
                         }
+                      });
+                      
+                      if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                          type: 'update-settings',
+                          settings: settings,
+                          userTimezone: userTimezone
+                        });
                       }
+                    }
                     
                     toast.success('Settings saved!');
                     setShowSettings(false);

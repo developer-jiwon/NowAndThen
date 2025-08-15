@@ -1,17 +1,24 @@
 // Firebase messaging service worker
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
 
-firebase.initializeApp({
-  apiKey: "your-api-key",
-  authDomain: "your-auth-domain",
-  projectId: "your-project-id",
-  storageBucket: "your-storage-bucket",
-  messagingSenderId: "your-messaging-sender-id",
-  appId: "your-app-id"
-});
+let messaging = null;
 
-const messaging = firebase.messaging();
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyB1tU7Wejp2UTAA-7yUzKbzcBT2BVv6sKA",
+    authDomain: "nowandthen-notifications.firebaseapp.com",
+    projectId: "nowandthen-notifications",
+    storageBucket: "nowandthen-notifications.appspot.com",
+    messagingSenderId: "943076943487",
+    appId: "1:943076943487:web:9f95e1977968c1a194414a"
+  });
+  
+  messaging = firebase.messaging();
+  console.log('Firebase initialized successfully in Service Worker');
+} catch (error) {
+  console.error('Firebase initialization failed in Service Worker:', error);
+}
 
 // Timer-based notification functions
 function getNotificationSettings() {
@@ -189,9 +196,9 @@ function checkDailySummary() {
   // Use the stored userTimezone variable instead of calling getUserTimezone()
   const now = new Date();
   const userTime = now.toLocaleString('en-US', { timeZone: userTimezone });
-  const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
-  const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
-  const currentTime = `${currentHour}:${currentMinute}`;
+  const currentHourNum = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
+  const currentMinuteNum = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
+  const currentTime = `${currentHourNum}:${currentMinuteNum}`;
   
   console.log(`Service Worker: Using timezone from variable: ${userTimezone}`);
   console.log(`Current time (${userTimezone}): ${currentTime}`);
@@ -199,10 +206,10 @@ function checkDailySummary() {
   
   // 시간 비교: ±2분 허용
   const [targetHour, targetMinute] = settings.dailySummaryTime.split(':').map(Number);
-  const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+  const [currentHourParsed, currentMinuteParsed] = currentTime.split(':').map(Number);
   
   const targetMinutes = targetHour * 60 + targetMinute;
-  const currentMinutes = currentHour * 60 + currentMinute;
+  const currentMinutes = currentHourParsed * 60 + currentMinuteParsed;
   const timeDiff = Math.abs(targetMinutes - currentMinutes);
   
   console.log(`Time difference: ${timeDiff} minutes`);
@@ -276,28 +283,30 @@ self.addEventListener('install', (event) => {
 console.log('=== FIREBASE SERVICE WORKER LOADED ===');
 console.log('Waiting for settings before starting timers...');
 
-messaging.onBackgroundMessage((payload) => {
-  console.log('Received background message:', payload);
-  
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon-192x192.png',
-    badge: '/badge-72x72.png',
-    actions: [
-      { action: 'view', title: 'View Timer' },
-      { action: 'dismiss', title: 'Dismiss' }
-    ],
-    data: {
-      url: payload.data?.url || '/',
-      timerId: payload.data?.timerId
-    },
-    requireInteraction: true,
-    vibrate: [200, 100, 200]
-  };
+if (messaging) {
+  messaging.onBackgroundMessage((payload) => {
+    console.log('Received background message:', payload);
+    
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+      body: payload.notification.body,
+      icon: '/icon-192x192.png',
+      badge: '/badge-72x72.png',
+      actions: [
+        { action: 'view', title: 'View Timer' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ],
+      data: {
+        url: payload.data?.url || '/',
+        timerId: payload.data?.timerId
+      },
+      requireInteraction: true,
+      vibrate: [200, 100, 200]
+    };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}
 
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
@@ -404,4 +413,6 @@ function sendTestNotification(customTime) {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
   console.log('Test notification sent successfully!');
-}// Force Service Worker update - Fri Aug 15 17:24:24 EDT 2025
+}
+
+// Force Service Worker update - v3.0 - Fri Aug 15 18:15:00 EDT 2025
