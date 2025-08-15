@@ -44,7 +44,7 @@ self.addEventListener('push', (event) => {
       timerId: data.timerId
     },
     requireInteraction: true,
-    vibrate: [200, 100, 200, 100, 200], // 진동 패턴
+    vibrate: [200, 100, 200], // 진동 패턴
     tag: 'nowandthen-timer',
     renotify: true, // 같은 태그면 새 알림으로 교체
     timestamp: Date.now(),
@@ -151,5 +151,113 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Check countdowns and send notifications
+async function checkCountdownsAndNotify() {
+  try {
+    // Get notification settings from localStorage (we'll need to sync this)
+    const settings = await getNotificationSettings();
+    
+    if (!settings || !settings.oneDay && !settings.threeDays && !settings.sevenDays) {
+      return; // No notifications enabled
+    }
+
+    // Get current countdowns from IndexedDB or localStorage
+    const countdowns = await getCountdowns();
+    
+    if (!countdowns || countdowns.length === 0) {
+      return;
+    }
+
+    const now = new Date();
+    
+    countdowns.forEach(countdown => {
+      if (!countdown.targetDate) return;
+      
+      const targetDate = new Date(countdown.targetDate);
+      const diffTime = targetDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Send notifications based on settings
+      if (settings.oneDay && diffDays === 1) {
+        sendNotification(countdown, 'tomorrow', 'Clock');
+      } else if (settings.threeDays && diffDays === 3) {
+        sendNotification(countdown, '3days', 'Calendar');
+      } else if (settings.sevenDays && diffDays === 7) {
+        sendNotification(countdown, 'week', 'CalendarDays');
+      }
+    });
+    
+  } catch (error) {
+    console.warn('Failed to check countdowns:', error);
+  }
+}
+
+// Send notification with appropriate icon and message
+function sendNotification(countdown, type, iconName) {
+  let title, body, icon;
+  
+  switch (type) {
+    case 'tomorrow':
+      title = '내일입니다';
+      body = `${countdown.title}이 내일입니다`;
+      icon = 'Clock';
+      break;
+    case '3days':
+      title = '3일 남았습니다';
+      body = `${countdown.title}까지 3일 남았습니다`;
+      icon = 'Calendar';
+      break;
+    case 'week':
+      title = '일주일 남았습니다';
+      body = `${countdown.title}까지 일주일 남았습니다`;
+      icon = 'CalendarDays';
+      break;
+  }
+  
+  // Create notification with modern design
+  const notification = new Notification(title, {
+    body: body,
+    icon: `/icons/nowandthen-icon.svg`,
+    badge: `/icons/nowandthen-icon.svg`,
+    tag: `countdown-${countdown.id}-${type}`,
+    requireInteraction: false,
+    silent: false,
+    vibrate: [200, 100, 200],
+    data: {
+      countdownId: countdown.id,
+      type: type
+    }
+  });
+  
+  // Auto close after 8 seconds
+  setTimeout(() => {
+    notification.close();
+  }, 8000);
+}
+
+// Get notification settings (we'll implement this)
+async function getNotificationSettings() {
+  // For now, return default settings
+  // Later we'll sync with the main app
+  return {
+    oneDay: true,
+    threeDays: true,
+    sevenDays: false
+  };
+}
+
+// Get countdowns (we'll implement this)
+async function getCountdowns() {
+  // For now, return empty array
+  // Later we'll sync with the main app
+  return [];
+}
+
+// Check countdowns every hour
+setInterval(checkCountdownsAndNotify, 60 * 60 * 1000);
+
+// Also check when service worker starts
+checkCountdownsAndNotify();
 
 
