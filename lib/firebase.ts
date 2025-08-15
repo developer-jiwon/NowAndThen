@@ -23,7 +23,14 @@ const firebaseConfig = hasFirebaseConfig ? {
 // Firebase 설정이 완전할 때만 초기화
 const app = (hasFirebaseConfig && firebaseConfig) ? initializeApp(firebaseConfig) : null;
 
-export const messaging = (typeof window !== 'undefined' && app) ? getMessaging(app) : null;
+export const messaging = (() => {
+  try {
+    return (typeof window !== 'undefined' && app && hasFirebaseConfig) ? getMessaging(app) : null;
+  } catch (error) {
+    console.error('Firebase messaging initialization failed:', error);
+    return null;
+  }
+})();
 
 export const requestNotificationPermission = async () => {
   if (typeof window === 'undefined' || !messaging || !hasFirebaseConfig) {

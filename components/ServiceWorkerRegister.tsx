@@ -9,7 +9,15 @@ export default function ServiceWorkerRegister() {
 
     const register = async () => {
       try {
-        await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        // 모바일 Safari 호환성을 위한 지연
+        setTimeout(async () => {
+          try {
+            await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+            console.log("Service Worker registered successfully");
+          } catch (err) {
+            console.error("SW register failed", err);
+          }
+        }, 100);
       } catch (err) {
         // swallow errors; registration is non-critical
         console.error("SW register failed", err);
