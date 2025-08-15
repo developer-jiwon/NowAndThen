@@ -4,7 +4,7 @@ import Script from "next/script"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"
+// import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -192,7 +192,7 @@ export default function RootLayout({
       </head>
       <body className={`${merriweather.variable} flex flex-col`}> 
         <SupabaseProvider>
-          <ServiceWorkerRegister />
+          {/* <ServiceWorkerRegister /> */}
           <div className="relative flex flex-col">
             {children}
           </div>

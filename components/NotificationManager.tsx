@@ -10,11 +10,28 @@ import { toast } from 'sonner'
 import NotificationPreferences from '@/components/NotificationPreferences'
 
 export default function NotificationManager() {
-  const user = useUser()
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [permission, setPermission] = useState<NotificationPermission>('default')
-  const [showPreferences, setShowPreferences] = useState(false)
+  const user = useUser();
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // Error boundary effect
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.warn('NotificationManager error caught:', error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  // If there was an error, don't render the component
+  if (hasError) {
+    return null;
+  }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -23,9 +40,23 @@ export default function NotificationManager() {
   }, [])
 
   useEffect(() => {
-    if (user) {
-      checkSubscriptionStatus()
+    const checkPermission = async () => {
+      try {
+        if ('Notification' in window) {
+          const permission = await Notification.requestPermission()
+          setPermission(permission)
+          
+          if (permission === 'granted') {
+            checkSubscriptionStatus()
+          }
+        }
+      } catch (error) {
+        console.warn('Notification permission check failed:', error)
+        setPermission('denied')
+      }
     }
+
+    checkPermission()
   }, [user])
 
   useEffect(() => {
@@ -48,14 +79,22 @@ export default function NotificationManager() {
     if (!user) return
     
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('push_subscriptions')
         .select('id')
         .eq('user_id', user.id)
         .single()
       
+      if (error) {
+        // Log error but don't throw - this prevents 406 errors from breaking the app
+        console.warn('Push subscription check failed:', error.message)
+        setIsSubscribed(false)
+        return
+      }
+      
       setIsSubscribed(!!data)
     } catch (error) {
+      console.warn('Push subscription check error:', error)
       setIsSubscribed(false)
     }
   }
@@ -72,6 +111,13 @@ export default function NotificationManager() {
 
   const actuallySubscribeToPush = async () => {
     if (!user) return
+
+    // Check if service worker and push manager are available
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      toast.error('Push notifications not supported in this browser')
+      setIsLoading(false)
+      return
+    }
 
     setIsLoading(true)
     

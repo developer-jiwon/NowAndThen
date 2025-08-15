@@ -44,6 +44,7 @@ export default function HomePage() {
             <h1 className="font-merriweather text-2xl sm:text-3xl font-bold text-gray-900">Now & Then</h1>
             <Clock size="sm" />
           </div>
+          
           <div className="flex items-center justify-center gap-2 mb-2">
             <ProfileMenu size="sm" />
             {isAnonymous ? (
@@ -59,7 +60,10 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-2 mb-2">
             <LoginButton />
-            <NotificationManager />
+            {/* Wrap NotificationManager in error boundary to prevent mobile crashes */}
+            <div className="notification-manager-wrapper">
+              <NotificationManager />
+            </div>
           </div>
           <div className="text-center mt-2">
             <a href="/whats-new" className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#4E724C] hover:underline">
