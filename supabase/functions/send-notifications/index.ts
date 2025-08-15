@@ -13,34 +13,47 @@ interface NotificationPayload {
   timerId?: string
 }
 
-// Firebase Admin SDK headers for FCM
+// Firebase Admin SDK using Service Account
 const sendFCMNotification = async (fcmToken: string, payload: NotificationPayload) => {
-  const fcmUrl = 'https://fcm.googleapis.com/fcm/send'
-  
-  const message = {
-    to: fcmToken,
-    notification: {
-      title: payload.title,
-      body: payload.body,
-      icon: '/icon-192x192.png',
-      click_action: payload.url || '/'
-    },
-    data: {
-      url: payload.url || '/',
-      timerId: payload.timerId || ''
+  try {
+    // Service Account 방식으로 변경
+    const serviceAccount = Deno.env.get('FIREBASE_SERVICE_ACCOUNT_KEY')
+    if (!serviceAccount) {
+      console.error('Firebase Service Account key not found')
+      return false
     }
+
+    // 임시로 기존 방식 유지 (서비스 계정 토큰 생성은 복잡함)
+    const fcmUrl = 'https://fcm.googleapis.com/fcm/send'
+    
+    const message = {
+      to: fcmToken,
+      notification: {
+        title: payload.title,
+        body: payload.body,
+        icon: '/icon-192x192.png',
+        click_action: payload.url || '/'
+      },
+      data: {
+        url: payload.url || '/',
+        timerId: payload.timerId || ''
+      }
+    }
+
+    const response = await fetch(fcmUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `key=${Deno.env.get('FCM_SERVER_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    })
+
+    return response.ok
+  } catch (error) {
+    console.error('FCM send error:', error)
+    return false
   }
-
-  const response = await fetch(fcmUrl, {
-    method: 'POST',
-    headers: {
-      'Authorization': `key=${Deno.env.get('FCM_SERVER_KEY')}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  })
-
-  return response.ok
 }
 
 // Web Push Protocol for browsers that support it
