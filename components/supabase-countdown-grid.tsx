@@ -73,16 +73,19 @@ export default function SupabaseCountdownGrid({
     return Math.abs(diff);
   };
 
-  // Sort pinned countdowns to the top, and apply optional value sort (lowest/highest)
+  // Sort all countdowns by value (lowest/highest), with pinned items getting priority
   const baseArr = [...modeFilteredCountdowns];
   const compareByValue = (a: Countdown, b: Countdown) => {
+    // First, pinned items always come first
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    
+    // Then sort by value within each group
     const av = getAbsDays(a);
     const bv = getAbsDays(b);
     return sortMode === 'lowest' ? av - bv : bv - av;
   };
-  const pinnedItems = baseArr.filter(c => c.pinned).sort(compareByValue);
-  const otherItems = baseArr.filter(c => !c.pinned).sort(compareByValue);
-  const sortedCountdowns = [...pinnedItems, ...otherItems];
+  const sortedCountdowns = baseArr.sort(compareByValue);
 
   useLayoutEffect(() => {
     if (!gridRef.current) return;
