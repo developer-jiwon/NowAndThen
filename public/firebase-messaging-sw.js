@@ -16,8 +16,15 @@ const messaging = firebase.messaging();
 // Timer-based notification functions
 function getNotificationSettings() {
   try {
-    const settings = localStorage.getItem('nowandthen-notification-settings');
-    return settings ? JSON.parse(settings) : null;
+    console.log('Getting notification settings from Service Worker memory...');
+    console.log('Current settings in memory:', currentSettings);
+    
+    if (!currentSettings) {
+      console.log('No settings in memory, returning null');
+      return null;
+    }
+    
+    return currentSettings;
   } catch (error) {
     console.error('Error getting notification settings:', error);
     return null;
@@ -25,25 +32,56 @@ function getNotificationSettings() {
 }
 
 function getCountdowns() {
-  try {
-    const countdowns = localStorage.getItem('nowandthen-countdowns');
-    return countdowns ? JSON.parse(countdowns) : [];
-  } catch (error) {
-    console.error('Error getting countdowns:', error);
-    return [];
-  }
+  // Service Worker cannot access localStorage directly
+  // Return empty array or use data passed from main thread
+  console.log('Service Worker: Cannot access localStorage, returning empty countdowns');
+  return [];
 }
 
 function getUserTimezone() {
   try {
-    // Try to get from localStorage first (set by main app)
-    const timezone = localStorage.getItem('nowandthen-user-timezone');
-    if (timezone) return timezone;
+    console.log('=== GETTING USER TIMEZONE ===');
     
-    // Fallback to UTC
-    return 'UTC';
+    // Method 1: Intl.DateTimeFormat
+    if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log('Method 1 - Intl.DateTimeFormat result:', userTimezone);
+      if (userTimezone && userTimezone !== 'UTC') {
+        console.log('Service Worker: Using Intl.DateTimeFormat timezone:', userTimezone);
+        return userTimezone;
+      }
+    }
+    
+    // Method 2: getTimezoneOffset
+    const offset = new Date().getTimezoneOffset();
+    const hours = Math.abs(Math.floor(offset / 60));
+    const minutes = Math.abs(offset % 60);
+    const sign = offset > 0 ? '-' : '+';
+    const fallbackTimezone = `GMT${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    console.log('Method 2 - getTimezoneOffset result:', fallbackTimezone);
+    console.log('Raw offset minutes:', offset);
+    
+    // Method 3: Manual timezone detection based on offset
+    if (offset === -540) { // UTC+9 (Korea, Japan)
+      const manualTimezone = 'Asia/Seoul';
+      console.log('Method 3 - Manual detection (UTC+9):', manualTimezone);
+      return manualTimezone;
+    } else if (offset === -300) { // UTC+5 (Eastern US)
+      const manualTimezone = 'America/New_York';
+      console.log('Method 3 - Manual detection (UTC+5):', manualTimezone);
+      return manualTimezone;
+    } else if (offset === 0) { // UTC+0 (UK)
+      const manualTimezone = 'Europe/London';
+      console.log('Method 3 - Manual detection (UTC+0):', manualTimezone);
+      return manualTimezone;
+    }
+    
+    console.log('Service Worker: Using fallback timezone:', fallbackTimezone);
+    return fallbackTimezone;
+    
   } catch (error) {
     console.error('Error getting timezone:', error);
+    console.log('Service Worker: Using emergency fallback UTC');
     return 'UTC';
   }
 }
@@ -132,41 +170,47 @@ function sendCountdownNotification(countdown, daysLeft) {
 }
 
 function checkDailySummary() {
+  console.log('=== DAILY SUMMARY CHECK ===');
   console.log('Checking daily summary...');
   
   const settings = getNotificationSettings();
-  if (!settings || !settings.dailySummary) {
-    console.log('Daily summary not enabled');
+  console.log('Notification settings:', settings);
+  
+  if (!settings) {
+    console.log('No notification settings found');
     return;
   }
   
-  const userTimezone = getUserTimezone();
+  if (!settings.dailySummary) {
+    console.log('Daily summary not enabled in settings');
+    return;
+  }
+  
+  // Use the stored userTimezone variable instead of calling getUserTimezone()
   const now = new Date();
   const userTime = now.toLocaleString('en-US', { timeZone: userTimezone });
-  const currentHour = now.getLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
-  const currentMinute = now.getLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
+  const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
+  const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
   const currentTime = `${currentHour}:${currentMinute}`;
   
+  console.log(`Service Worker: Using timezone from variable: ${userTimezone}`);
   console.log(`Current time (${userTimezone}): ${currentTime}`);
-  console.log(`Daily summary time: ${settings.dailySummaryTime}`);
+  console.log(`Daily summary time setting: ${settings.dailySummaryTime}`);
+  console.log(`Time match: ${currentTime === settings.dailySummaryTime}`);
   
   if (currentTime === settings.dailySummaryTime) {
+    console.log('Time matched! Sending daily summary notification...');
     sendDailySummaryNotification();
+  } else {
+    console.log('Time not matched yet');
   }
 }
 
 function sendDailySummaryNotification() {
-  const countdowns = getCountdowns();
-  const activeCountdowns = countdowns.filter(c => c.targetDate && new Date(c.targetDate) > new Date());
+  // Service Worker cannot access localStorage, so send a generic notification
+  let summaryText = '오늘도 목표를 향해 나아가세요! 💪';
   
-  let summaryText = 'No active countdowns';
-  if (activeCountdowns.length > 0) {
-    const nearest = activeCountdowns.sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate))[0];
-    const daysLeft = Math.ceil((new Date(nearest.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
-    summaryText = `${activeCountdowns.length} active countdowns. Nearest: "${nearest.title}" in ${daysLeft} days`;
-  }
-  
-  const notificationTitle = 'Daily Countdown Summary';
+  const notificationTitle = '📅 오늘의 타이머 요약';
   const notificationOptions = {
     body: summaryText,
     icon: '/icons/nowandthen-icon.svg',
@@ -207,9 +251,20 @@ function startBackgroundTimers() {
 
 // Start timers when service worker activates
 self.addEventListener('activate', (event) => {
+  console.log('=== SERVICE WORKER ACTIVATED ===');
   console.log('Service Worker activated, starting timers...');
   event.waitUntil(startBackgroundTimers());
 });
+
+// Also start timers when service worker installs
+self.addEventListener('install', (event) => {
+  console.log('=== SERVICE WORKER INSTALLED ===');
+  console.log('Service Worker installed');
+});
+
+// Don't start timers immediately - wait for settings
+console.log('=== FIREBASE SERVICE WORKER LOADED ===');
+console.log('Waiting for settings before starting timers...');
 
 messaging.onBackgroundMessage((payload) => {
   console.log('Received background message:', payload);
@@ -253,13 +308,66 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
+// Store settings and timezone in memory (Service Worker scope)
+let currentSettings = null;
+let userTimezone = 'UTC'; // Will be updated from main thread
+
 // Listen for messages from main thread
 self.addEventListener('message', (event) => {
-  console.log('Service Worker received message:', event.data);
+  console.log('=== SERVICE WORKER MESSAGE RECEIVED ===');
+  console.log('Message type:', event.data?.type);
+  console.log('Message data:', event.data);
+  console.log('Source:', event.source);
+  console.log('Current settings before update:', currentSettings);
+  console.log('Current timezone before update:', userTimezone);
   
   if (event.data && event.data.type === 'test-notification') {
     console.log('Sending test notification...');
     sendTestNotification(event.data.customTime);
+  }
+  
+  if (event.data && event.data.type === 'update-settings') {
+    console.log('=== UPDATING SERVICE WORKER SETTINGS ===');
+    console.log('Old settings:', currentSettings);
+    console.log('Old timezone:', userTimezone);
+    
+    // Store new settings
+    currentSettings = event.data.settings;
+    console.log('Settings stored in memory:', currentSettings);
+    
+    // Update timezone if provided
+    if (event.data.userTimezone) {
+      userTimezone = event.data.userTimezone;
+      console.log('User timezone updated to:', userTimezone);
+    }
+    
+    console.log('Final settings in memory:', currentSettings);
+    console.log('Final timezone in memory:', userTimezone);
+    console.log('Settings updated in Service Worker successfully!');
+    
+    // Verify storage
+    console.log('=== VERIFICATION ===');
+    console.log('currentSettings === event.data.settings:', currentSettings === event.data.settings);
+    console.log('currentSettings.dailySummaryTime:', currentSettings?.dailySummaryTime);
+    console.log('event.data.settings.dailySummaryTime:', event.data.settings?.dailySummaryTime);
+    
+    // Show detailed timezone and time info using received timezone
+    const now = new Date();
+    const currentTime = now.toLocaleString('en-US', { timeZone: userTimezone });
+    const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
+    const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
+    const currentTimeFormatted = `${currentHour}:${currentMinute}`;
+    
+    console.log('=== SERVICE WORKER TIMEZONE & TIME INFO ===');
+    console.log('Service Worker using timezone:', userTimezone);
+    console.log('Current time in Service Worker:', currentTime);
+    console.log('Current time (HH:MM):', currentTimeFormatted);
+    console.log('Daily summary time setting:', currentSettings.dailySummaryTime);
+    console.log('Time until next check:', `${currentSettings.dailySummaryTime} - ${currentTimeFormatted}`);
+    
+    // Start timers after receiving settings
+    console.log('Starting background timers now...');
+    startBackgroundTimers();
   }
 });
 
@@ -286,4 +394,4 @@ function sendTestNotification(customTime) {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
   console.log('Test notification sent successfully!');
-}
+}// Force Service Worker update - Fri Aug 15 17:24:24 EDT 2025

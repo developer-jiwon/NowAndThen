@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Settings, X } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import NotificationPreferences from "./NotificationPreferences";
 
 interface NotificationSettings {
   oneDay: boolean;
@@ -32,7 +34,7 @@ export default function NotificationManager() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-      const isInApp = window.navigator.standalone === true;
+      const isInApp = (window.navigator as any).standalone === true;
       setIsPWA(isStandalone || isInApp);
     }
   }, []);
@@ -66,6 +68,7 @@ export default function NotificationManager() {
         if (isPWA) {
           toast.info('In PWA mode, you will get a better notification experience');
         }
+        await registerForNotifications();
       } else if (result === 'denied') {
         toast.error('Notification permission denied. Please allow it in your browser settings.');
       } else {
@@ -74,6 +77,18 @@ export default function NotificationManager() {
     } catch (error) {
       console.warn('Notification permission request failed:', error);
       toast.error('Failed to request notification permission');
+    }
+  };
+
+  // FCM 토큰 등록
+  const registerForNotifications = async () => {
+    if (!user) return;
+
+    try {
+      // FCM 토큰은 firebase.ts에서 처리됨
+      console.log('Notification permission granted for user:', user.id);
+    } catch (error) {
+      console.error('Error registering for notifications:', error);
     }
   };
 
@@ -323,6 +338,48 @@ export default function NotificationManager() {
                     // Save to localStorage
                     localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
                     console.log('Settings saved successfully!');
+                    
+                    // Get user timezone and current time
+                    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const now = new Date();
+                    const currentTime = now.toLocaleString('en-US', { timeZone: userTimezone });
+                    const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
+                    const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
+                    const currentTimeFormatted = `${currentHour}:${currentMinute}`;
+                    
+                    console.log('=== SAVE BUTTON CLICKED - DETAILED INFO ===');
+                    console.log('User timezone:', userTimezone);
+                    console.log('Current time in user timezone:', currentTime);
+                    console.log('Current time (HH:MM):', currentTimeFormatted);
+                    console.log('Daily summary time setting:', settings.dailySummaryTime);
+                    console.log('Time difference:', `${settings.dailySummaryTime} - ${currentTimeFormatted}`);
+                    
+                                          // Send settings and timezone to Service Worker
+                      if ('serviceWorker' in navigator) {
+                        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        
+                        // Wait for Service Worker to be ready
+                        navigator.serviceWorker.ready.then((registration) => {
+                          if (registration.active) {
+                            registration.active.postMessage({
+                              type: 'update-settings',
+                              settings: settings,
+                              userTimezone: userTimezone
+                            });
+                            console.log('Settings + timezone sent to Service Worker via ready');
+                          }
+                        });
+                        
+                        // Also try direct controller
+                        if (navigator.serviceWorker.controller) {
+                          navigator.serviceWorker.controller.postMessage({
+                            type: 'update-settings',
+                            settings: settings,
+                            userTimezone: userTimezone
+                          });
+                          console.log('Settings + timezone sent to Service Worker via controller');
+                        }
+                      }
                     
                     toast.success('Settings saved!');
                     setShowSettings(false);

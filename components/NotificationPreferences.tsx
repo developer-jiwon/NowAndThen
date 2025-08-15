@@ -85,7 +85,31 @@ export default function NotificationPreferences({ isOpen, onClose, onSave }: Not
 
     setIsLoading(true)
     try {
-      // 일단 설정만 저장하고 외부 콜백 실행 (실제 구독은 NotificationManager에서)
+      // DB에 설정 저장
+      const notificationPrefs = {
+        hours_before: settings.custom_times,
+        daily_summary: settings.daily_summary,
+        daily_summary_time: settings.daily_summary_time,
+        timezone: settings.timezone
+      }
+
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert(
+          {
+            user_id: user.id,
+            notification_preferences: notificationPrefs,
+            created_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id' }
+        )
+
+      if (error) {
+        console.error('Error saving to DB:', error)
+        toast.error('설정 저장에 실패했습니다.')
+        return
+      }
+
       toast.success('알림 설정이 저장되었습니다!')
       
       // 외부에서 전달된 onSave 콜백 실행 (실제 구독 처리)

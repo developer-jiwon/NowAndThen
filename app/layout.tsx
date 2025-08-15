@@ -192,6 +192,24 @@ export default function RootLayout({
       <body className={`${merriweather.variable} flex flex-col`}> 
         <SupabaseProvider>
           {/* <ServiceWorkerRegister /> */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  console.log('Registering Firebase Service Worker...');
+                  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then((registration) => {
+                      console.log('Firebase Service Worker registered:', registration);
+                    })
+                    .catch((error) => {
+                      console.error('Firebase Service Worker registration failed:', error);
+                    });
+                } else {
+                  console.log('Service Worker not supported');
+                }
+              `
+            }}
+          />
           <div className="relative flex flex-col">
             {children}
           </div>
