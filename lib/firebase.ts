@@ -1,17 +1,27 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-const firebaseConfig = {
+// Firebase 설정 확인
+const hasFirebaseConfig = !!(
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+  process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
+  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+  process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET &&
+  process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID &&
+  process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+);
+
+const firebaseConfig = hasFirebaseConfig ? {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-};
+} : null;
 
-// Firebase 설정이 없으면 초기화하지 않음
-const app = firebaseConfig.projectId ? initializeApp(firebaseConfig) : null;
+// Firebase 설정이 완전할 때만 초기화
+const app = (hasFirebaseConfig && firebaseConfig) ? initializeApp(firebaseConfig) : null;
 
 export const messaging = (typeof window !== 'undefined' && app) ? getMessaging(app) : null;
 
