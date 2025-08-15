@@ -16,6 +16,18 @@ export default function NotificationManager() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(mobile);
+    };
+    
+    checkMobile();
+  }, []);
 
   // Error boundary effect
   useEffect(() => {
@@ -28,8 +40,8 @@ export default function NotificationManager() {
     return () => window.removeEventListener('error', handleError);
   }, []);
 
-  // If there was an error, don't render the component
-  if (hasError) {
+  // If there was an error or on mobile, don't render the component
+  if (hasError || isMobile) {
     return null;
   }
 
