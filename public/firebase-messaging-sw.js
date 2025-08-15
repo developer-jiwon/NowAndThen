@@ -213,8 +213,8 @@ function sendDailySummaryNotification() {
   const notificationTitle = '📅 오늘의 타이머 요약';
   const notificationOptions = {
     body: summaryText,
-    icon: '/icons/nowandthen-icon.svg',
-    badge: '/icons/nowandthen-icon.svg',
+    icon: '/icon-192x192.png',
+    badge: '/icon-192x192.png',
     actions: [
       { action: 'view', title: 'View App' },
       { action: 'dismiss', title: 'Dismiss' }
@@ -223,7 +223,7 @@ function sendDailySummaryNotification() {
       url: '/',
       type: 'daily-summary'
     },
-    requireInteraction: false,
+    requireInteraction: true,
     vibrate: [200, 100, 200],
     tag: 'daily-summary'
   };
