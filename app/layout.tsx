@@ -4,7 +4,6 @@ import Script from "next/script"
 import { Merriweather } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
-// import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -99,7 +98,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png" />
         <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.webmanifest" />
+        {/* <link rel="manifest" href="/manifest.webmanifest" /> */}
         <link rel="canonical" href={siteUrl} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#FFFFFF" />

@@ -82,11 +82,61 @@ export default function NotificationManager() {
     toast.success('Notifications disabled');
   };
 
+  const sendTestNotification = async () => {
+    try {
+      // Get current time and compare with custom time setting
+      const now = new Date();
+      const currentTime = now.toTimeString().slice(0, 5); // "HH:MM" format
+      
+      console.log('Current time:', currentTime);
+      console.log('Custom time setting:', settings.dailySummaryTime);
+      
+      // Check if service worker is available
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        // Send message to service worker to trigger test notification
+        navigator.serviceWorker.controller.postMessage({
+          type: 'test-notification',
+          customTime: settings.dailySummaryTime
+        });
+        toast.success('Test notification sent!');
+      } else {
+        // Fallback: send notification directly
+        if (Notification.permission === 'granted') {
+          new Notification('Test Notification', {
+            body: `Custom time: ${settings.dailySummaryTime} | Current time: ${currentTime}`,
+            icon: '/icons/nowandthen-icon.svg'
+          });
+          toast.success('Test notification sent!');
+        } else {
+          toast.error('Notification permission not granted');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send test notification:', error);
+      toast.error('Failed to send test notification');
+    }
+  };
+
   const saveSettings = () => {
-    // Save settings to localStorage
-    localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
-    toast.success('Notification settings saved!');
-    setShowSettings(false);
+    console.log('Saving notification settings:', settings);
+    
+    try {
+      // Save settings to localStorage
+      localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
+      console.log('Settings saved to localStorage successfully');
+      
+      toast.success('Notification settings saved!');
+      setShowSettings(false);
+      
+      // Send test notification immediately after saving
+      setTimeout(() => {
+        sendTestNotification();
+      }, 500);
+      
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast.error('Failed to save notification settings');
+    }
   };
 
   const loadSettings = () => {
@@ -263,8 +313,27 @@ export default function NotificationManager() {
             
             <div className="flex gap-3 mt-8">
               <Button
-                onClick={saveSettings}
+                onClick={(e) => {
+                  console.log('=== SAVE BUTTON CLICKED ===');
+                  console.log('Save button clicked!');
+                  console.log('Current settings:', settings);
+                  console.log('Button element:', e.target);
+                  
+                  try {
+                    // Save to localStorage
+                    localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
+                    console.log('Settings saved successfully!');
+                    
+                    toast.success('Settings saved!');
+                    setShowSettings(false);
+                    
+                  } catch (error) {
+                    console.error('Save failed:', error);
+                    toast.error('Failed to save settings');
+                  }
+                }}
                 className="flex-1 bg-[#4E724C] hover:bg-[#4E724C]/90 text-white font-medium"
+                type="button"
               >
                 Save
               </Button>
@@ -272,6 +341,7 @@ export default function NotificationManager() {
                 variant="outline"
                 onClick={() => setShowSettings(false)}
                 className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                type="button"
               >
                 Cancel
               </Button>
