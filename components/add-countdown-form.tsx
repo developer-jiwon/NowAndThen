@@ -163,12 +163,12 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2 w-full max-w-md sm:max-w-lg mx-auto bg-gradient-to-br from-gray-50 to-white rounded-md border border-gray-100 shadow-sm p-3 sm:p-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2 w-full max-w-md sm:max-w-lg mx-auto bg-gradient-to-br from-gray-50 to-white rounded-md border border-gray-100 shadow-sm pt-3 pb-4 px-3 sm:px-4">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-0.5">
               <FormLabel className="text-xs font-medium text-[#4A2C3A]">Title</FormLabel>
               <div className="w-full">
                 <FormControl>
@@ -192,7 +192,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
             const inputRef = useRef<HTMLInputElement>(null);
             
             return (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-0.5">
               <FormLabel className="text-xs font-medium text-[#4A2C3A]">Date</FormLabel>
                 <div className="w-full">
                   {/* Quick preset buttons */}
@@ -285,7 +285,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-0.5">
               <FormLabel className="text-xs font-medium text-[#4A2C3A]">Category</FormLabel>
               <div className="w-full">
                 <Select
@@ -312,7 +312,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           control={form.control}
           name="memo"
           render={({ field }) => (
-            <FormItem className="space-y-1">
+            <FormItem className="space-y-0.5">
               <FormLabel className="text-xs font-medium text-[#4A2C3A]">Memo (Optional)</FormLabel>
               <div className="w-full">
                 <FormControl>
@@ -329,7 +329,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
-        <div className="w-full max-w-sm sm:max-w-md mx-auto flex gap-2 pt-2">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex gap-2 pt-3">
           <Button type="submit" className="flex-1 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-9 text-sm font-medium rounded-md shadow-sm transition-all duration-200">
             {submitButtonText}
           </Button>
