@@ -196,9 +196,19 @@ function checkDailySummary() {
   console.log(`Service Worker: Using timezone from variable: ${userTimezone}`);
   console.log(`Current time (${userTimezone}): ${currentTime}`);
   console.log(`Daily summary time setting: ${settings.dailySummaryTime}`);
-  console.log(`Time match: ${currentTime === settings.dailySummaryTime}`);
   
-  if (currentTime === settings.dailySummaryTime) {
+  // 시간 비교: ±2분 허용
+  const [targetHour, targetMinute] = settings.dailySummaryTime.split(':').map(Number);
+  const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+  
+  const targetMinutes = targetHour * 60 + targetMinute;
+  const currentMinutes = currentHour * 60 + currentMinute;
+  const timeDiff = Math.abs(targetMinutes - currentMinutes);
+  
+  console.log(`Time difference: ${timeDiff} minutes`);
+  console.log(`Time match: ${timeDiff <= 2}`);
+  
+  if (timeDiff <= 2) {
     console.log('Time matched! Sending daily summary notification...');
     sendDailySummaryNotification();
   } else {
