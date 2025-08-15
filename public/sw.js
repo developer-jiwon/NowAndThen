@@ -3,7 +3,16 @@ const OFFLINE_URL = '/offline';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL]))
+    (async () => {
+      try {
+        if ('caches' in self) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.addAll([OFFLINE_URL]);
+        }
+      } catch (error) {
+        console.error('Cache install failed:', error);
+      }
+    })()
   );
   self.skipWaiting();
 });
