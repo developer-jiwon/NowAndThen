@@ -32,28 +32,32 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
 
   const content = {
     en: {
-      title: 'Now & Then v1.1',
-      subtitle: 'Fresh improvements that make the app feel faster and easier.',
-      memoTitle: 'Better memos',
-      memoDesc: 'Saved memos show instantly and open by default when present.',
-      designTitle: 'New app icon & PWA',
-      designDesc: 'Installable app with offline page, and a cute calendar icon for Home Screen.',
-      emptyStateTitle: 'Smart sorting',
-      emptyStateDesc: 'Quickly sort by Lowest/Highest to see the most urgent timers.',
-      confirm: 'Nice',
-      version: 'Version 1.1 • August 2025'
+      title: 'Now & Then v2.0',
+      subtitle: 'Major update with PWA support and smart notifications.',
+      pwaTitle: 'PWA Support',
+      pwaDesc: 'Install on home screen and use like a native app with offline support.',
+      notificationTitle: 'Smart Notifications',
+      notificationDesc: 'Get notified 1, 3, or 7 days before important events with modern UI.',
+      uiTitle: 'Modern UI/UX',
+      uiDesc: 'Elegant toggle switches, optimized spacing, and mobile-friendly design.',
+      performanceTitle: 'Performance Boost',
+      performanceDesc: 'Faster, smoother experience with improved animations and responsiveness.',
+      confirm: 'Awesome',
+      version: 'Version 2.0 • January 2025'
     },
     ko: {
-      title: 'Now & Then v1.1',
-      subtitle: '더 빠르고 편해진 업데이트를 소개합니다.',
-      memoTitle: '메모 개선',
-      memoDesc: '저장 즉시 화면에 반영되고, 메모가 있으면 기본으로 펼쳐져요.',
-      designTitle: '앱 아이콘 & PWA',
-      designDesc: '홈 화면에 설치 가능, 오프라인 페이지 지원, 캘린더 아이콘 적용.',
-      emptyStateTitle: '빠른 정렬',
-      emptyStateDesc: 'Lowest/Highest로 가장 급한 타이머를 바로 확인.',
-      confirm: '좋아요',
-      version: '버전 1.1 • 2025년 8월'
+      title: 'Now & Then v2.0',
+      subtitle: 'PWA 지원과 스마트 알림이 추가된 대규모 업데이트.',
+      pwaTitle: 'PWA 지원',
+      pwaDesc: '홈 화면에 설치하고 네이티브 앱처럼 사용, 오프라인에서도 동작.',
+      notificationTitle: '스마트 알림',
+      notificationDesc: '1일/3일/7일 전에 자동 알림, 모던한 설정 UI로 편리하게.',
+      uiTitle: '모던한 UI/UX',
+      uiDesc: '세련된 토글 스위치, 최적화된 간격, 모바일 친화적 디자인.',
+      performanceTitle: '성능 향상',
+      performanceDesc: '더 빠르고 부드러운 애니메이션과 반응성.',
+      confirm: '훌륭해요',
+      version: '버전 2.0 • 2025년 1월'
     }
   };
 
@@ -105,12 +109,24 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
             <div className="space-y-4 mb-6">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Globe className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.pwaTitle}</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentContent.pwaDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.memoTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.notificationTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.memoDesc}
+                    {currentContent.notificationDesc}
                   </p>
                 </div>
               </div>
@@ -120,9 +136,9 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
                   <Palette className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.designTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.uiTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.designDesc}
+                    {currentContent.uiDesc}
                   </p>
                 </div>
               </div>
@@ -130,13 +146,13 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.emptyStateTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.performanceTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.emptyStateDesc}
+                    {currentContent.performanceDesc}
                   </p>
                 </div>
               </div>

@@ -23,7 +23,7 @@ export default function HomePage() {
     if (hash && ['pinned', 'general', 'personal', 'custom', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
-    const hasSeen = localStorage.getItem('nowandthen-v1.1');
+    const hasSeen = localStorage.getItem('nowandthen-v2.0');
     if (!hasSeen) {
       setTimeout(() => setShowUpdatePopup(true), 600);
     }
@@ -31,7 +31,7 @@ export default function HomePage() {
   
   const handleCloseUpdatePopup = () => {
     setShowUpdatePopup(false);
-    localStorage.setItem('nowandthen-v1.1', 'true');
+    localStorage.setItem('nowandthen-v2.0', 'true');
   };
 
   return (
