@@ -55,6 +55,35 @@ export type Database = {
           updated_at?: string;
         };
       };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          fcm_token?: string;
+          push_subscription?: any;
+          notification_preferences?: any;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          fcm_token?: string;
+          push_subscription?: any;
+          notification_preferences?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          fcm_token?: string;
+          push_subscription?: any;
+          notification_preferences?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }; 

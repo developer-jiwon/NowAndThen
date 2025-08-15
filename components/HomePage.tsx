@@ -10,6 +10,7 @@ import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
 import UpdatePopup from "@/components/update-popup";
 import AdSenseComponent from "@/components/AdSenseComponent";
+import NotificationManager from "@/components/NotificationManager";
 
 export default function HomePage() {
   const user = useUser();
@@ -56,7 +57,10 @@ export default function HomePage() {
               </span>
             )}
           </div>
-          <LoginButton />
+          <div className="flex items-center gap-2 mb-2">
+            <LoginButton />
+            <NotificationManager />
+          </div>
           <div className="text-center mt-2">
             <a href="/whats-new" className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#4E724C] hover:underline">
               <CalendarIcon className="w-3.5 h-3.5" />
