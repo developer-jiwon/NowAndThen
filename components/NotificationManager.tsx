@@ -92,44 +92,43 @@ export default function NotificationManager() {
       
       if (fcmToken) {
         console.log('FCM Token received:', fcmToken);
+        console.log('User ID:', user.id);
         
-        // Supabase에 FCM 토큰 저장 (update 우선, 실패시 insert)
-        let { error } = await supabase
+        // Supabase에 FCM 토큰 저장 (upsert 사용)
+        const { error } = await supabase
           .from('push_subscriptions')
-          .update({
+          .upsert({
+            user_id: user.id,
             fcm_token: fcmToken,
             notification_preferences: {
               ...settings,
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             },
             updated_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-          
-        // 업데이트 실패시 새로 생성
-        if (error) {
-          const { error: insertError } = await supabase
-            .from('push_subscriptions')
-            .insert({
-              user_id: user.id,
-              fcm_token: fcmToken,
-              notification_preferences: {
-                ...settings,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-              }
-            });
-          error = insertError;
-        }
+          }, {
+            onConflict: 'user_id'
+          });
           
         if (error) {
           console.error('Error saving FCM token:', error);
           toast.error('Failed to register for notifications');
         } else {
           console.log('FCM token saved successfully');
+          
+          // 저장된 데이터 확인
+          const { data: checkData, error: checkError } = await supabase
+            .from('push_subscriptions')
+            .select('*')
+            .eq('user_id', user.id);
+            
+          console.log('Saved subscription data:', checkData);
+          if (checkError) console.error('Check error:', checkError);
+          
           toast.success('Successfully registered for notifications!');
         }
       } else {
         console.log('No FCM token received');
+        toast.error('Failed to get FCM token');
       }
     } catch (error) {
       console.error('Error registering for notifications:', error);
@@ -144,23 +143,36 @@ export default function NotificationManager() {
 
   const sendTestNotification = async () => {
     try {
-      const now = new Date();
-      const currentTime = now.toTimeString().slice(0, 5);
+      console.log('=== TESTING BACKEND NOTIFICATION ===');
       
-      console.log('Sending test notification directly...');
+      // 백엔드 함수 직접 호출해서 알림 내용 확인
+      const response = await fetch('/api/test-daily-summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user?.id,
+          testTime: settings.dailySummaryTime
+        })
+      });
       
-      if (Notification.permission === 'granted') {
-        new Notification('Daily Summary Test', {
-          body: `Test notification for ${settings.dailySummaryTime}. Current time: ${currentTime}`,
-          icon: '/favicon.ico'
-        });
-        toast.success('Test notification sent!');
+      if (response.ok) {
+        const result = await response.json();
+        console.log('=== BACKEND NOTIFICATION RESULT ===');
+        console.log('Title:', result.title);
+        console.log('Body:', result.body);
+        console.log('User timers found:', result.timersCount);
+        console.log('Full response:', result);
+        
+        toast.success('Test notification sent! Check console for details.');
       } else {
-        toast.error('Notification permission not granted');
+        console.error('Backend test failed:', response.status);
+        toast.error('Backend test failed');
       }
     } catch (error) {
-      console.error('Failed to send test notification:', error);
-      toast.error('Failed to send test notification');
+      console.error('Failed to test backend notification:', error);
+      toast.error('Failed to test backend notification');
     }
   };
 
@@ -232,17 +244,15 @@ export default function NotificationManager() {
               <Settings className="w-3 h-3 mr-1" />
               Settings
             </Button>
-{/* Test button temporarily hidden for production
             <Button
               variant="outline"
               size="sm"
               onClick={sendTestNotification}
               className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
-              title="Test notification now"
+              title="Test notification content"
             >
               Test
             </Button>
-            */}
             <Button
               variant="outline"
               size="sm"
@@ -386,6 +396,9 @@ export default function NotificationManager() {
                     
                     // Update Supabase with new settings
                     if (user) {
+                      console.log('Updating preferences for user:', user.id);
+                      console.log('New settings:', settings);
+                      
                       const { error } = await supabase
                         .from('push_subscriptions')
                         .update({
@@ -399,8 +412,21 @@ export default function NotificationManager() {
                         
                       if (error) {
                         console.error('Error updating notification preferences:', error);
+                        
+                        // FCM 토큰 다시 등록 시도
+                        console.log('Retrying FCM token registration...');
+                        await registerForNotifications();
                       } else {
                         console.log('Notification preferences updated in database');
+                        
+                        // 업데이트 후 데이터 확인
+                        const { data: updatedData, error: fetchError } = await supabase
+                          .from('push_subscriptions')
+                          .select('*')
+                          .eq('user_id', user.id);
+                          
+                        console.log('Updated subscription data:', updatedData);
+                        if (fetchError) console.error('Fetch error:', fetchError);
                       }
                     }
                     

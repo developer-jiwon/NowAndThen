@@ -30,6 +30,11 @@ const sendFCMNotification = async (fcmToken: string, payload: NotificationPayloa
     }
   }
 
+  console.log('=== FCM REQUEST ===')
+  console.log('FCM URL:', fcmUrl)
+  console.log('FCM Message:', JSON.stringify(message, null, 2))
+  console.log('FCM Server Key exists:', !!Deno.env.get('FCM_SERVER_KEY'))
+
   const response = await fetch(fcmUrl, {
     method: 'POST',
     headers: {
@@ -38,6 +43,18 @@ const sendFCMNotification = async (fcmToken: string, payload: NotificationPayloa
     },
     body: JSON.stringify(message),
   })
+
+  console.log('=== FCM RESPONSE ===')
+  console.log('Status:', response.status)
+  console.log('Status Text:', response.statusText)
+  
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('FCM Error Response:', errorText)
+  } else {
+    const responseData = await response.text()
+    console.log('FCM Success Response:', responseData)
+  }
 
   return response.ok
 }
@@ -205,15 +222,23 @@ serve(async (req) => {
           url: '/'
         }
 
+        console.log('=== NOTIFICATION PAYLOAD ===')
+        console.log('Title:', payload.title)
+        console.log('Body:', payload.body)
+        console.log('FCM Token:', subscription.fcm_token?.substring(0, 20) + '...')
+        console.log('Full notification content:')
+        console.log(JSON.stringify(payload, null, 2))
+
         // FCM 알림 전송
         const fcmSent = await sendFCMNotification(subscription.fcm_token, payload)
         
         if (fcmSent) {
           notificationsSent++
-          console.log(`Daily summary sent to user ${subscription.user_id}`)
+          console.log(`✅ Daily summary sent successfully to user ${subscription.user_id}`)
+          console.log(`📱 Notification content: "${payload.title}" - "${payload.body}"`)
         } else {
           errors++
-          console.error(`Failed to send daily summary to user ${subscription.user_id}`)
+          console.error(`❌ Failed to send daily summary to user ${subscription.user_id}`)
         }
 
       } catch (error) {

@@ -258,9 +258,17 @@ function startBackgroundTimers() {
     checkCountdownsAndNotify();
   }, 60 * 60 * 1000); // 1 hour
   
-  // Check daily summary every minute
+  // Check daily summary every minute (but only once per minute)
+  let lastCheckMinute = -1;
   setInterval(() => {
-    checkDailySummary();
+    const now = new Date();
+    const currentMinute = now.getMinutes();
+    
+    // Only run once per minute to avoid duplicates
+    if (currentMinute !== lastCheckMinute) {
+      lastCheckMinute = currentMinute;
+      checkDailySummary();
+    }
   }, 60 * 1000); // 1 minute
   
   console.log('Background timers started');
