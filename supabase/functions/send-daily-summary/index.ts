@@ -55,12 +55,15 @@ serve(async (req) => {
 
     console.log('Starting daily summary notifications...')
 
-    // 매일 요약 알림이 활성화된 사용자들 찾기
-    const { data: subscriptions, error: subsError } = await supabaseClient
+    // 매일 요약 알림이 활성화된 사용자들 찾기 - 일단 모든 사용자 가져와서 필터링
+    const { data: allSubscriptions, error: subsError } = await supabaseClient
       .from('push_subscriptions')
       .select('*')
-      .eq('notification_preferences->daily_summary', true)
       .not('fcm_token', 'is', null)
+
+    const subscriptions = allSubscriptions?.filter(sub => 
+      sub.notification_preferences?.dailySummary === true
+    ) || []
 
     if (subsError) {
       console.error('Error fetching subscriptions:', subsError)
@@ -70,6 +73,8 @@ serve(async (req) => {
       })
     }
 
+    console.log('All subscriptions found:', allSubscriptions?.length || 0)
+    console.log('Subscriptions with FCM token:', allSubscriptions?.filter(sub => sub.fcm_token !== null).length || 0)
     console.log('Found subscriptions with daily summary enabled:', subscriptions?.length || 0)
 
     let notificationsSent = 0

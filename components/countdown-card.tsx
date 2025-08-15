@@ -224,6 +224,17 @@ export default function CountdownCard({
     const updateTime = () => {
       const newTimeRemaining = calculateTimeRemaining(exactDate, isCountUp);
       setTimeRemaining(newTimeRemaining);
+      
+      // Check if timer reached 0 and show notification
+      if (!isCountUp && newTimeRemaining.days === 0 && newTimeRemaining.isToday) {
+        // Timer reached today - could show notification here
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(`${countdown.title} 시간입니다`, {
+            body: '설정한 타이머가 도달했습니다',
+            icon: '/favicon.ico'
+          });
+        }
+      }
     };
     
     // Update immediately
@@ -234,7 +245,7 @@ export default function CountdownCard({
     
     // Clean up interval on unmount
     return () => clearInterval(timer);
-  }, [exactDate, isCountUp, countdown.date, isTomorrow]);
+  }, [exactDate, isCountUp, countdown.date, isTomorrow, countdown.title]);
   
   const isPinned = countdown.pinned || false;
 
