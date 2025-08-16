@@ -4,6 +4,14 @@ import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
+    // 환경변수 체크
+    console.log('🔧 [Config Check] FCM_SERVER_KEY exists:', !!process.env.FCM_SERVER_KEY);
+    console.log('🔧 [Config Check] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
+    console.log('🔧 [Config Check] VAPID keys:', {
+      public: !!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      private: !!process.env.VAPID_PRIVATE_KEY
+    });
+    
     const body = await request.json();
     const { userId, title, message } = body;
 
@@ -24,10 +32,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
     }
 
-    console.log('[Test] PWA CLOSED TEST - Found subscription for user:', userId);
-    console.log('[Test] FCM Token available:', !!subscription.fcm_token);
-    console.log('[Test] Web Push subscription available:', !!subscription.push_subscription);
-    console.log('[Test] This notification should reach even when PWA is completely closed');
+    console.log('🚀 [PWA CLOSED TEST] Starting notification test for user:', userId);
+    console.log('📱 [PWA CLOSED TEST] FCM Token available:', !!subscription.fcm_token);
+    console.log('🌐 [PWA CLOSED TEST] Web Push subscription available:', !!subscription.push_subscription);
+    console.log('⏰ [PWA CLOSED TEST] Current time:', new Date().toISOString());
+    console.log('🎯 [PWA CLOSED TEST] This notification MUST reach even when PWA is completely closed');
+    
+    // 구독 정보 상세 로깅
+    if (subscription.fcm_token) {
+      console.log('🔑 [FCM] Token exists, length:', subscription.fcm_token.length);
+    }
+    if (subscription.push_subscription) {
+      console.log('🔔 [WebPush] Subscription endpoint:', subscription.push_subscription.endpoint?.substring(0, 50) + '...');
+    }
 
     let results = [];
 
@@ -42,6 +59,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             to: subscription.fcm_token,
+            priority: 'high',  // 높은 우선순위 (PWA 종료 상태에서 필수)
             notification: {
               title: title || '🚀 PWA 종료 테스트 성공!',
               body: message || 'PWA가 완전히 종료되어도 알림이 정상 작동합니다! 🎉',
@@ -51,18 +69,47 @@ export async function POST(request: NextRequest) {
             },
             data: {
               url: '/',
-              type: 'test-direct'
+              type: 'test-direct',
+              timestamp: Date.now().toString(),
+              priority: 'high'
+            },
+            // Android 전용 설정
+            android: {
+              priority: 'high',
+              notification: {
+                channel_id: 'default',
+                priority: 'high',
+                visibility: 'public'
+              }
+            },
+            // 웹푸시 전용 설정
+            webpush: {
+              headers: {
+                Urgency: 'high'
+              },
+              notification: {
+                requireInteraction: true,
+                silent: false
+              }
             }
           })
         });
 
         const fcmResult = await fcmResponse.json();
-        console.log('[Test] FCM Result:', fcmResult);
+        console.log('📲 [FCM] Response status:', fcmResponse.status, fcmResponse.statusText);
+        console.log('📲 [FCM] Full result:', JSON.stringify(fcmResult, null, 2));
+        
+        if (fcmResponse.ok) {
+          console.log('✅ [FCM] Notification sent successfully! Should reach device even when PWA is closed.');
+        } else {
+          console.error('❌ [FCM] Notification failed:', fcmResult);
+        }
 
         results.push({
           method: 'FCM',
           success: fcmResponse.ok,
-          result: fcmResult
+          result: fcmResult,
+          httpStatus: fcmResponse.status
         });
       } catch (error) {
         console.error('[Test] FCM Error:', error);
@@ -91,12 +138,20 @@ export async function POST(request: NextRequest) {
         });
 
         const webPushResult = await webPushResponse.json();
-        console.log('[Test] Web Push Result:', webPushResult);
+        console.log('🌐 [WebPush] Response status:', webPushResponse.status, webPushResponse.statusText);
+        console.log('🌐 [WebPush] Full result:', JSON.stringify(webPushResult, null, 2));
+        
+        if (webPushResponse.ok) {
+          console.log('✅ [WebPush] Notification sent successfully! Should reach device even when PWA is closed.');
+        } else {
+          console.error('❌ [WebPush] Notification failed:', webPushResult);
+        }
 
         results.push({
           method: 'Web Push',
           success: webPushResponse.ok,
-          result: webPushResult
+          result: webPushResult,
+          httpStatus: webPushResponse.status
         });
       } catch (error) {
         console.error('[Test] Web Push Error:', error);

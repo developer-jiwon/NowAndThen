@@ -585,8 +585,11 @@ export default function NotificationManagerRefactored() {
                     {isIOS && !isPWA && <div>• iOS: Add to home screen first</div>}
                     {currentPermission === 'denied' && <div>• Enable notifications in browser settings</div>}
                     {currentMethod === 'none' && <div>• Click "Enable Notifications" first</div>}
-                    {isMobile && <div>• Make sure battery optimization is off</div>}
-                    {isAndroid && <div>• Check if Chrome notifications are enabled</div>}
+                    {isMobile && <div>• Turn off battery optimization for browser</div>}
+                    {isAndroid && <div>• Chrome Settings → Notifications → Allow</div>}
+                    {isAndroid && <div>• Android Settings → Apps → Chrome → Notifications → Allow</div>}
+                    {isAndroid && <div>• Check "Do Not Disturb" mode is off</div>}
+                    {isIOS && <div>• iOS Settings → Safari → Notifications → Allow</div>}
                   </div>
                 </div>
                 
