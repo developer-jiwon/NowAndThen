@@ -36,24 +36,7 @@ export class NotificationService {
    * 사용 가능한 최적의 알림 방법 감지
    */
   private async detectBestMethod(): Promise<NotificationMethod> {
-    // Firebase 먼저 시도
-    try {
-      if (typeof window !== 'undefined') {
-        const { requestNotificationPermission } = await import('./firebase');
-        const token = await requestNotificationPermission();
-        
-        if (token) {
-          this.currentMethod = 'firebase';
-          this.firebaseToken = token;
-          console.log('[Notifications] Firebase FCM enabled');
-          return 'firebase';
-        }
-      }
-    } catch (error) {
-      console.warn('[NotificationService] Firebase FCM failed:', error);
-    }
-
-    // Firebase 실패시 순수 웹 푸시 시도
+    // 웹 푸시를 우선으로 시도 (더 안정적)
     try {
       if (webPushManager.isSupported()) {
         const permission = await webPushManager.requestPermission();
@@ -70,10 +53,27 @@ export class NotificationService {
         }
       }
     } catch (error) {
-      console.warn('[NotificationService] Web Push failed:', error);
+      console.log('[Notifications] Web Push unavailable, trying Firebase');
     }
 
-    console.warn('[NotificationService] No notification method available');
+    // 웹푸시 실패시 Firebase 시도
+    try {
+      if (typeof window !== 'undefined') {
+        const { requestNotificationPermission } = await import('./firebase');
+        const token = await requestNotificationPermission();
+        
+        if (token) {
+          this.currentMethod = 'firebase';
+          this.firebaseToken = token;
+          console.log('[Notifications] Firebase FCM enabled');
+          return 'firebase';
+        }
+      }
+    } catch (error) {
+      console.log('[Notifications] Firebase also unavailable');
+    }
+
+    console.warn('[Notifications] No notification method available');
     this.currentMethod = 'none';
     return 'none';
   }

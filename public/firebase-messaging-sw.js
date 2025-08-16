@@ -378,4 +378,4 @@ function sendTestNotification(customTime) {
   console.log('Test notification sent successfully!');
 }
 
-// Force Service Worker update - v4.2 - Fixed const assignment
+// Force Service Worker update - v5.0 - Complete rewrite to fix const bug

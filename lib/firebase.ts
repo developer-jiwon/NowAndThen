@@ -41,19 +41,46 @@ export const requestNotificationPermission = async () => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      // Service Worker가 등록되지 않은 경우 직접 등록
+      // Service Worker 등록 및 준비 대기
       if ('serviceWorker' in navigator) {
         try {
-          await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          // 기존 서비스 워커 언레지스터
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+          
+          // 새로운 서비스 워커 등록
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js?v=' + Date.now());
+          
+          // 서비스 워커가 활성화될 때까지 대기
+          await navigator.serviceWorker.ready;
+          
+          // 추가 대기 시간 (서비스 워커 완전 초기화)
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          console.log('[Firebase] Service Worker ready');
         } catch (swError) {
           console.warn('[Firebase] SW registration failed:', swError);
+          // 서비스 워커 실패해도 계속 진행
         }
       }
       
-      const token = await getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
-      });
-      return token;
+      // 토큰 요청 (서비스 워커 준비 후)
+      try {
+        const token = await getToken(messaging, {
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+        });
+        
+        if (!token) {
+          console.warn('[Firebase] No FCM token received');
+        }
+        
+        return token;
+      } catch (tokenError) {
+        console.error('[Firebase] Token request failed:', tokenError);
+        return null;
+      }
     }
     return null;
   } catch (error) {
