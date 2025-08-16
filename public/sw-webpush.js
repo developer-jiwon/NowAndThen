@@ -4,7 +4,7 @@
  */
 
 // 서비스 워커 버전
-const CACHE_VERSION = 'webpush-v1';
+const CACHE_VERSION = 'webpush-v2';
 const CACHE_NAME = `nowandthen-webpush-${CACHE_VERSION}`;
 
 // 설정 저장용 변수들
@@ -121,8 +121,14 @@ self.addEventListener('message', (event) => {
   switch (type) {
     case 'update-settings':
       // 설정 업데이트
-      notificationSettings = payload.settings;
-      userTimezone = payload.userTimezone || 'UTC';
+      if (payload && payload.settings) {
+        notificationSettings = payload.settings;
+        userTimezone = payload.userTimezone || 'UTC';
+      } else {
+        // Direct message format fallback
+        notificationSettings = event.data.settings;
+        userTimezone = event.data.userTimezone || 'UTC';
+      }
       console.log('[SW] Settings updated:', notificationSettings);
       console.log('[SW] Timezone updated:', userTimezone);
       
@@ -132,17 +138,23 @@ self.addEventListener('message', (event) => {
 
     case 'update-countdowns':
       // 카운트다운 데이터 업데이트
-      countdownData = payload.countdowns || [];
+      if (payload && payload.countdowns) {
+        countdownData = payload.countdowns;
+      } else {
+        countdownData = event.data.countdowns || [];
+      }
       console.log('[SW] Countdown data updated:', countdownData.length, 'items');
       break;
 
     case 'show-notification':
       // 즉시 알림 표시
-      const { title, body, options } = payload;
-      self.registration.showNotification(title, {
-        body,
-        ...options
-      });
+      if (payload) {
+        const { title, body, options } = payload;
+        self.registration.showNotification(title, {
+          body,
+          ...options
+        });
+      }
       break;
 
     case 'test-notification':
