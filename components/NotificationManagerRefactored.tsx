@@ -24,6 +24,7 @@ export default function NotificationManagerRefactored() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [testTimeout, setTestTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: true,
     threeDays: true,
@@ -95,13 +96,29 @@ export default function NotificationManagerRefactored() {
     try {
       console.log('[Mobile] Starting notification permission request...');
       
-      // 모바일 디바이스 체크
-      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      // 상세한 모바일 디바이스 정보 로깅
+      const userAgent = navigator.userAgent;
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isAndroid = /Android/i.test(userAgent);
+      const isChrome = /Chrome/i.test(userAgent);
+      const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
+      
+      console.log('[Mobile] Device info:', {
+        userAgent,
+        isMobile,
+        isIOS,
+        isAndroid,
+        isChrome,
+        isSafari,
+        isPWA,
+        notificationSupport: 'Notification' in window,
+        serviceWorkerSupport: 'serviceWorker' in navigator,
+        pushManagerSupport: 'PushManager' in window
+      });
       
       if (isMobile) {
-        console.log('[Mobile] Device detected - Mobile:', isMobile, 'iOS:', isIOS);
-        toast.info('Mobile device detected - requesting notification permission...');
+        toast.info(`📱 ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile'} device detected - requesting permission...`);
       }
       
       if (isIOS && !isPWA) {
@@ -200,9 +217,39 @@ export default function NotificationManagerRefactored() {
     }
 
     try {
-      // PWA 종료 상태 확인을 위한 안내
-      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // 상세한 디바이스 및 알림 상태 체크
+      const userAgent = navigator.userAgent;
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isAndroid = /Android/i.test(userAgent);
       
+      const currentMethod = notificationService.getCurrentMethod();
+      const currentPermission = Notification.permission;
+      
+      console.log('[TestNotification] Device & Notification Status:', {
+        userAgent,
+        isMobile,
+        isIOS,
+        isAndroid,
+        isPWA,
+        currentMethod,
+        currentPermission,
+        isEnabled,
+        notificationSupported: notificationService.isSupported()
+      });
+      
+      // 모바일에서 알림이 안 오는 경우 체크
+      if (isMobile && currentPermission !== 'granted') {
+        toast.error('❌ 알림 권한이 거부되었습니다. 브라우저 설정에서 알림을 허용해주세요.');
+        return;
+      }
+      
+      if (isMobile && currentMethod === 'none') {
+        toast.error('❌ 알림 방법이 설정되지 않았습니다. Enable Notifications를 먼저 눌러주세요.');
+        return;
+      }
+      
+      // PWA 종료 상태 확인을 위한 안내
       if (isMobile && isPWA) {
         toast.success('📱 10초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
       } else if (isMobile) {
@@ -323,6 +370,14 @@ export default function NotificationManagerRefactored() {
               disabled={isLoading || !!testTimeout}
             >
               {testTimeout ? 'Testing...' : 'Test'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowDebugInfo(true)}
+              className="h-8 text-xs border-purple-500 text-purple-500 hover:bg-purple-50"
+            >
+              Debug
             </Button>
             <Button
               variant="outline"
@@ -475,6 +530,123 @@ export default function NotificationManagerRefactored() {
           </div>
         </div>
       )}
+
+      {/* Debug Info Modal */}
+      {showDebugInfo && (() => {
+        const userAgent = navigator.userAgent;
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+        const isAndroid = /Android/i.test(userAgent);
+        const currentMethod = notificationService.getCurrentMethod();
+        const currentPermission = Notification.permission;
+        
+        return (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[80vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">📱 Mobile Debug Info</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDebugInfo(false)}
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-4 text-sm">
+                <div className="bg-gray-50 p-3 rounded">
+                  <h4 className="font-medium text-gray-700 mb-2">Device Info</h4>
+                  <div className="space-y-1 text-xs">
+                    <div>Mobile: {isMobile ? '✅' : '❌'}</div>
+                    <div>iOS: {isIOS ? '✅' : '❌'}</div>
+                    <div>Android: {isAndroid ? '✅' : '❌'}</div>
+                    <div>PWA Mode: {isPWA ? '✅' : '❌'}</div>
+                    <div className="break-all">UserAgent: {userAgent}</div>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 p-3 rounded">
+                  <h4 className="font-medium text-gray-700 mb-2">Notification Support</h4>
+                  <div className="space-y-1 text-xs">
+                    <div>Notification API: {'Notification' in window ? '✅' : '❌'}</div>
+                    <div>Service Worker: {'serviceWorker' in navigator ? '✅' : '❌'}</div>
+                    <div>Push Manager: {'PushManager' in window ? '✅' : '❌'}</div>
+                    <div>Permission: {currentPermission}</div>
+                    <div>Current Method: {currentMethod}</div>
+                    <div>Service Supported: {notificationService.isSupported() ? '✅' : '❌'}</div>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 p-3 rounded">
+                  <h4 className="font-medium text-gray-700 mb-2">Troubleshooting Tips</h4>
+                  <div className="space-y-1 text-xs text-gray-600">
+                    {isIOS && !isPWA && <div>• iOS: Add to home screen first</div>}
+                    {currentPermission === 'denied' && <div>• Enable notifications in browser settings</div>}
+                    {currentMethod === 'none' && <div>• Click "Enable Notifications" first</div>}
+                    {isMobile && <div>• Make sure battery optimization is off</div>}
+                    {isAndroid && <div>• Check if Chrome notifications are enabled</div>}
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded">
+                  <h4 className="font-medium text-blue-700 mb-2">Quick Tests</h4>
+                  <div className="space-y-2">
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('즉시 테스트', {
+                              body: '브라우저 기본 알림이 작동합니다!',
+                              icon: '/favicon.ico'
+                            });
+                          } else {
+                            alert('Notification permission not granted');
+                          }
+                        } catch (error) {
+                          alert(`Error: ${error.message}`);
+                        }
+                      }}
+                      className="w-full text-xs bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      Browser Notification Test
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const registration = await navigator.serviceWorker.ready;
+                          if (registration.active) {
+                            registration.active.postMessage({
+                              type: 'test-notification'
+                            });
+                          } else {
+                            alert('Service Worker not active');
+                          }
+                        } catch (error) {
+                          alert(`SW Error: ${error.message}`);
+                        }
+                      }}
+                      className="w-full text-xs bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      Service Worker Test
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => setShowDebugInfo(false)}
+                className="w-full mt-6 bg-[#4E724C] hover:bg-[#4E724C]/90 text-white"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
