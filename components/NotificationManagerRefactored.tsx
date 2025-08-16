@@ -23,6 +23,7 @@ export default function NotificationManagerRefactored() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [testTimeout, setTestTimeout] = useState<NodeJS.Timeout | null>(null);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: true,
     threeDays: true,
@@ -53,6 +54,15 @@ export default function NotificationManagerRefactored() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (testTimeout) {
+        clearTimeout(testTimeout);
+      }
+    };
+  }, [testTimeout]);
 
   const loadSettings = () => {
     const saved = localStorage.getItem('nowandthen-notification-settings');
@@ -181,22 +191,47 @@ export default function NotificationManagerRefactored() {
 
   const sendTestNotification = async () => {
     if (!user) return;
+    
+    // 이미 테스트가 진행 중이면 취소하고 새로 시작
+    if (testTimeout) {
+      clearTimeout(testTimeout);
+      setTestTimeout(null);
+      toast.info('이전 테스트를 취소하고 새로 시작합니다');
+    }
 
     try {
-      toast.success('10초 후 알림이 전송됩니다. PWA를 완전히 종료하세요!');
+      // PWA 종료 상태 확인을 위한 안내
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      // 10초 후에만 알림 전송 (즉시 알림 제거)
-      setTimeout(async () => {
-        await fetch('/api/test-push-direct', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.id,
-            title: '🚀 PWA 종료 테스트',
-            message: '성공! PWA가 종료되어도 알림이 왔습니다!'
-          })
-        });
+      if (isMobile && isPWA) {
+        toast.success('📱 10초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
+      } else if (isMobile) {
+        toast.success('📱 10초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
+      } else {
+        toast.success('💻 10초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
+      }
+      
+      // 단 하나의 타이머만 설정 (중복 방지)
+      const timeout = setTimeout(async () => {
+        try {
+          console.log('[Test] Sending notification after 10 seconds...');
+          await fetch('/api/test-push-direct', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: user.id,
+              title: '🚀 PWA 종료 테스트 성공!',
+              message: 'PWA가 종료되어도 알림이 정상 작동합니다!'
+            })
+          });
+          setTestTimeout(null);
+        } catch (error) {
+          console.error('Error in delayed notification:', error);
+          setTestTimeout(null);
+        }
       }, 10000);
+      
+      setTestTimeout(timeout);
       
     } catch (error) {
       console.error('Error sending test notification:', error);
@@ -285,9 +320,9 @@ export default function NotificationManagerRefactored() {
               size="sm"
               onClick={sendTestNotification}
               className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
-              disabled={isLoading}
+              disabled={isLoading || !!testTimeout}
             >
-              Test
+              {testTimeout ? 'Testing...' : 'Test'}
             </Button>
             <Button
               variant="outline"

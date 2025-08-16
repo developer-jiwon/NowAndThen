@@ -24,9 +24,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
     }
 
-    console.log('[Test] Found subscription for user:', userId);
-    console.log('[Test] FCM Token:', !!subscription.fcm_token);
-    console.log('[Test] Web Push:', !!subscription.push_subscription);
+    console.log('[Test] PWA CLOSED TEST - Found subscription for user:', userId);
+    console.log('[Test] FCM Token available:', !!subscription.fcm_token);
+    console.log('[Test] Web Push subscription available:', !!subscription.push_subscription);
+    console.log('[Test] This notification should reach even when PWA is completely closed');
 
     let results = [];
 
@@ -42,10 +43,11 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             to: subscription.fcm_token,
             notification: {
-              title: title || 'PWA 종료 테스트',
-              body: message || 'PWA가 종료되어도 알림이 옵니다! 🎉',
+              title: title || '🚀 PWA 종료 테스트 성공!',
+              body: message || 'PWA가 완전히 종료되어도 알림이 정상 작동합니다! 🎉',
               icon: '/favicon.ico',
-              click_action: '/'
+              click_action: '/',
+              require_interaction: true
             },
             data: {
               url: '/',
@@ -82,8 +84,8 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             userId,
-            title: title || 'PWA 종료 테스트',
-            message: message || 'Web Push가 작동합니다! 🚀',
+            title: title || '🚀 PWA 종료 테스트 성공!',
+            message: message || 'Web Push로 PWA 종료 상태에서도 알림 전달! 🚀',
             data: { url: '/', type: 'test-direct' }
           })
         });
@@ -114,7 +116,7 @@ export async function POST(request: NextRequest) {
         preferences: subscription.notification_preferences
       },
       results,
-      message: 'PWA를 완전히 종료하고 알림을 확인하세요!'
+      message: '✅ PWA를 완전히 종료하고 10초 후 알림을 확인하세요! (앱을 최근 앱 목록에서도 제거해주세요)'
     });
 
   } catch (error: any) {
