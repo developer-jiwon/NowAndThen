@@ -109,6 +109,43 @@ export default function RootLayout({
         
         {/* Google Search Console Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="ELL-x5tIpqAhOb58cy_wsdVCh6csVzbl_VJt1pgOotM" />
+        {/* Hide LaunchDarkly logs in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <Script id="hide-launchdarkly-logs" strategy="beforeInteractive">{
+            `
+            (function() {
+              const originalLog = console.log;
+              const originalWarn = console.warn;
+              const originalError = console.error;
+              
+              const shouldFilter = (args) => {
+                return args.some(arg => 
+                  typeof arg === 'string' && (
+                    arg.includes('LaunchDarkly') || 
+                    arg.includes('clientstream.launchdarkly.com') ||
+                    arg.includes('apple-mobile-web-app-capable') ||
+                    arg.includes('mobile-web-app-capable')
+                  )
+                );
+              };
+              
+              console.log = function(...args) {
+                if (shouldFilter(args)) return;
+                originalLog.apply(console, args);
+              };
+              console.warn = function(...args) {
+                if (shouldFilter(args)) return;
+                originalWarn.apply(console, args);
+              };
+              console.error = function(...args) {
+                if (shouldFilter(args)) return;
+                originalError.apply(console, args);
+              };
+            })();
+            `
+          }</Script>
+        )}
+
         {/* Consent Mode v2 default (must run before any gtag/ad scripts) */}
         <Script id="consent-default" strategy="afterInteractive">{
           `

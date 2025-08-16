@@ -33,7 +33,7 @@ export function useAnonymousAuth() {
             setUser(data.user);
           }
         } else {
-          console.log('Existing session found:', session.user.id);
+          // console.log('Existing session found:', session.user.id);
           // If anonymous user, store guest_id in localStorage
           if (session.user.user_metadata?.provider === 'anonymous') {
             localStorage.setItem('guest_id', session.user.id);
@@ -52,7 +52,7 @@ export function useAnonymousAuth() {
     // Listen for authentication state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
+        // console.log('Auth state changed:', event, session?.user?.id);
         // After logout, try to restore previous guest_id
         if (event === 'SIGNED_OUT') {
           const previousGuestId = localStorage.getItem('guest_id');

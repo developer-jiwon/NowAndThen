@@ -53,7 +53,7 @@ export default function AdSenseComponent({
       setHasContent(hasSufficientContent);
       
       if (!hasSufficientContent) {
-        console.log(`Insufficient content for ads: ${wordCount} words (minimum: ${minWords})`);
+        // console.log(`Insufficient content for ads: ${wordCount} words (minimum: ${minWords})`);
         setAdStatus('no-content');
       }
     };

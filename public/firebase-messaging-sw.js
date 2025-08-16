@@ -15,39 +15,18 @@ try {
   });
   
   messaging = firebase.messaging();
-  console.log('Firebase initialized successfully in Service Worker');
+  console.log('[SW] Firebase ready');
 } catch (error) {
-  console.error('Firebase initialization failed in Service Worker:', error);
+  console.error('[SW] Firebase failed:', error);
 }
 
 // Timer-based notification functions
 function getNotificationSettings() {
-  try {
-    console.log('=== GET NOTIFICATION SETTINGS DEBUG ===');
-    console.log('currentSettings variable exists:', typeof currentSettings !== 'undefined');
-    console.log('currentSettings value:', currentSettings);
-    console.log('currentSettings type:', typeof currentSettings);
-    console.log('currentSettings === null:', currentSettings === null);
-    console.log('currentSettings === undefined:', currentSettings === undefined);
-    
-    if (!currentSettings) {
-      console.log('No settings in memory, returning null');
-      return null;
-    }
-    
-    console.log('Returning settings:', currentSettings);
-    return currentSettings;
-  } catch (error) {
-    console.error('Error getting notification settings:', error);
-    return null;
-  }
+  return currentSettings;
 }
 
 function getCountdowns() {
-  // Service Worker cannot access localStorage directly
-  // Return empty array or use data passed from main thread
-  console.log('Service Worker: Cannot access localStorage, returning empty countdowns');
-  return [];
+  return countdownsData;
 }
 
 function getUserTimezone() {
@@ -182,32 +161,16 @@ function sendCountdownNotification(countdown, daysLeft) {
 }
 
 function checkDailySummary() {
-  console.log('=== DAILY SUMMARY CHECK ===');
-  console.log('Checking daily summary...');
-  
   const settings = getNotificationSettings();
-  console.log('Notification settings:', settings);
   
-  if (!settings) {
-    console.log('No notification settings found');
+  if (!settings?.dailySummary) {
     return;
   }
   
-  if (!settings.dailySummary) {
-    console.log('Daily summary not enabled in settings');
-    return;
-  }
-  
-  // Use the stored userTimezone variable instead of calling getUserTimezone()
   const now = new Date();
-  const userTime = now.toLocaleString('en-US', { timeZone: userTimezone });
   const currentHourNum = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
   const currentMinuteNum = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
   const currentTime = `${currentHourNum}:${currentMinuteNum}`;
-  
-  console.log(`Service Worker: Using timezone from variable: ${userTimezone}`);
-  console.log(`Current time (${userTimezone}): ${currentTime}`);
-  console.log(`Daily summary time setting: ${settings.dailySummaryTime}`);
   
   // 시간 비교: ±2분 허용
   const [targetHour, targetMinute] = settings.dailySummaryTime.split(':').map(Number);
@@ -217,14 +180,9 @@ function checkDailySummary() {
   const currentMinutes = currentHourParsed * 60 + currentMinuteParsed;
   const timeDiff = Math.abs(targetMinutes - currentMinutes);
   
-  console.log(`Time difference: ${timeDiff} minutes`);
-  console.log(`Time match: ${timeDiff <= 2}`);
-  
   if (timeDiff <= 2) {
-    console.log('Time matched! Sending daily summary notification...');
+    console.log(`[SW] Daily summary time matched! Sending notification...`);
     sendDailySummaryNotification();
-  } else {
-    console.log('Time not matched yet');
   }
 }
 
@@ -254,47 +212,51 @@ function sendDailySummaryNotification() {
   console.log('Daily summary notification sent');
 }
 
+// Background timer state
+let timersStarted = false;
+let countdownInterval = null;
+let dailySummaryInterval = null;
+
 // Start background timers
 function startBackgroundTimers() {
-  console.log('Starting background timers...');
+  if (timersStarted) {
+    return;
+  }
+  
+  console.log('[SW] Starting background timers');
   
   // Check countdowns every hour
-  setInterval(() => {
+  countdownInterval = setInterval(() => {
     checkCountdownsAndNotify();
-  }, 60 * 60 * 1000); // 1 hour
+  }, 60 * 60 * 1000);
   
-  // Check daily summary every minute (but only once per minute)
+  // Check daily summary every minute
   let lastCheckMinute = -1;
-  setInterval(() => {
+  dailySummaryInterval = setInterval(() => {
     const now = new Date();
     const currentMinute = now.getMinutes();
     
-    // Only run once per minute to avoid duplicates
     if (currentMinute !== lastCheckMinute) {
       lastCheckMinute = currentMinute;
       checkDailySummary();
     }
-  }, 60 * 1000); // 1 minute
+  }, 60 * 1000);
   
-  console.log('Background timers started');
+  timersStarted = true;
 }
 
 // Start timers when service worker activates
 self.addEventListener('activate', (event) => {
-  console.log('=== SERVICE WORKER ACTIVATED ===');
-  console.log('Service Worker activated, starting timers...');
-  event.waitUntil(startBackgroundTimers());
+  console.log('[SW] Activated - waiting for settings');
 });
 
-// Also start timers when service worker installs
+// Service worker install event
 self.addEventListener('install', (event) => {
-  console.log('=== SERVICE WORKER INSTALLED ===');
-  console.log('Service Worker installed');
+  console.log('[SW] Installed');
+  self.skipWaiting();
 });
 
-// Don't start timers immediately - wait for settings
-console.log('=== FIREBASE SERVICE WORKER LOADED ===');
-console.log('Waiting for settings before starting timers...');
+console.log('[SW] Firebase Service Worker loaded');
 
 if (messaging) {
   messaging.onBackgroundMessage((payload) => {
@@ -343,27 +305,19 @@ self.addEventListener('notificationclick', (event) => {
 // Store settings and timezone in memory (Service Worker scope)
 let currentSettings = null;
 let userTimezone = 'UTC'; // Will be updated from main thread
+let countdownsData = []; // Store countdown data from main thread
 
 // Listen for messages from main thread
 self.addEventListener('message', (event) => {
-  console.log('=== SERVICE WORKER MESSAGE RECEIVED ===');
-  console.log('Message type:', event.data?.type);
-  console.log('Message data:', event.data);
-  console.log('Source:', event.source);
-  console.log('Current settings before update:', currentSettings);
-  console.log('Current timezone before update:', userTimezone);
+  const { type, settings, countdowns, payload } = event.data || {};
   
-  if (event.data && event.data.type === 'test-notification') {
-    console.log('Sending test notification...');
+  if (type === 'test-notification') {
     sendTestNotification(event.data.customTime);
   }
   
-  if (event.data && event.data.type === 'schedule-test-notification') {
-    console.log('Scheduling test notification in', event.data.payload.delay, 'ms');
-    const { title, body, delay } = event.data.payload;
-    
+  if (type === 'schedule-test-notification') {
+    const { title, body, delay } = payload;
     setTimeout(() => {
-      console.log('Sending scheduled test notification...');
       self.registration.showNotification(title, {
         body: body,
         icon: '/favicon.ico',
@@ -372,10 +326,7 @@ self.addEventListener('message', (event) => {
           { action: 'view', title: 'View App' },
           { action: 'dismiss', title: 'Dismiss' }
         ],
-        data: {
-          url: '/',
-          type: 'scheduled-test'
-        },
+        data: { url: '/', type: 'scheduled-test' },
         requireInteraction: true,
         vibrate: [200, 100, 200],
         tag: 'scheduled-test-notification'
@@ -383,39 +334,22 @@ self.addEventListener('message', (event) => {
     }, delay);
   }
   
-  if (event.data && event.data.type === 'update-settings') {
-    console.log('=== UPDATING SERVICE WORKER SETTINGS ===');
-    console.log('Old settings:', currentSettings);
-    console.log('Old timezone:', userTimezone);
-    
-    // Store new settings - Deep copy to ensure proper storage
-    currentSettings = JSON.parse(JSON.stringify(event.data.settings));
-    console.log('Settings stored in memory (deep copy):', currentSettings);
-    
-    // Update timezone if provided
+  if (type === 'update-settings') {
+    if (settings) {
+      currentSettings = JSON.parse(JSON.stringify(settings));
+    }
     if (event.data.userTimezone) {
       userTimezone = event.data.userTimezone;
-      console.log('User timezone updated to:', userTimezone);
     }
     
-    console.log('Final settings in memory:', currentSettings);
-    console.log('Final timezone in memory:', userTimezone);
-    console.log('Settings updated in Service Worker successfully!');
+    console.log(`[SW] Settings: Daily ${currentSettings?.dailySummary ? 'ON' : 'OFF'} at ${currentSettings?.dailySummaryTime}`);
     
-    // Verify storage
-    console.log('=== VERIFICATION ===');
-    console.log('currentSettings type:', typeof currentSettings);
-    console.log('currentSettings.dailySummaryTime:', currentSettings?.dailySummaryTime);
-    console.log('currentSettings.dailySummary:', currentSettings?.dailySummary);
-    console.log('Settings object keys:', Object.keys(currentSettings || {}));
-    
-    // Force a test check immediately
-    console.log('=== IMMEDIATE TEST CHECK ===');
-    checkDailySummary();
-    
-    // Start timers after receiving settings
-    console.log('Starting background timers now...');
-    startBackgroundTimers();
+    if (!timersStarted) startBackgroundTimers();
+  }
+  
+  if (type === 'update-countdowns') {
+    countdownsData = countdowns || [];
+    if (countdownsData.length > 0) console.log(`[SW] ${countdownsData.length} countdowns loaded`);
   }
 });
 
@@ -444,4 +378,4 @@ function sendTestNotification(customTime) {
   console.log('Test notification sent successfully!');
 }
 
-// Force Service Worker update - v3.0 - Fri Aug 15 18:15:00 EDT 2025
+// Force Service Worker update - v4.2 - Fixed const assignment

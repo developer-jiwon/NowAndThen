@@ -10,7 +10,7 @@ import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
 import UpdatePopup from "@/components/update-popup";
 import AdSenseComponent from "@/components/AdSenseComponent";
-import NotificationManager from "@/components/NotificationManager";
+import NotificationManagerRefactored from "@/components/NotificationManagerRefactored";
 
 export default function HomePage() {
   const user = useUser();
@@ -62,7 +62,7 @@ export default function HomePage() {
             <LoginButton />
             {/* Wrap NotificationManager in error boundary to prevent mobile crashes */}
             <div className="notification-manager-wrapper">
-              <NotificationManager />
+              <NotificationManagerRefactored />
             </div>
           </div>
           <div className="text-center mt-2">

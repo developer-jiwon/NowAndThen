@@ -1,0 +1,196 @@
+/**
+ * Pure Web Push API implementation as fallback to Firebase
+ * Based on web standards without external dependencies
+ */
+
+export interface PushSubscription {
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+export class WebPushManager {
+  private vapidPublicKey: string;
+  
+  constructor() {
+    // VAPID 키는 환경변수에서 가져오기
+    this.vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+    
+    if (!this.vapidPublicKey) {
+      console.warn('VAPID public key not found. Web push may not work.');
+    }
+  }
+
+  /**
+   * 브라우저 웹 푸시 지원 여부 확인
+   */
+  isSupported(): boolean {
+    return (
+      'serviceWorker' in navigator &&
+      'PushManager' in window &&
+      'Notification' in window
+    );
+  }
+
+  /**
+   * 알림 권한 요청
+   */
+  async requestPermission(): Promise<NotificationPermission> {
+    if (!this.isSupported()) {
+      throw new Error('Web push is not supported in this browser');
+    }
+
+    return await Notification.requestPermission();
+  }
+
+  /**
+   * 서비스 워커 등록
+   */
+  async registerServiceWorker(): Promise<ServiceWorkerRegistration> {
+    if (!('serviceWorker' in navigator)) {
+      throw new Error('Service Worker is not supported');
+    }
+
+    // 순수 웹 푸시용 서비스 워커 사용
+    const registration = await navigator.serviceWorker.register('/sw-webpush.js');
+    await navigator.serviceWorker.ready;
+    
+    return registration;
+  }
+
+  /**
+   * Push 구독 생성
+   */
+  async subscribe(): Promise<PushSubscription | null> {
+    try {
+      const registration = await this.registerServiceWorker();
+      
+      // 기존 구독이 있는지 확인
+      let subscription = await registration.pushManager.getSubscription();
+      
+      if (!subscription) {
+        // 새로운 구독 생성
+        const applicationServerKey = this.urlBase64ToUint8Array(this.vapidPublicKey);
+        
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: applicationServerKey
+        });
+      }
+
+      if (!subscription) {
+        console.error('Failed to create push subscription');
+        return null;
+      }
+
+      // PushSubscription을 우리 형식으로 변환
+      const p256dh = subscription.getKey('p256dh');
+      const auth = subscription.getKey('auth');
+
+      if (!p256dh || !auth) {
+        console.error('Failed to get subscription keys');
+        return null;
+      }
+
+      return {
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: this.arrayBufferToBase64(p256dh),
+          auth: this.arrayBufferToBase64(auth)
+        }
+      };
+    } catch (error) {
+      console.error('Error subscribing to push notifications:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Push 구독 해제
+   */
+  async unsubscribe(): Promise<boolean> {
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) return false;
+
+      const subscription = await registration.pushManager.getSubscription();
+      if (!subscription) return true;
+
+      return await subscription.unsubscribe();
+    } catch (error) {
+      console.error('Error unsubscribing from push notifications:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 테스트 알림 전송 (로컬에서만)
+   */
+  async sendTestNotification(title: string, body: string, data?: any): Promise<void> {
+    if (!('serviceWorker' in navigator)) {
+      throw new Error('Service Worker is not supported');
+    }
+
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      throw new Error('Service Worker is not registered');
+    }
+
+    // 서비스 워커에 직접 메시지 전송
+    if (registration.active) {
+      registration.active.postMessage({
+        type: 'show-notification',
+        payload: {
+          title,
+          body,
+          data,
+          options: {
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: 'test-notification',
+            requireInteraction: true,
+            actions: [
+              { action: 'view', title: '보기' },
+              { action: 'dismiss', title: '닫기' }
+            ]
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * VAPID 공개 키를 Uint8Array로 변환
+   */
+  private urlBase64ToUint8Array(base64String: string): Uint8Array {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  /**
+   * ArrayBuffer를 Base64로 변환
+   */
+  private arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  }
+}
+
+// 싱글톤 인스턴스
+export const webPushManager = new WebPushManager();

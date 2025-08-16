@@ -12,6 +12,58 @@ interface NotificationPayload {
   url?: string
 }
 
+// Web Push 알림 전송
+const sendWebPushNotification = async (subscription: any, payload: NotificationPayload) => {
+  // Web Push는 외부 라이브러리가 필요하므로 일단 HTTP API 호출로 처리
+  const webPushUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-webpush-notification`
+  
+  const message = {
+    subscription: subscription,
+    payload: {
+      title: payload.title,
+      body: payload.body,
+      icon: '/favicon.ico',
+      data: {
+        url: payload.url || '/',
+        type: 'daily_summary'
+      }
+    }
+  }
+
+  console.log('=== WEB PUSH REQUEST ===')
+  console.log('Web Push URL:', webPushUrl)
+  console.log('Web Push Message:', JSON.stringify(message, null, 2))
+
+  try {
+    const response = await fetch(webPushUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    })
+
+    console.log('=== WEB PUSH RESPONSE ===')
+    console.log('Status:', response.status)
+    console.log('Status Text:', response.statusText)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Web Push error:', errorText)
+      return { success: false, error: errorText }
+    }
+
+    const result = await response.json()
+    console.log('Web Push result:', result)
+    return { success: true, result }
+
+  } catch (error) {
+    console.error('Web Push fetch error:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 // Firebase FCM 알림 전송
 const sendFCMNotification = async (fcmToken: string, payload: NotificationPayload) => {
   const fcmUrl = 'https://fcm.googleapis.com/fcm/send'
@@ -232,19 +284,39 @@ serve(async (req) => {
         console.log('Title:', payload.title)
         console.log('Body:', payload.body)
         console.log('FCM Token:', subscription.fcm_token?.substring(0, 20) + '...')
+        console.log('Web Push Subscription:', !!subscription.webpush_subscription)
+        console.log('Notification Method:', subscription.notification_method)
         console.log('Full notification content:')
         console.log(JSON.stringify(payload, null, 2))
 
-        // FCM 알림 전송
-        const fcmSent = await sendFCMNotification(subscription.fcm_token, payload)
+        let sent = false
+
+        // Firebase FCM 우선 시도
+        if (subscription.fcm_token && (subscription.notification_method === 'firebase' || !subscription.notification_method)) {
+          console.log('Attempting FCM notification...')
+          const fcmSent = await sendFCMNotification(subscription.fcm_token, payload)
+          if (fcmSent) {
+            sent = true
+            console.log(`✅ FCM Daily summary sent to user ${subscription.user_id}`)
+          }
+        }
+
+        // Web Push 시도 (Firebase 실패시 또는 웹푸시 전용)
+        if (!sent && subscription.webpush_subscription) {
+          console.log('Attempting Web Push notification...')
+          const webPushResult = await sendWebPushNotification(subscription.webpush_subscription, payload)
+          if (webPushResult.success) {
+            sent = true
+            console.log(`✅ Web Push Daily summary sent to user ${subscription.user_id}`)
+          }
+        }
         
-        if (fcmSent) {
+        if (sent) {
           notificationsSent++
-          console.log(`✅ Daily summary sent successfully to user ${subscription.user_id}`)
           console.log(`📱 Notification content: "${payload.title}" - "${payload.body}"`)
         } else {
           errors++
-          console.error(`❌ Failed to send daily summary to user ${subscription.user_id}`)
+          console.error(`❌ Failed to send daily summary to user ${subscription.user_id} (no working method)`)
         }
 
       } catch (error) {
