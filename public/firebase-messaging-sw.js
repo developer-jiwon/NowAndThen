@@ -260,7 +260,8 @@ console.log('[SW] Firebase Service Worker loaded');
 
 if (messaging) {
   messaging.onBackgroundMessage((payload) => {
-    console.log('Received background message:', payload);
+    console.log('🚀 PWA CLOSED - Received background FCM message:', payload);
+    console.log('[SW] Firebase handling notification while PWA is closed!');
     
     const notificationTitle = payload.notification.title;
     const notificationOptions = {

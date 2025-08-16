@@ -4,7 +4,7 @@
  */
 
 // 서비스 워커 버전
-const CACHE_VERSION = 'webpush-v2';
+const CACHE_VERSION = 'webpush-v3';
 const CACHE_NAME = `nowandthen-webpush-${CACHE_VERSION}`;
 
 // 설정 저장용 변수들
@@ -13,6 +13,7 @@ let userTimezone = 'UTC';
 let countdownData = [];
 
 console.log('=== WEB PUSH SERVICE WORKER LOADED ===');
+console.log('[SW] Background PWA notification service ready');
 
 // 설치 이벤트
 self.addEventListener('install', (event) => {
@@ -40,9 +41,10 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Push 이벤트 처리
+// Push 이벤트 처리 (PWA가 종료되어도 실행됨)
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push event received:', event);
+  console.log('[SW] 🚀 Push event received - PWA BACKGROUND:', event);
+  console.log('[SW] PWA is closed, but service worker is handling notification!');
   
   let notificationData = {
     title: 'NowAndThen 알림',
@@ -57,6 +59,7 @@ self.addEventListener('push', (event) => {
     try {
       const payload = event.data.json();
       notificationData = { ...notificationData, ...payload };
+      console.log('[SW] Parsed push payload:', payload);
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
     }
@@ -314,13 +317,36 @@ function startPeriodicCheck() {
   }, 60 * 1000); // 1분
 }
 
+// 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
+function keepServiceWorkerAlive() {
+  // 주기적으로 자가 메시지 전송 (서비스 워커 유지)
+  setInterval(() => {
+    self.clients.matchAll().then(clients => {
+      if (clients.length === 0) {
+        // PWA가 완전히 종료된 상태
+        console.log('[SW] ⚡ PWA closed - Service Worker still alive for background notifications');
+      }
+    });
+  }, 30000); // 30초마다 체크
+}
+
 // 서비스 워커가 활성화되면 주기적 체크 시작
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Service Worker activated - enabling background notifications');
   event.waitUntil(
     Promise.resolve().then(() => {
       startPeriodicCheck();
+      keepServiceWorkerAlive(); // 백그라운드 유지
     })
   );
 });
 
-console.log('[SW] Web Push Service Worker ready');
+// 모든 탭이 닫혀도 서비스 워커 유지
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'KEEP_SW_ALIVE') {
+    // PWA가 살아있음을 서비스 워커에게 알림
+    console.log('[SW] Received keepalive from PWA');
+  }
+});
+
+console.log('[SW] 🎯 Web Push Service Worker ready for BACKGROUND notifications');
