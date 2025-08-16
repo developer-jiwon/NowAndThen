@@ -147,7 +147,7 @@ export default function NotificationManager() {
     try {
       console.log('=== TESTING BACKEND NOTIFICATION ===');
       
-      // 백엔드 함수 직접 호출해서 알림 내용 확인
+      // 백엔드에서 실제 알림 내용 가져오기
       const response = await fetch('/api/test-daily-summary', {
         method: 'POST',
         headers: {
@@ -161,33 +161,30 @@ export default function NotificationManager() {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('=== BACKEND NOTIFICATION RESULT ===');
+        console.log('=== SENDING PUSH NOTIFICATION ===');
         console.log('Title:', result.title);
         console.log('Body:', result.body);
-        console.log('User timers found:', result.timersCount);
-        console.log('Full response:', result);
         
-        // 화면에 결과 표시
-        let displayText = `📱 알림 내용:\n\n`;
-        displayText += `제목: ${result.title}\n\n`;
-        displayText += `내용:\n${result.body}\n\n`;
-        displayText += `📊 타이머 현황:\n`;
-        displayText += `• 전체: ${result.timersCount}개\n`;
-        displayText += `• 오늘: ${result.todayCount}개\n`;
-        displayText += `• 내일: ${result.tomorrowCount}개\n`;
-        displayText += `• 이번 주: ${result.thisWeekCount}개`;
-        
-        setTestResult(displayText);
-        setShowTestResult(true);
-        
-        toast.success('테스트 완료! 알림 내용을 확인하세요.');
+        // 실제 푸시 알림 전송
+        if (Notification.permission === 'granted') {
+          new Notification(result.title, {
+            body: result.body,
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: 'test-daily-summary'
+          });
+          
+          toast.success('테스트 푸시 알림이 전송되었습니다!');
+        } else {
+          toast.error('알림 권한이 필요합니다');
+        }
       } else {
         console.error('Backend test failed:', response.status);
         toast.error('테스트 실패');
       }
     } catch (error) {
       console.error('Failed to test backend notification:', error);
-      toast.error('Failed to test backend notification');
+      toast.error('테스트 실패');
     }
   };
 
@@ -430,7 +427,28 @@ export default function NotificationManager() {
                         
                         // FCM 토큰 다시 등록 시도
                         console.log('Retrying FCM token registration...');
-                        await registerForNotifications();
+                        const { requestNotificationPermission } = await import('@/lib/firebase');
+                        const fcmToken = await requestNotificationPermission();
+                        
+                        if (fcmToken) {
+                          const { error: forceError } = await supabase
+                            .from('push_subscriptions')
+                            .upsert({
+                              user_id: user.id,
+                              fcm_token: fcmToken,
+                              notification_preferences: {
+                                ...settings,
+                                timezone: userTimezone
+                              },
+                              updated_at: new Date().toISOString()
+                            }, {
+                              onConflict: 'user_id'
+                            });
+                            
+                          if (!forceError) {
+                            console.log('FCM token force registered successfully');
+                          }
+                        }
                       } else {
                         console.log('Notification preferences updated in database');
                         
