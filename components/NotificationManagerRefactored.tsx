@@ -183,44 +183,21 @@ export default function NotificationManagerRefactored() {
     if (!user) return;
 
     try {
-      // 서버에서 직접 푸시 알림 전송 (PWA 종료해도 작동하는지 테스트)
-      const response = await fetch('/api/test-push-direct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          title: 'PWA 종료 테스트',
-          message: 'PWA를 완전히 종료해도 이 알림이 보입니다! 🎉'
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('[Test] Direct push result:', result);
-        
-        if (result.success) {
-          toast.success('10초 후 알림이 전송됩니다. PWA를 완전히 종료하세요!');
-          
-          // 10초 후 알림 전송
-          setTimeout(async () => {
-            await fetch('/api/test-push-direct', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: user.id,
-                title: '🚀 PWA 종료 테스트',
-                message: '성공! PWA가 종료되어도 알림이 왔습니다!'
-              })
-            });
-          }, 10000);
-        } else {
-          toast.error('푸시 알림 전송 실패');
-        }
-      } else {
-        toast.error('테스트 실패');
-      }
+      toast.success('10초 후 알림이 전송됩니다. PWA를 완전히 종료하세요!');
+      
+      // 10초 후에만 알림 전송 (즉시 알림 제거)
+      setTimeout(async () => {
+        await fetch('/api/test-push-direct', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            title: '🚀 PWA 종료 테스트',
+            message: '성공! PWA가 종료되어도 알림이 왔습니다!'
+          })
+        });
+      }, 10000);
+      
     } catch (error) {
       console.error('Error sending test notification:', error);
       toast.error('테스트 알림 전송 실패');
