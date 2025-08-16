@@ -165,16 +165,19 @@ export default function NotificationManager() {
         console.log('Title:', result.title);
         console.log('Body:', result.body);
         
-        // 실제 푸시 알림 전송
+        // 10초 후 푸시 알림 전송
         if (Notification.permission === 'granted') {
-          new Notification(result.title, {
-            body: result.body,
-            icon: '/favicon.ico',
-            badge: '/favicon.ico',
-            tag: 'test-daily-summary'
-          });
+          toast.success('10초 후 테스트 알림이 전송됩니다. PWA를 닫으세요!');
           
-          toast.success('테스트 푸시 알림이 전송되었습니다!');
+          setTimeout(() => {
+            new Notification(result.title, {
+              body: result.body,
+              icon: '/favicon.ico',
+              badge: '/favicon.ico',
+              tag: 'test-daily-summary',
+              requireInteraction: true
+            });
+          }, 10000); // 10초 후
         } else {
           toast.error('알림 권한이 필요합니다');
         }
