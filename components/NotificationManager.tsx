@@ -24,6 +24,8 @@ export default function NotificationManager() {
   const [showSettings, setShowSettings] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showTestResult, setShowTestResult] = useState(false);
+  const [testResult, setTestResult] = useState('');
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: true,
     threeDays: true,
@@ -165,10 +167,23 @@ export default function NotificationManager() {
         console.log('User timers found:', result.timersCount);
         console.log('Full response:', result);
         
-        toast.success('Test notification sent! Check console for details.');
+        // 화면에 결과 표시
+        let displayText = `📱 알림 내용:\n\n`;
+        displayText += `제목: ${result.title}\n\n`;
+        displayText += `내용:\n${result.body}\n\n`;
+        displayText += `📊 타이머 현황:\n`;
+        displayText += `• 전체: ${result.timersCount}개\n`;
+        displayText += `• 오늘: ${result.todayCount}개\n`;
+        displayText += `• 내일: ${result.tomorrowCount}개\n`;
+        displayText += `• 이번 주: ${result.thisWeekCount}개`;
+        
+        setTestResult(displayText);
+        setShowTestResult(true);
+        
+        toast.success('테스트 완료! 알림 내용을 확인하세요.');
       } else {
         console.error('Backend test failed:', response.status);
-        toast.error('Backend test failed');
+        toast.error('테스트 실패');
       }
     } catch (error) {
       console.error('Failed to test backend notification:', error);
@@ -505,6 +520,30 @@ export default function NotificationManager() {
               </p>
               <Button
                 onClick={() => setShowSuccessPopup(false)}
+                className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200"
+              >
+                확인
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Test Result Popup */}
+      {showTestResult && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                알림 미리보기
+              </h3>
+              <div className="text-left bg-gray-50 p-4 rounded-lg mb-6">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">
+                  {testResult}
+                </pre>
+              </div>
+              <Button
+                onClick={() => setShowTestResult(false)}
                 className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200"
               >
                 확인
