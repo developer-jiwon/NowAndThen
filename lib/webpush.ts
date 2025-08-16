@@ -42,7 +42,53 @@ export class WebPushManager {
       throw new Error('Web push is not supported in this browser');
     }
 
-    return await Notification.requestPermission();
+    // 모바일 브라우저 감지
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    console.log('[WebPush] Device check - Mobile:', isMobile, 'iOS:', isIOS);
+    
+    // iOS Safari는 PWA에서만 웹푸시 지원
+    if (isIOS && !window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('[WebPush] iOS detected - PWA mode required for notifications');
+      throw new Error('iOS requires PWA mode for notifications');
+    }
+
+    // 현재 권한 상태 확인
+    const currentPermission = Notification.permission;
+    console.log('[WebPush] Current permission:', currentPermission);
+    
+    if (currentPermission === 'granted') {
+      return 'granted';
+    }
+    
+    if (currentPermission === 'denied') {
+      throw new Error('Notifications are blocked. Please enable them in browser settings.');
+    }
+
+    // 권한 요청
+    let permission: NotificationPermission;
+    
+    try {
+      // 구형 브라우저 호환성
+      if ('requestPermission' in Notification) {
+        permission = await Notification.requestPermission();
+      } else {
+        // Legacy callback API
+        permission = await new Promise((resolve) => {
+          Notification.requestPermission((result) => {
+            resolve(result as NotificationPermission);
+          });
+        });
+      }
+      
+      console.log('[WebPush] Permission result:', permission);
+      return permission;
+      
+    } catch (error) {
+      console.error('[WebPush] Permission request failed:', error);
+      throw error;
+    }
   }
 
   /**

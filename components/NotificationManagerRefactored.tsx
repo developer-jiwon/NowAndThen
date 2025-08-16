@@ -83,7 +83,25 @@ export default function NotificationManagerRefactored() {
     setIsLoading(true);
     
     try {
+      console.log('[Mobile] Starting notification permission request...');
+      
+      // 모바일 디바이스 체크
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      if (isMobile) {
+        console.log('[Mobile] Device detected - Mobile:', isMobile, 'iOS:', isIOS);
+        toast.info('Mobile device detected - requesting notification permission...');
+      }
+      
+      if (isIOS && !isPWA) {
+        toast.error('iOS requires PWA mode for notifications. Please add to home screen first.');
+        setIsLoading(false);
+        return;
+      }
+
       const success = await notificationService.requestPermission();
+      console.log('[Mobile] Permission request result:', success);
       
       if (success) {
         // 구독 정보를 데이터베이스에 저장
@@ -107,11 +125,19 @@ export default function NotificationManagerRefactored() {
           toast.error('Failed to save notification settings');
         }
       } else {
-        toast.error('Failed to enable notifications. Please check your browser settings.');
+        console.warn('[Mobile] Permission request failed or denied');
+        toast.error('Notification permission denied. Please allow notifications in your browser settings.');
       }
-    } catch (error) {
-      console.error('Error enabling notifications:', error);
-      toast.error('Failed to enable notifications');
+    } catch (error: any) {
+      console.error('[Mobile] Error enabling notifications:', error);
+      
+      if (error.message.includes('iOS requires PWA')) {
+        toast.error('iOS: Please add to home screen first, then try again');
+      } else if (error.message.includes('blocked')) {
+        toast.error('Notifications blocked. Please enable in browser settings.');
+      } else {
+        toast.error(`Failed to enable notifications: ${error.message}`);
+      }
     } finally {
       setIsLoading(false);
     }
