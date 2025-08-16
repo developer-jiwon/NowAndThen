@@ -165,19 +165,34 @@ export default function NotificationManager() {
         console.log('Title:', result.title);
         console.log('Body:', result.body);
         
-        // 10초 후 푸시 알림 전송
-        if (Notification.permission === 'granted') {
+        // Service Worker를 통해 10초 후 알림 전송
+        if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
           toast.success('10초 후 테스트 알림이 전송됩니다. PWA를 닫으세요!');
           
-          setTimeout(() => {
-            new Notification(result.title, {
-              body: result.body,
-              icon: '/favicon.ico',
-              badge: '/favicon.ico',
-              tag: 'test-daily-summary',
-              requireInteraction: true
+          // Service Worker에 10초 후 알림 전송 요청
+          navigator.serviceWorker.ready.then((registration) => {
+            if (registration.active) {
+              registration.active.postMessage({
+                type: 'schedule-test-notification',
+                payload: {
+                  title: result.title,
+                  body: result.body,
+                  delay: 10000 // 10초
+                }
+              });
+            }
+          });
+          
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              type: 'schedule-test-notification',
+              payload: {
+                title: result.title,
+                body: result.body,
+                delay: 10000 // 10초
+              }
             });
-          }, 10000); // 10초 후
+          }
         } else {
           toast.error('알림 권한이 필요합니다');
         }
@@ -188,6 +203,89 @@ export default function NotificationManager() {
     } catch (error) {
       console.error('Failed to test backend notification:', error);
       toast.error('테스트 실패');
+    }
+  };
+
+  const runAutomatedTest = async () => {
+    try {
+      console.log('=== RUNNING AUTOMATED NOTIFICATION FLOW TEST ===');
+      
+      const response = await fetch('/api/test-notification-flow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user?.id
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('=== AUTOMATED TEST RESULTS ===');
+        console.log(result);
+        
+        if (result.success) {
+          let resultText = '🚀 자동화 테스트 결과:\n\n';
+          
+          // 각 단계별 결과 표시
+          const tests = result.testResults;
+          resultText += `✅ 1. FCM 토큰: ${tests.step1_fcm_token.status}\n`;
+          resultText += `   토큰: ${tests.step1_fcm_token.token}\n\n`;
+          
+          resultText += `✅ 2. Daily Summary 설정: ${tests.step2_daily_summary.status}\n`;
+          resultText += `   활성화: ${tests.step2_daily_summary.enabled}\n`;
+          resultText += `   시간: ${tests.step2_daily_summary.time}\n`;
+          resultText += `   타임존: ${tests.step2_daily_summary.timezone}\n\n`;
+          
+          resultText += `✅ 3. 타이머 데이터: ${tests.step3_timer_data.status}\n`;
+          resultText += `   전체: ${tests.step3_timer_data.totalTimers}개\n`;
+          resultText += `   보이는 타이머: ${tests.step3_timer_data.visibleTimers}개\n`;
+          resultText += `   오늘: ${tests.step3_timer_data.todayCount}개\n`;
+          resultText += `   내일: ${tests.step3_timer_data.tomorrowCount}개\n`;
+          resultText += `   이번주: ${tests.step3_timer_data.thisWeekCount}개\n\n`;
+          
+          resultText += `✅ 4. 알림 내용: ${tests.step4_notification_content.status}\n`;
+          resultText += `   제목: ${tests.step4_notification_content.title}\n`;
+          resultText += `   내용: ${tests.step4_notification_content.body}\n\n`;
+          
+          resultText += `✅ 5. FCM 전송: ${tests.step5_fcm_simulation.status}\n\n`;
+          
+          resultText += `🕐 6. 시간 매칭: ${tests.step6_time_matching.status}\n`;
+          resultText += `   현재: ${tests.step6_time_matching.currentTime}\n`;
+          resultText += `   목표: ${tests.step6_time_matching.targetTime}\n`;
+          resultText += `   차이: ${tests.step6_time_matching.timeDifference}분\n`;
+          resultText += `   지금 보낼까?: ${tests.step6_time_matching.wouldSendNow ? '예' : '아니오'}\n\n`;
+          
+          if (tests.step6_time_matching.wouldSendNow) {
+            resultText += '🎉 모든 조건 충족! PWA 닫아도 알림이 올 겁니다!';
+          } else {
+            resultText += '⏰ 시간이 맞지 않아 지금은 알림이 안 옵니다.\n';
+            resultText += `${tests.step6_time_matching.targetTime}에 다시 테스트하세요.`;
+          }
+          
+          setTestResult(resultText);
+          setShowTestResult(true);
+          
+          toast.success('자동화 테스트 완료!');
+        } else {
+          // 실패한 경우
+          let errorText = `❌ 테스트 실패 (단계 ${result.step}):\n\n`;
+          errorText += `문제: ${result.issue}\n`;
+          errorText += `해결책: ${result.solution}`;
+          
+          setTestResult(errorText);
+          setShowTestResult(true);
+          
+          toast.error('알림 설정에 문제가 있습니다');
+        }
+      } else {
+        console.error('Automated test failed:', response.status);
+        toast.error('자동화 테스트 실패');
+      }
+    } catch (error) {
+      console.error('Failed to run automated test:', error);
+      toast.error('자동화 테스트 실패');
     }
   };
 
@@ -267,6 +365,15 @@ export default function NotificationManager() {
               title="Test notification content"
             >
               Test
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={runAutomatedTest}
+              className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-50"
+              title="Run automated flow test"
+            >
+              Auto Test
             </Button>
             <Button
               variant="outline"

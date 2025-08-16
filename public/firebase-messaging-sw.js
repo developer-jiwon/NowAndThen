@@ -23,14 +23,19 @@ try {
 // Timer-based notification functions
 function getNotificationSettings() {
   try {
-    console.log('Getting notification settings from Service Worker memory...');
-    console.log('Current settings in memory:', currentSettings);
+    console.log('=== GET NOTIFICATION SETTINGS DEBUG ===');
+    console.log('currentSettings variable exists:', typeof currentSettings !== 'undefined');
+    console.log('currentSettings value:', currentSettings);
+    console.log('currentSettings type:', typeof currentSettings);
+    console.log('currentSettings === null:', currentSettings === null);
+    console.log('currentSettings === undefined:', currentSettings === undefined);
     
     if (!currentSettings) {
       console.log('No settings in memory, returning null');
       return null;
     }
     
+    console.log('Returning settings:', currentSettings);
     return currentSettings;
   } catch (error) {
     console.error('Error getting notification settings:', error);
@@ -353,14 +358,39 @@ self.addEventListener('message', (event) => {
     sendTestNotification(event.data.customTime);
   }
   
+  if (event.data && event.data.type === 'schedule-test-notification') {
+    console.log('Scheduling test notification in', event.data.payload.delay, 'ms');
+    const { title, body, delay } = event.data.payload;
+    
+    setTimeout(() => {
+      console.log('Sending scheduled test notification...');
+      self.registration.showNotification(title, {
+        body: body,
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        actions: [
+          { action: 'view', title: 'View App' },
+          { action: 'dismiss', title: 'Dismiss' }
+        ],
+        data: {
+          url: '/',
+          type: 'scheduled-test'
+        },
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        tag: 'scheduled-test-notification'
+      });
+    }, delay);
+  }
+  
   if (event.data && event.data.type === 'update-settings') {
     console.log('=== UPDATING SERVICE WORKER SETTINGS ===');
     console.log('Old settings:', currentSettings);
     console.log('Old timezone:', userTimezone);
     
-    // Store new settings
-    currentSettings = event.data.settings;
-    console.log('Settings stored in memory:', currentSettings);
+    // Store new settings - Deep copy to ensure proper storage
+    currentSettings = JSON.parse(JSON.stringify(event.data.settings));
+    console.log('Settings stored in memory (deep copy):', currentSettings);
     
     // Update timezone if provided
     if (event.data.userTimezone) {
@@ -374,23 +404,14 @@ self.addEventListener('message', (event) => {
     
     // Verify storage
     console.log('=== VERIFICATION ===');
-    console.log('currentSettings === event.data.settings:', currentSettings === event.data.settings);
+    console.log('currentSettings type:', typeof currentSettings);
     console.log('currentSettings.dailySummaryTime:', currentSettings?.dailySummaryTime);
-    console.log('event.data.settings.dailySummaryTime:', event.data.settings?.dailySummaryTime);
+    console.log('currentSettings.dailySummary:', currentSettings?.dailySummary);
+    console.log('Settings object keys:', Object.keys(currentSettings || {}));
     
-    // Show detailed timezone and time info using received timezone
-    const now = new Date();
-    const currentTime = now.toLocaleString('en-US', { timeZone: userTimezone });
-    const currentHour = now.toLocaleString('en-US', { timeZone: userTimezone, hour: '2-digit', hour12: false });
-    const currentMinute = now.toLocaleString('en-US', { timeZone: userTimezone, minute: '2-digit' });
-    const currentTimeFormatted = `${currentHour}:${currentMinute}`;
-    
-    console.log('=== SERVICE WORKER TIMEZONE & TIME INFO ===');
-    console.log('Service Worker using timezone:', userTimezone);
-    console.log('Current time in Service Worker:', currentTime);
-    console.log('Current time (HH:MM):', currentTimeFormatted);
-    console.log('Daily summary time setting:', currentSettings.dailySummaryTime);
-    console.log('Time until next check:', `${currentSettings.dailySummaryTime} - ${currentTimeFormatted}`);
+    // Force a test check immediately
+    console.log('=== IMMEDIATE TEST CHECK ===');
+    checkDailySummary();
     
     // Start timers after receiving settings
     console.log('Starting background timers now...');
