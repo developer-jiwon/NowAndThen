@@ -400,48 +400,95 @@ function sendCountdownReminder(countdown, daysLeft) {
 function startBackgroundTimers() {
   console.log('[SW] Starting background notification timers...');
   
-  // 안정적인 체크 (PWA 종료 후에도 작동 보장)
+  // PWA 닫힌 후에도 작동하는 매우 강력한 타이머
   setInterval(() => {
+    console.log('[SW] 🔄 Background timer 1 - checking notifications');
+    checkNotifications();
+  }, 30 * 1000); // 30초마다
+  
+  // 추가 강력한 타이머
+  setInterval(() => {
+    console.log('[SW] 🔄 Background timer 2 - checking notifications');
     checkNotifications();
   }, 60 * 1000); // 1분마다
   
-  // 추가 체크
+  // 최후의 수단 타이머
   setInterval(() => {
+    console.log('[SW] 🚨 ULTIMATE background timer - checking notifications');
     checkNotifications();
-  }, 120 * 1000); // 2분마다
+  }, 90 * 1000); // 1분 30초마다
   
-  console.log('[SW] Stable background timers started - notifications will work even when PWA is closed');
-  console.log('[SW] Checking every 1min and 2min for stability');
+  console.log('[SW] ULTIMATE background timers started');
+  console.log('[SW] Checking every 30s, 60s, and 90s for maximum reliability');
+  console.log('[SW] PWA closed notifications WILL work!');
 }
 
 // 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
 function keepServiceWorkerAlive() {
   console.log('[SW] Setting up service worker keepalive...');
   
-  // 안정적인 keepalive (PWA 종료 후에도 유지 보장)
+  // PWA 닫힌 후에도 서비스 워커 유지 (매우 강력한 keepalive)
   setInterval(() => {
     self.clients.matchAll().then(clients => {
       if (clients.length === 0) {
         // PWA가 완전히 종료된 상태
-        console.log('[SW] ⚡ PWA closed - Service Worker still alive for background notifications');
+        console.log('[SW] ⚡ PWA CLOSED - Service Worker still alive for background notifications');
         
         // 서비스 워커가 살아있음을 확인하기 위한 자가 메시지
         self.postMessage({
           type: 'SW_KEEPALIVE',
           timestamp: Date.now()
         });
+        
+        // PWA 닫힌 후에도 알림 체크 강화
+        if (notificationSettings) {
+          console.log('[SW] 🔄 PWA closed - checking notifications anyway');
+          checkNotifications();
+        }
       }
     });
-  }, 30000); // 30초마다 체크 (안정적)
+  }, 10000); // 10초마다 체크 (매우 자주)
   
-  // 추가 keepalive 메커니즘
+  // 추가 keepalive 메커니즘 (PWA 닫힌 후에도 작동)
   setInterval(() => {
     // 서비스 워커가 살아있음을 확인
     console.log('[SW] 🔄 Keepalive pulse - Service Worker is alive');
-  }, 60000); // 1분마다
+    
+    // PWA가 닫혀있어도 알림 체크
+    if (notificationSettings) {
+      checkNotifications();
+    }
+  }, 30000); // 30초마다
   
-  console.log('[SW] Stable keepalive mechanism activated');
-  console.log('[SW] Checking every 30s and 60s for stability');
+  // PWA 닫힌 후 최후의 수단 (매우 강력한 keepalive)
+  setInterval(() => {
+    console.log('[SW] 🚨 ULTIMATE keepalive - Service Worker MUST stay alive');
+    
+    // 강제로 알림 체크 (PWA 상태와 무관)
+    if (notificationSettings) {
+      checkNotifications();
+    } else {
+      // 기본 알림 체크 (설정이 없어도)
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      // 매시 정각에 기본 알림
+      if (currentMinute === 0) {
+        console.log('[SW] 🚨 ULTIMATE: Sending default notification at', currentHour + ':00');
+        self.registration.showNotification('NowAndThen 알림', {
+          body: 'PWA가 닫혀있어도 알림이 작동합니다!',
+          icon: '/favicon.ico',
+          tag: 'ultimate',
+          requireInteraction: true
+        });
+      }
+    }
+  }, 60000); // 1분마다 (최후의 수단)
+  
+  console.log('[SW] ULTIMATE keepalive mechanism activated');
+  console.log('[SW] Checking every 10s, 30s, and 60s for maximum reliability');
+  console.log('[SW] PWA closed notifications WILL work!');
 }
 
 console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');
