@@ -259,7 +259,20 @@ export default function RootLayout({
                         timestamp: Date.now()
                       });
                     }
-                  }, 25000); // 25초마다 (30초보다 빠르게)
+                  }, 20000); // 20초마다 (더 빠르게)
+                  
+                  // 백그라운드 테스트 버튼 추가
+                  if (typeof window !== 'undefined') {
+                    window.testBackgroundNotification = function() {
+                      if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                          type: 'test-background'
+                        });
+                        console.log('🧪 Background test notification requested');
+                      }
+                    };
+                    console.log('🧪 Test function added: testBackgroundNotification()');
+                  }
                 })
                 .catch((error) => {
                   console.error('Unified Service Worker registration failed:', error);

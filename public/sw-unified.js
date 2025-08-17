@@ -214,11 +214,35 @@ self.addEventListener('message', (event) => {
       break;
 
     case 'test-notification':
-      // 테스트 알림
-      self.registration.showNotification('테스트 알림', {
+      // 테스트 알림 (모바일 PWA 최적화)
+      console.log('[SW] 🧪 Test notification requested');
+      
+      const testOptions = {
         body: '통합 서비스 워커가 정상 작동합니다!',
         icon: '/favicon.ico',
+        badge: '/favicon.ico',
         tag: 'test',
+        requireInteraction: true,
+        actions: [
+          { action: 'view', title: '확인' },
+          { action: 'dismiss', title: '닫기' }
+        ],
+        data: { url: '/' },
+        vibrate: [200, 100, 200], // 모바일 진동
+        silent: false // 소리 재생
+      };
+      
+      self.registration.showNotification('🧪 테스트 알림', testOptions);
+      console.log('[SW] Test notification displayed successfully');
+      break;
+
+    case 'test-background':
+      // 백그라운드 테스트 알림 (PWA 종료 후 작동 확인)
+      console.log('[SW] 🧪 Background test notification requested');
+      self.registration.showNotification('백그라운드 테스트', {
+        body: 'PWA가 종료되어도 이 알림이 온다면 성공!',
+        icon: '/favicon.ico',
+        tag: 'background-test',
         requireInteraction: true
       });
       break;
@@ -273,14 +297,16 @@ function checkDailySummary(now) {
     minute: '2-digit' 
   }));
 
-  // ±2분 허용
+  // 정확한 시간에만 알림 (±1분 허용)
   const targetMinutes = targetHour * 60 + targetMinute;
   const currentMinutes = currentHour * 60 + currentMinute;
   const timeDiff = Math.abs(targetMinutes - currentMinutes);
 
   console.log(`[SW] Daily summary check: ${currentHour}:${currentMinute} vs ${targetHour}:${targetMinute} (diff: ${timeDiff}min)`);
 
-  if (timeDiff <= 2) {
+  // 정확한 시간에만 알림 (즉시 알림 방지)
+  if (timeDiff <= 1 && timeDiff >= 0) {
+    console.log(`[SW] 🎯 Daily summary time matched! Sending notification...`);
     sendDailySummary();
   }
 }
@@ -374,19 +400,25 @@ function sendCountdownReminder(countdown, daysLeft) {
 function startBackgroundTimers() {
   console.log('[SW] Starting background notification timers...');
   
-  // 매분마다 체크
+  // 더 자주 체크 (PWA 종료 후에도 작동 보장)
   setInterval(() => {
     checkNotifications();
-  }, 60 * 1000); // 1분
+  }, 30 * 1000); // 30초마다
+  
+  // 추가로 매분마다도 체크
+  setInterval(() => {
+    checkNotifications();
+  }, 60 * 1000); // 1분마다
   
   console.log('[SW] Background timers started - notifications will work even when PWA is closed');
+  console.log('[SW] Checking every 30s and 60s for maximum reliability');
 }
 
 // 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
 function keepServiceWorkerAlive() {
   console.log('[SW] Setting up service worker keepalive...');
   
-  // 주기적으로 자가 메시지 전송 (서비스 워커 유지)
+  // 더 자주 체크 (PWA 종료 후에도 유지 보장)
   setInterval(() => {
     self.clients.matchAll().then(clients => {
       if (clients.length === 0) {
@@ -398,11 +430,26 @@ function keepServiceWorkerAlive() {
           type: 'SW_KEEPALIVE',
           timestamp: Date.now()
         });
+        
+        // 백그라운드에서 알림 체크 강화
+        checkNotifications();
       }
     });
-  }, 30000); // 30초마다 체크
+  }, 15000); // 15초마다 체크 (더 자주)
   
-  console.log('[SW] Keepalive mechanism activated');
+  // 추가 keepalive 메커니즘
+  setInterval(() => {
+    // 서비스 워커가 살아있음을 확인
+    console.log('[SW] 🔄 Keepalive pulse - Service Worker is alive');
+    
+    // 백그라운드 알림 체크
+    if (notificationSettings) {
+      checkNotifications();
+    }
+  }, 45000); // 45초마다
+  
+  console.log('[SW] Enhanced keepalive mechanism activated');
+  console.log('[SW] Checking every 15s and 45s for maximum reliability');
 }
 
 console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');

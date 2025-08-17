@@ -15,6 +15,19 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'ko',
     dir: 'ltr',
     prefer_related_applications: false,
+    // 모바일 PWA 최적화
+    edge_side_panel: {
+      preferred_width: 400
+    },
+    shortcuts: [
+      {
+        name: 'Add Timer',
+        short_name: 'Add',
+        description: 'Add a new countdown timer',
+        url: '/?action=add',
+        icons: [{ src: '/icons/nowandthen-icon.svg', sizes: '96x96' }]
+      }
+    ],
     icons: [
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
