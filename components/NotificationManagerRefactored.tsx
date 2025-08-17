@@ -128,6 +128,26 @@ export default function NotificationManagerRefactored() {
       }
 
       console.log('[Mobile] About to request permission...');
+      
+      // 모바일 PWA에서 권한 요청 전 추가 검증
+      if (isMobile && isPWA) {
+        console.log('[Mobile] Mobile PWA detected - additional validation...');
+        
+        // PWA 환경에서 서비스 워커 상태 확인
+        if ('serviceWorker' in navigator) {
+          try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            console.log('[Mobile] Service Worker registration:', !!registration);
+            if (!registration) {
+              throw new Error('Service Worker not registered in PWA mode');
+            }
+          } catch (swError) {
+            console.error('[Mobile] Service Worker check failed:', swError);
+            throw new Error('PWA Service Worker not ready. Please refresh and try again.');
+          }
+        }
+      }
+      
       const success = await notificationService.requestPermission();
       console.log('[Mobile] Permission request result:', success);
       console.log('[Mobile] Current method:', notificationService.getCurrentMethod());
