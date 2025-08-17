@@ -264,17 +264,17 @@ export default function NotificationManagerRefactored() {
       
       // PWA 종료 상태 확인을 위한 안내
       if (isMobile && isPWA) {
-        toast.success('📱 10초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
+        toast.success('📱 5초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
       } else if (isMobile) {
-        toast.success('📱 10초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
+        toast.success('📱 5초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
       } else {
-        toast.success('💻 10초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
+        toast.success('💻 5초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
       }
       
-      // 단 하나의 타이머만 설정 (중복 방지) - 10초로 복원
+      // 단 하나의 타이머만 설정 (중복 방지) - 5초로 복원
       const timeout = setTimeout(async () => {
         try {
-          console.log('[Test] Sending notification after 10 seconds...');
+          console.log('[Test] Sending notification after 5 seconds...');
           
           // 1. 즉시 브라우저 알림 테스트
           if (Notification.permission === 'granted') {
@@ -316,7 +316,7 @@ export default function NotificationManagerRefactored() {
           console.error('Error in delayed notification:', error);
           setTestTimeout(null);
         }
-      }, 10000);
+      }, 5000);
       
       setTestTimeout(timeout);
       
@@ -649,7 +649,7 @@ export default function NotificationManagerRefactored() {
                             alert('Notification permission not granted');
                           }
                         } catch (error) {
-                          alert(`Error: ${error.message}`);
+                          alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
                         }
                       }}
                       className="w-full text-xs bg-blue-500 hover:bg-blue-600 text-white"
@@ -669,7 +669,7 @@ export default function NotificationManagerRefactored() {
                             alert('Service Worker not active');
                           }
                         } catch (error) {
-                          alert(`SW Error: ${error.message}`);
+                          alert(`SW Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
                         }
                       }}
                       className="w-full text-xs bg-green-500 hover:bg-green-600 text-white"
