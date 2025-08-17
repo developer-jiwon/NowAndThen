@@ -238,18 +238,7 @@ export default function NotificationManagerRefactored() {
         notificationSupported: notificationService.isSupported()
       });
       
-      // 즉시 테스트 알림 (권한 확인용)
-      if (Notification.permission === 'granted') {
-        try {
-          new Notification('🧪 즉시 테스트', {
-            body: '알림 권한이 정상 작동합니다!',
-            icon: '/favicon.ico'
-          });
-          console.log('[Test] Immediate test notification sent');
-        } catch (immediateError) {
-          console.error('[Test] Immediate notification failed:', immediateError);
-        }
-      }
+
       
       // 모바일에서 알림이 안 오는 경우 체크
       if (isMobile && currentPermission !== 'granted') {
@@ -276,14 +265,7 @@ export default function NotificationManagerRefactored() {
         try {
           console.log('[Test] Sending notification after 5 seconds...');
           
-          // 1. 즉시 브라우저 알림 테스트
-          if (Notification.permission === 'granted') {
-            new Notification('🧪 즉시 테스트 알림', {
-              body: '브라우저 알림이 작동합니다!',
-              icon: '/favicon.ico'
-            });
-            console.log('[Test] Browser notification sent immediately');
-          }
+
           
           // 2. 서비스 워커를 통한 즉시 알림 (모바일 PWA에서 작동)
           if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -641,8 +623,8 @@ export default function NotificationManagerRefactored() {
                       onClick={async () => {
                         try {
                           if ('Notification' in window && Notification.permission === 'granted') {
-                            new Notification('즉시 테스트', {
-                              body: '브라우저 기본 알림이 작동합니다!',
+                            new Notification('5초 후 테스트', {
+                              body: '5초 후 알림이 작동합니다!',
                               icon: '/favicon.ico'
                             });
                           } else {
