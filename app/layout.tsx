@@ -259,7 +259,7 @@ export default function RootLayout({
                         timestamp: Date.now()
                       });
                     }
-                  }, 20000); // 20초마다 (더 빠르게)
+                  }, 60000); // 1분마다 (안정적)
                   
                   // 백그라운드 테스트 버튼 추가
                   if (typeof window !== 'undefined') {
