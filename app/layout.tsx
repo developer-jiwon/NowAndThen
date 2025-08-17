@@ -259,10 +259,12 @@ export default function RootLayout({
                   }).then((registration) => {
                     console.log('Service Worker is ready:', registration);
                     
-                    // VAPID 키를 window 객체에 설정
+                    // VAPID 키를 window 객체에 설정 (.env.local에서 가져오기)
                     if (typeof window !== 'undefined') {
-                      window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk';
-                      console.log('🔑 VAPID public key set to window object');
+                      // 환경 변수에서 VAPID 키 가져오기
+                      const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
+                      window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
+                      console.log('🔑 VAPID public key set to window object from .env.local');
                       
                       // WebPushManager에 직접 VAPID 키 설정 (약간의 지연 후)
                       setTimeout(() => {

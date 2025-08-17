@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
-// VAPID 설정 (새로운 키로 직접 설정)
+// VAPID 설정 (.env.local과 일치)
 const vapidKeys = {
-  publicKey: 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk',
-  privateKey: 'ZIaSEZS0_Qfw2JPMl0uIcPFnhIYhcJRtys0fz_jq0ms'
+  publicKey: 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s',
+  privateKey: 'YifvATCN0RY1vHfdbqh7nj4rWtrX3KVsc9ER4dw2uks'
 };
 
 webpush.setVapidDetails(

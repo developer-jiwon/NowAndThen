@@ -49,10 +49,11 @@ export class WebPushManager {
       }
     }
     
-    // VAPID 키가 여전히 없으면 하드코딩된 키 사용 (임시 해결책)
+    // VAPID 키가 여전히 없으면 에러 (하드코딩 제거)
     if (!this.vapidPublicKey) {
-      console.warn('[WebPush] VAPID public key not found, using hardcoded key as fallback');
-      this.vapidPublicKey = 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk';
+      console.error('[WebPush] ❌ VAPID public key not found in any source!');
+      console.error('[WebPush] Check your .env.local file and NEXT_PUBLIC_VAPID_PUBLIC_KEY');
+      throw new Error('VAPID public key is required for Web Push notifications. Please check your environment configuration.');
     }
     
     return this.vapidPublicKey;
