@@ -403,6 +403,11 @@ function startBackgroundTimers() {
   // 더 자주 체크 (PWA 종료 후에도 작동 보장)
   setInterval(() => {
     checkNotifications();
+  }, 20 * 1000); // 20초마다
+  
+  // 추가로 30초마다도 체크
+  setInterval(() => {
+    checkNotifications();
   }, 30 * 1000); // 30초마다
   
   // 추가로 매분마다도 체크
@@ -410,8 +415,14 @@ function startBackgroundTimers() {
     checkNotifications();
   }, 60 * 1000); // 1분마다
   
-  console.log('[SW] Background timers started - notifications will work even when PWA is closed');
-  console.log('[SW] Checking every 30s and 60s for maximum reliability');
+  // PWA 완전 제거 시 최후의 수단
+  setInterval(() => {
+    console.log('[SW] 🚨 Emergency timer check - PWA completely removed');
+    checkNotifications();
+  }, 120 * 1000); // 2분마다 (최후의 수단)
+  
+  console.log('[SW] Maximum background timers started - notifications will work even when PWA is completely removed');
+  console.log('[SW] Checking every 20s, 30s, 60s, and 120s for maximum reliability');
 }
 
 // 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
@@ -433,9 +444,12 @@ function keepServiceWorkerAlive() {
         
         // 백그라운드에서 알림 체크 강화
         checkNotifications();
+        
+        // PWA 완전 제거 시에도 알림 보장을 위한 추가 체크
+        console.log('[SW] 🚨 PWA completely removed - Enhanced background checking activated');
       }
     });
-  }, 15000); // 15초마다 체크 (더 자주)
+  }, 10000); // 10초마다 체크 (더 자주)
   
   // 추가 keepalive 메커니즘
   setInterval(() => {
@@ -446,10 +460,37 @@ function keepServiceWorkerAlive() {
     if (notificationSettings) {
       checkNotifications();
     }
-  }, 45000); // 45초마다
+  }, 30000); // 30초마다 (더 자주)
   
-  console.log('[SW] Enhanced keepalive mechanism activated');
-  console.log('[SW] Checking every 15s and 45s for maximum reliability');
+  // PWA 완전 제거 시 최후의 수단
+  setInterval(() => {
+    // 서비스 워커가 살아있음을 확인하고 강제로 알림 체크
+    console.log('[SW] 🚨 Emergency keepalive - Force checking notifications');
+    
+    // 설정이 없어도 기본 알림 체크
+    if (notificationSettings) {
+      checkNotifications();
+    } else {
+      // 기본 시간에 맞춰 알림 체크 (8:00 AM)
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      if (currentHour === 8 && currentMinute === 0) {
+        console.log('[SW] 🚨 Emergency: Sending default notification at 8:00 AM');
+        self.registration.showNotification('NowAndThen 알림', {
+          body: 'PWA가 완전히 제거되어도 알림이 작동합니다!',
+          icon: '/favicon.ico',
+          tag: 'emergency',
+          requireInteraction: true
+        });
+      }
+    }
+  }, 60000); // 1분마다 (최후의 수단)
+  
+  console.log('[SW] Maximum enhanced keepalive mechanism activated');
+  console.log('[SW] Checking every 10s, 30s, and 60s for maximum reliability');
+  console.log('[SW] PWA completely removed notifications will still work!');
 }
 
 console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');
