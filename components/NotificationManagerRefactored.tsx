@@ -277,18 +277,21 @@ export default function NotificationManagerRefactored() {
             console.warn('[Test] Service Worker not available');
           }
           
-          // 3. 서버 푸시도 함께 전송 (백업)
+          // 3. 실제 푸시 구독을 통한 서버 푸시 전송
           try {
-            await fetch('/api/test-push-direct', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: user.id,
-                title: '🚀 PWA 종료 테스트 성공!',
-                message: 'PWA가 종료되어도 알림이 정상 작동합니다!'
-              })
-            });
-            console.log('[Test] Server push sent successfully');
+            const currentSubscription = await notificationService.getCurrentSubscription();
+            if (currentSubscription) {
+              await fetch('/api/test-push-delayed', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  subscription: currentSubscription
+                })
+              });
+              console.log('[Test] Delayed push notification scheduled via server');
+            } else {
+              console.warn('[Test] No push subscription available');
+            }
           } catch (pushError) {
             console.error('[Test] Server push failed:', pushError);
           }

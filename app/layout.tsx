@@ -251,15 +251,36 @@ export default function RootLayout({
                 .then((registration) => {
                   console.log('Service Worker is ready:', registration);
                   
-                  // 주기적으로 서비스 워커 생명 유지
+                  // 🚀 ULTIMATE 서비스 워커 생명 유지 (여러 주파수)
                   setInterval(() => {
                     if (navigator.serviceWorker.controller) {
                       navigator.serviceWorker.controller.postMessage({
                         type: 'KEEP_SW_ALIVE',
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        message: 'Keepalive 1: 20초마다'
                       });
                     }
-                  }, 60000); // 1분마다 (안정적)
+                  }, 20000); // 20초마다
+                  
+                  setInterval(() => {
+                    if (navigator.serviceWorker.controller) {
+                      navigator.serviceWorker.controller.postMessage({
+                        type: 'KEEP_SW_ALIVE',
+                        timestamp: Date.now(),
+                        message: 'Keepalive 2: 40초마다'
+                      });
+                    }
+                  }, 40000); // 40초마다
+                  
+                  setInterval(() => {
+                    if (navigator.serviceWorker.controller) {
+                      navigator.serviceWorker.controller.postMessage({
+                        type: 'KEEP_SW_ALIVE',
+                        timestamp: Date.now(),
+                        message: 'Keepalive 3: 60초마다'
+                      });
+                    }
+                  }, 60000); // 60초마다
                   
                   // 백그라운드 테스트 버튼 추가
                   if (typeof window !== 'undefined') {

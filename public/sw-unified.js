@@ -398,39 +398,90 @@ function sendCountdownReminder(countdown, daysLeft) {
 
 // 백그라운드 타이머 시작
 function startBackgroundTimers() {
-  console.log('[SW] Starting background notification timers...');
+  console.log('[SW] 🚀 Starting ULTIMATE background notification timers...');
   
-  // 간단한 백그라운드 타이머 (5초 후 알림이 작동했던 버전)
+  // 여러 주파수로 백그라운드 체크 (OS가 죽이지 못하도록)
   setInterval(() => {
+    console.log('[SW] 🔄 Background check 1: 15초마다');
     checkNotifications();
-  }, 60 * 1000); // 1분마다
+  }, 15 * 1000); // 15초마다
   
-  console.log('[SW] Simple background timers started');
-  console.log('[SW] Checking every 1min for stability');
+  setInterval(() => {
+    console.log('[SW] 🔄 Background check 2: 30초마다');
+    checkNotifications();
+  }, 30 * 1000); // 30초마다
+  
+  setInterval(() => {
+    console.log('[SW] 🔄 Background check 3: 45초마다');
+    checkNotifications();
+  }, 45 * 1000); // 45초마다
+  
+  setInterval(() => {
+    console.log('[SW] 🔄 Background check 4: 60초마다');
+    checkNotifications();
+  }, 60 * 1000); // 60초마다
+  
+  console.log('[SW] 🎯 ULTIMATE background timers started');
+  console.log('[SW] Multiple frequencies to prevent OS killing');
 }
 
 // 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
 function keepServiceWorkerAlive() {
-  console.log('[SW] Setting up service worker keepalive...');
+  console.log('[SW] 🚀 Setting up ULTIMATE service worker keepalive...');
   
-  // 간단한 keepalive (5초 후 알림이 작동했던 버전)
+  // 여러 주파수로 keepalive (OS가 죽이지 못하도록)
   setInterval(() => {
+    console.log('[SW] ⚡ Keepalive 1: 10초마다');
+    forceKeepalive();
+  }, 10 * 1000); // 10초마다
+  
+  setInterval(() => {
+    console.log('[SW] ⚡ Keepalive 2: 25초마다');
+    forceKeepalive();
+  }, 25 * 1000); // 25초마다
+  
+  setInterval(() => {
+    console.log('[SW] ⚡ Keepalive 3: 40초마다');
+    forceKeepalive();
+  }, 40 * 1000); // 40초마다
+  
+  setInterval(() => {
+    console.log('[SW] ⚡ Keepalive 4: 55초마다');
+    forceKeepalive();
+  }, 55 * 1000); // 55초마다
+  
+  console.log('[SW] 🎯 ULTIMATE keepalive mechanism activated');
+  console.log('[SW] Multiple frequencies to prevent OS killing');
+}
+
+// 강제 keepalive 실행
+function forceKeepalive() {
+  try {
+    // 서비스 워커가 살아있음을 확인하기 위한 강제 작업
     self.clients.matchAll().then(clients => {
       if (clients.length === 0) {
         // PWA가 완전히 종료된 상태
         console.log('[SW] ⚡ PWA closed - Service Worker still alive for background notifications');
         
+        // 강제로 알림 체크 실행
+        checkNotifications();
+        
         // 서비스 워커가 살아있음을 확인하기 위한 자가 메시지
         self.postMessage({
           type: 'SW_KEEPALIVE',
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          message: 'ULTIMATE KEEPALIVE ACTIVE'
         });
       }
     });
-  }, 30000); // 30초마다 체크 (안정적)
-  
-  console.log('[SW] Simple keepalive mechanism activated');
-  console.log('[SW] Checking every 30s for stability');
+    
+    // 추가적인 백그라운드 작업으로 서비스 워커 유지
+    const dummyWork = Date.now() + Math.random();
+    console.log('[SW] 🔧 Force keepalive work:', dummyWork);
+    
+  } catch (error) {
+    console.error('[SW] Keepalive error:', error);
+  }
 }
 
 console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');

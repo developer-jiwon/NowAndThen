@@ -21,6 +21,8 @@ export class WebPushManager {
     if (!this.vapidPublicKey) {
       console.warn('VAPID public key not found. Web push may not work.');
     }
+    
+    console.log('[WebPush] VAPID public key loaded:', this.vapidPublicKey.substring(0, 20) + '...');
   }
 
   /**

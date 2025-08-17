@@ -250,6 +250,13 @@ export class NotificationService {
   }
 
   /**
+   * 현재 푸시 구독 반환
+   */
+  getCurrentSubscription(): WebPushSubscription | null {
+    return this.webpushSubscription;
+  }
+
+  /**
    * 알림 지원 여부 확인
    */
   isSupported(): boolean {
