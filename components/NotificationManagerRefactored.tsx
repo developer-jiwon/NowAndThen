@@ -238,6 +238,19 @@ export default function NotificationManagerRefactored() {
         notificationSupported: notificationService.isSupported()
       });
       
+      // 즉시 테스트 알림 (권한 확인용)
+      if (Notification.permission === 'granted') {
+        try {
+          new Notification('🧪 즉시 테스트', {
+            body: '알림 권한이 정상 작동합니다!',
+            icon: '/favicon.ico'
+          });
+          console.log('[Test] Immediate test notification sent');
+        } catch (immediateError) {
+          console.error('[Test] Immediate notification failed:', immediateError);
+        }
+      }
+      
       // 모바일에서 알림이 안 오는 경우 체크
       if (isMobile && currentPermission !== 'granted') {
         toast.error('❌ 알림 권한이 거부되었습니다. 브라우저 설정에서 알림을 허용해주세요.');
@@ -263,24 +276,40 @@ export default function NotificationManagerRefactored() {
         try {
           console.log('[Test] Sending notification after 10 seconds...');
           
-          // 서비스 워커를 통한 즉시 알림 (모바일 PWA에서 작동)
+          // 1. 즉시 브라우저 알림 테스트
+          if (Notification.permission === 'granted') {
+            new Notification('🧪 즉시 테스트 알림', {
+              body: '브라우저 알림이 작동합니다!',
+              icon: '/favicon.ico'
+            });
+            console.log('[Test] Browser notification sent immediately');
+          }
+          
+          // 2. 서비스 워커를 통한 즉시 알림 (모바일 PWA에서 작동)
           if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
               type: 'test-notification'
             });
             console.log('[Test] Sent test notification via service worker');
+          } else {
+            console.warn('[Test] Service Worker not available');
           }
           
-          // 서버 푸시도 함께 전송 (백업)
-          await fetch('/api/test-push-direct', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: user.id,
-              title: '🚀 PWA 종료 테스트 성공!',
-              message: 'PWA가 종료되어도 알림이 정상 작동합니다!'
-            })
-          });
+          // 3. 서버 푸시도 함께 전송 (백업)
+          try {
+            await fetch('/api/test-push-direct', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.id,
+                title: '🚀 PWA 종료 테스트 성공!',
+                message: 'PWA가 종료되어도 알림이 정상 작동합니다!'
+              })
+            });
+            console.log('[Test] Server push sent successfully');
+          } catch (pushError) {
+            console.error('[Test] Server push failed:', pushError);
+          }
           
           setTestTimeout(null);
         } catch (error) {
