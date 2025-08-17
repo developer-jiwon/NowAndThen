@@ -230,13 +230,39 @@ export default function RootLayout({
         <SupabaseProvider>
           <Script id="sw-register" strategy="afterInteractive">{`
             if ('serviceWorker' in navigator) {
-              console.log('Registering Firebase Service Worker...');
-              navigator.serviceWorker.register('/firebase-messaging-sw.js')
+              console.log('Registering Unified Service Worker...');
+              
+              // 기존 서비스 워커들 제거
+              navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                  registration.unregister();
+                  console.log('Old service worker unregistered');
+                }
+              });
+              
+              // 통합 서비스 워커 등록
+              navigator.serviceWorker.register('/sw-unified.js')
                 .then((registration) => {
-                  console.log('Firebase Service Worker registered successfully:', registration);
+                  console.log('Unified Service Worker registered successfully:', registration);
+                  
+                  // 서비스 워커가 활성화될 때까지 대기
+                  return navigator.serviceWorker.ready;
+                })
+                .then((registration) => {
+                  console.log('Service Worker is ready:', registration);
+                  
+                  // 주기적으로 서비스 워커 생명 유지
+                  setInterval(() => {
+                    if (navigator.serviceWorker.controller) {
+                      navigator.serviceWorker.controller.postMessage({
+                        type: 'KEEP_SW_ALIVE',
+                        timestamp: Date.now()
+                      });
+                    }
+                  }, 25000); // 25초마다 (30초보다 빠르게)
                 })
                 .catch((error) => {
-                  console.error('Firebase Service Worker registration failed:', error);
+                  console.error('Unified Service Worker registration failed:', error);
                 });
             } else {
               console.log('Service Worker not supported in this browser');

@@ -33,10 +33,10 @@ export class NotificationService {
   }
 
   /**
-   * 사용 가능한 최적의 알림 방법 감지
+   * Detect the best notification method available
    */
   private async detectBestMethod(): Promise<NotificationMethod> {
-    // 웹 푸시를 우선으로 시도 (더 안정적)
+    // Try web push first (more stable)
     try {
       if (webPushManager.isSupported()) {
         const permission = await webPushManager.requestPermission();
@@ -56,7 +56,7 @@ export class NotificationService {
       console.log('[Notifications] Web Push unavailable, trying Firebase');
     }
 
-    // 웹푸시 실패시 Firebase 시도
+    // If web push fails, try Firebase
     try {
       if (typeof window !== 'undefined') {
         const { requestNotificationPermission } = await import('./firebase');
@@ -169,36 +169,22 @@ export class NotificationService {
     try {
       const registration = await navigator.serviceWorker.ready;
       
-      // Firebase 서비스 워커 업데이트
+      // 통합 서비스 워커에 설정 전송
       if (registration.active) {
         registration.active.postMessage({
           type: 'update-settings',
           settings: settings,
           userTimezone: userTimezone
         });
-      }
-
-      // 웹 푸시 서비스 워커도 등록되어 있다면 업데이트
-      const webpushRegistration = await navigator.serviceWorker.getRegistration('/sw-webpush.js');
-      if (webpushRegistration?.active) {
-        webpushRegistration.active.postMessage({
-          type: 'update-settings',
-          payload: {
-            settings: settings,
-            userTimezone: userTimezone
-          }
-        });
 
         // 카운트다운 데이터도 전송
-        webpushRegistration.active.postMessage({
+        registration.active.postMessage({
           type: 'update-countdowns',
-          payload: {
-            countdowns: countdowns
-          }
+          countdowns: countdowns
         });
       }
 
-      console.log('[Notifications] Settings synced to service worker');
+      console.log('[Notifications] Settings synced to unified service worker');
 
     } catch (error) {
       console.error('Error updating Service Worker settings:', error);

@@ -41,27 +41,23 @@ export const requestNotificationPermission = async () => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      // Service Worker 등록 및 준비 대기
+      // 통합 서비스 워커 사용
       if ('serviceWorker' in navigator) {
         try {
-          // 기존 서비스 워커 언레지스터
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (const registration of registrations) {
-            await registration.unregister();
+          // 통합 서비스 워커가 준비될 때까지 대기
+          const registration = await navigator.serviceWorker.ready;
+          
+          // Firebase 메시징 설정
+          if (registration.active) {
+            registration.active.postMessage({
+              type: 'firebase-ready',
+              timestamp: Date.now()
+            });
           }
           
-          // 새로운 서비스 워커 등록
-          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js?v=' + Date.now());
-          
-          // 서비스 워커가 활성화될 때까지 대기
-          await navigator.serviceWorker.ready;
-          
-          // 추가 대기 시간 (서비스 워커 완전 초기화)
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          console.log('[Firebase] Service Worker ready');
+          console.log('[Firebase] Using unified service worker');
         } catch (swError) {
-          console.warn('[Firebase] SW registration failed:', swError);
+          console.warn('[Firebase] Service worker not ready:', swError);
           // 서비스 워커 실패해도 계속 진행
         }
       }

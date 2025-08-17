@@ -1,29 +1,51 @@
 /**
- * 순수 웹 푸시용 서비스 워커
- * Firebase 없이 순수 Web Push API만 사용
+ * 통합 서비스 워커 - Firebase FCM + Web Push 모두 지원
+ * PWA 종료 후에도 백그라운드 알림 보장
  */
 
+// Firebase 설정
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
+
 // 서비스 워커 버전
-const CACHE_VERSION = 'webpush-v3';
-const CACHE_NAME = `nowandthen-webpush-${CACHE_VERSION}`;
+const CACHE_VERSION = 'unified-v1';
+const CACHE_NAME = `nowandthen-unified-${CACHE_VERSION}`;
 
 // 설정 저장용 변수들
 let notificationSettings = null;
 let userTimezone = 'UTC';
 let countdownData = [];
+let messaging = null;
 
-console.log('=== WEB PUSH SERVICE WORKER LOADED ===');
-console.log('[SW] Background PWA notification service ready');
+console.log('=== UNIFIED SERVICE WORKER LOADED ===');
+console.log('[SW] Unified PWA notification service ready');
+
+// Firebase 초기화
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyB1tU7Wejp2UTAA-7yUzKbzcBT2BVv6sKA",
+    authDomain: "nowandthen-notifications.firebaseapp.com",
+    projectId: "nowandthen-notifications",
+    storageBucket: "nowandthen-notifications.appspot.com",
+    messagingSenderId: "943076943487",
+    appId: "1:943076943487:web:9f95e1977968c1a194414a"
+  });
+  
+  messaging = firebase.messaging();
+  console.log('[SW] Firebase ready');
+} catch (error) {
+  console.error('[SW] Firebase failed:', error);
+}
 
 // 설치 이벤트
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
+  console.log('[SW] Installing unified service worker...');
   self.skipWaiting(); // 즉시 활성화
 });
 
 // 활성화 이벤트
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating unified service worker...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -37,6 +59,10 @@ self.addEventListener('activate', (event) => {
     }).then(() => {
       console.log('[SW] Claiming clients...');
       return self.clients.claim();
+    }).then(() => {
+      // 백그라운드 타이머 시작
+      startBackgroundTimers();
+      keepServiceWorkerAlive();
     })
   );
 });
@@ -85,6 +111,33 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(notificationData.title, notificationOptions)
   );
 });
+
+// Firebase 백그라운드 메시지 처리
+if (messaging) {
+  messaging.onBackgroundMessage((payload) => {
+    console.log('🚀 PWA CLOSED - Received background FCM message:', payload);
+    console.log('[SW] Firebase handling notification while PWA is closed!');
+    
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+      body: payload.notification.body,
+      icon: '/favicon.ico',
+      badge: '/favicon.ico',
+      actions: [
+        { action: 'view', title: 'View Timer' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ],
+      data: {
+        url: payload.data?.url || '/',
+        timerId: payload.data?.timerId
+      },
+      requireInteraction: true,
+      vibrate: [200, 100, 200]
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}
 
 // 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {
@@ -163,11 +216,21 @@ self.addEventListener('message', (event) => {
     case 'test-notification':
       // 테스트 알림
       self.registration.showNotification('테스트 알림', {
-        body: '웹 푸시가 정상 작동합니다!',
+        body: '통합 서비스 워커가 정상 작동합니다!',
         icon: '/favicon.ico',
         tag: 'test',
         requireInteraction: true
       });
+      break;
+
+    case 'firebase-ready':
+      // Firebase가 준비되었음을 확인
+      console.log('[SW] Firebase ready signal received');
+      break;
+
+    case 'KEEP_SW_ALIVE':
+      // PWA가 살아있음을 서비스 워커에게 알림
+      console.log('[SW] Received keepalive from PWA');
       break;
 
     default:
@@ -307,46 +370,41 @@ function sendCountdownReminder(countdown, daysLeft) {
   });
 }
 
-// 주기적 체크를 위한 타이머 설정
-function startPeriodicCheck() {
-  console.log('[SW] Starting periodic notification check...');
+// 백그라운드 타이머 시작
+function startBackgroundTimers() {
+  console.log('[SW] Starting background notification timers...');
   
-  // 매분마다 체크 (중복 방지를 위해 초 단위는 체크하지 않음)
+  // 매분마다 체크
   setInterval(() => {
     checkNotifications();
   }, 60 * 1000); // 1분
+  
+  console.log('[SW] Background timers started - notifications will work even when PWA is closed');
 }
 
 // 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
 function keepServiceWorkerAlive() {
+  console.log('[SW] Setting up service worker keepalive...');
+  
   // 주기적으로 자가 메시지 전송 (서비스 워커 유지)
   setInterval(() => {
     self.clients.matchAll().then(clients => {
       if (clients.length === 0) {
         // PWA가 완전히 종료된 상태
         console.log('[SW] ⚡ PWA closed - Service Worker still alive for background notifications');
+        
+        // 서비스 워커가 살아있음을 확인하기 위한 자가 메시지
+        self.postMessage({
+          type: 'SW_KEEPALIVE',
+          timestamp: Date.now()
+        });
       }
     });
   }, 30000); // 30초마다 체크
+  
+  console.log('[SW] Keepalive mechanism activated');
 }
 
-// 서비스 워커가 활성화되면 주기적 체크 시작
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Service Worker activated - enabling background notifications');
-  event.waitUntil(
-    Promise.resolve().then(() => {
-      startPeriodicCheck();
-      keepServiceWorkerAlive(); // 백그라운드 유지
-    })
-  );
-});
-
-// 모든 탭이 닫혀도 서비스 워커 유지
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'KEEP_SW_ALIVE') {
-    // PWA가 살아있음을 서비스 워커에게 알림
-    console.log('[SW] Received keepalive from PWA');
-  }
-});
-
-console.log('[SW] 🎯 Web Push Service Worker ready for BACKGROUND notifications');
+console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');
+console.log('[SW] This service worker will handle both Firebase FCM and Web Push');
+console.log('[SW] PWA can be closed - notifications will still work!');

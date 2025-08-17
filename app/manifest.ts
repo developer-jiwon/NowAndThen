@@ -10,6 +10,11 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     background_color: '#FFFFFF',
     theme_color: '#FFFFFF',
+    orientation: 'portrait',
+    categories: ['productivity', 'utilities'],
+    lang: 'ko',
+    dir: 'ltr',
+    prefer_related_applications: false,
     icons: [
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
       { src: '/icons/nowandthen-icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },

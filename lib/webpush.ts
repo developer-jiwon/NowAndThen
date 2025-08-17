@@ -100,32 +100,15 @@ export class WebPushManager {
     }
 
     try {
-      // 모바일에서 강화된 서비스 워커 등록
-      console.log('[WebPush] Registering service worker for background notifications...');
+      // 통합 서비스 워커 사용
+      console.log('[WebPush] Using unified service worker for background notifications...');
       
-      const registration = await navigator.serviceWorker.register('/sw-webpush.js', {
-        scope: '/'  // 전체 도메인에서 작동하도록
-      });
-      
-      console.log('[WebPush] Service Worker registered:', registration);
-      
-      // 등록 완료까지 대기
-      await navigator.serviceWorker.ready;
-      console.log('[WebPush] Service Worker ready for background notifications');
-      
-      // 모바일에서 서비스 워커가 백그라운드에서 계속 작동하도록 keepalive 설정
-      if (registration.active) {
-        // 주기적으로 서비스 워커에게 keepalive 신호 전송
-        setInterval(() => {
-          if (registration.active) {
-            registration.active.postMessage({ type: 'KEEP_SW_ALIVE' });
-          }
-        }, 25000); // 25초마다
-      }
+      const registration = await navigator.serviceWorker.ready;
+      console.log('[WebPush] Unified Service Worker ready for background notifications');
       
       return registration;
     } catch (error) {
-      console.error('[WebPush] Service Worker registration failed:', error);
+      console.error('[WebPush] Service Worker not ready:', error);
       throw error;
     }
   }
