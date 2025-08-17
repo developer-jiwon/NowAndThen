@@ -274,63 +274,105 @@ export default function NotificationManagerRefactored() {
         return;
       }
       
-      // PWA 종료 상태 확인을 위한 안내
-      if (isPWA) {
-        toast.success('📱 8초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
-      } else if (isMobile) {
-        toast.success('📱 8초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
-      } else {
-        toast.success('💻 8초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
-      }
-      
-      // 단 하나의 타이머만 설정 (중복 방지) - 8초로 변경
-      const timeout = setTimeout(async () => {
-        try {
-          console.log('[Test] Sending notification after 8 seconds...');
-          
-
-          
-          // 3. 실제 푸시 구독을 통한 서버 푸시 전송 (20초 후 하나의 알림만)
-          try {
-            console.log('[Test] 🔍 Checking current subscription...');
-            const currentSubscription = await notificationService.getCurrentSubscription();
-            console.log('[Test] Current subscription:', currentSubscription);
-            
-            if (currentSubscription) {
-              console.log('[Test] ✅ Subscription found, sending to server...');
-              console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
-              
-              const response = await fetch('/api/test-push-delayed', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  subscription: currentSubscription
-                })
-              });
-              
-              if (response.ok) {
-                const result = await response.json();
-                console.log('[Test] ✅ Server response:', result);
-                console.log('[Test] Delayed push notification scheduled via server (20s)');
-              } else {
-                console.error('[Test] ❌ Server error:', response.status, response.statusText);
-              }
-            } else {
-              console.warn('[Test] ❌ No push subscription available');
-              console.log('[Test] Current method:', notificationService.getCurrentMethod());
+      // 즉시 테스트 알림 전송 (서비스 워커를 통해)
+      try {
+        console.log('[Test] 🔍 Sending immediate test notification...');
+        
+        // 1. 즉시 서비스 워커에 테스트 알림 요청
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'test-notification',
+            payload: {
+              title: 'NowAndThen 테스트 알림',
+              body: '즉시 테스트 알림이 도착했습니다! 🎉',
+              icon: '/favicon.ico',
+              badge: '/favicon.ico',
+              tag: 'test-immediate',
+              requireInteraction: true,
+              actions: [
+                { action: 'view', title: '확인하기' },
+                { action: 'dismiss', title: '닫기' }
+              ],
+              data: { url: '/' }
             }
-          } catch (pushError) {
-            console.error('[Test] ❌ Server push failed:', pushError);
+          });
+          console.log('[Test] ✅ Immediate test notification sent to service worker');
+        } else {
+          // 서비스 워커가 없으면 브라우저 알림 API 직접 사용
+          console.log('[Test] Service worker not available, using browser notification API');
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('NowAndThen 테스트 알림', {
+              body: '즉시 테스트 알림이 도착했습니다! 🎉',
+              icon: '/favicon.ico',
+              tag: 'test-fallback'
+            });
+            console.log('[Test] ✅ Fallback notification sent via browser API');
           }
-          
-          setTestTimeout(null);
-        } catch (error) {
-          console.error('Error in delayed notification:', error);
-          setTestTimeout(null);
         }
-      }, 8000);
-      
-      setTestTimeout(timeout);
+        
+        // 2. 8초 후 서버 푸시 알림도 전송
+        toast.success('📱 즉시 알림 + 8초 후 푸시 알림 전송!');
+        
+        // PWA 종료 상태 확인을 위한 안내
+        if (isPWA) {
+          toast.info('📱 8초 후 푸시 알림도 전송됩니다! 지금 앱을 완전히 종료해보세요');
+        } else if (isMobile) {
+          toast.info('📱 8초 후 푸시 알림도 전송됩니다! 지금 브라우저를 완전히 종료해보세요');
+        } else {
+          toast.info('💻 8초 후 푸시 알림도 전송됩니다! 지금 브라우저 탭을 닫거나 최소화해보세요');
+        }
+        
+                // 8초 후 서버 푸시 전송
+        const timeout = setTimeout(async () => {
+          try {
+            console.log('[Test] Sending notification after 8 seconds...');
+            
+            // 실제 푸시 구독을 통한 서버 푸시 전송 (8초 후)
+            try {
+              console.log('[Test] 🔍 Checking current subscription...');
+              const currentSubscription = await notificationService.getCurrentSubscription();
+              console.log('[Test] Current subscription:', currentSubscription);
+              
+              if (currentSubscription) {
+                console.log('[Test] ✅ Subscription found, sending to server...');
+                console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
+                
+                const response = await fetch('/api/test-push-delayed', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    subscription: currentSubscription
+                  })
+                });
+                
+                if (response.ok) {
+                  const result = await response.json();
+                  console.log('[Test] ✅ Server response:', result);
+                  console.log('[Test] Delayed push notification scheduled via server (8s)');
+                } else {
+                  console.error('[Test] ❌ Server error:', response.status, response.statusText);
+                }
+              } else {
+                console.warn('[Test] ❌ No push subscription available');
+                console.log('[Test] Current method:', notificationService.getCurrentMethod());
+              }
+            } catch (pushError) {
+              console.error('[Test] ❌ Server push failed:', pushError);
+            }
+            
+            setTestTimeout(null);
+          } catch (error) {
+            console.error('Error in delayed notification:', error);
+            setTestTimeout(null);
+          }
+        }, 8000);
+        
+        setTestTimeout(timeout);
+        
+      } catch (immediateError) {
+        console.error('[Test] ❌ Immediate test notification failed:', immediateError);
+        toast.error('즉시 테스트 알림 전송 실패');
+      }
       
     } catch (error) {
       console.error('Error sending test notification:', error);

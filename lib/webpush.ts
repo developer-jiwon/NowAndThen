@@ -28,8 +28,19 @@ export class WebPushManager {
       this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       console.log('[WebPush] VAPID key set in constructor:', this.vapidPublicKey.substring(0, 20) + '...');
     } else {
+      // 환경 변수에서 직접 가져오기 시도
       this.vapidPublicKey = '';
       console.log('[WebPush] VAPID key not available in constructor, will set later');
+      
+      // 약간의 지연 후 다시 시도
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          if (window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+            this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+            console.log('[WebPush] VAPID key set after delay:', this.vapidPublicKey.substring(0, 20) + '...');
+          }
+        }, 1000);
+      }
     }
   }
   
@@ -49,11 +60,11 @@ export class WebPushManager {
       }
     }
     
-    // VAPID 키가 여전히 없으면 에러 (하드코딩 제거)
+    // VAPID 키가 여전히 없으면 fallback 키 사용 (임시 해결책)
     if (!this.vapidPublicKey) {
-      console.error('[WebPush] ❌ VAPID public key not found in any source!');
-      console.error('[WebPush] Check your .env.local file and NEXT_PUBLIC_VAPID_PUBLIC_KEY');
-      throw new Error('VAPID public key is required for Web Push notifications. Please check your environment configuration.');
+      console.warn('[WebPush] VAPID key not found, using hardcoded key as fallback');
+      this.vapidPublicKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
+      console.log('[WebPush] Fallback VAPID key set:', this.vapidPublicKey.substring(0, 20) + '...');
     }
     
     return this.vapidPublicKey;
