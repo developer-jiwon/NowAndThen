@@ -41,6 +41,15 @@ try {
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing unified service worker...');
   self.skipWaiting(); // 즉시 활성화
+  
+  // 설치 즉시 백그라운드 작업 시작
+  event.waitUntil(
+    Promise.resolve().then(() => {
+      console.log('[SW] Starting background work immediately after install...');
+      startBackgroundTimers();
+      keepServiceWorkerAlive();
+    })
+  );
 });
 
 // 활성화 이벤트
@@ -396,94 +405,119 @@ function sendCountdownReminder(countdown, daysLeft) {
   });
 }
 
-// 백그라운드 타이머 시작
+// 백그라운드 타이머 시작 (간단하고 강력하게)
 function startBackgroundTimers() {
-  console.log('[SW] 🚀 Starting ULTIMATE background notification timers...');
+  console.log('[SW] 🚀 Starting SIMPLE but POWERFUL background timers...');
   
-  // 여러 주파수로 백그라운드 체크 (OS가 죽이지 못하도록)
+  // 단일 강력한 백그라운드 타이머 (5초마다)
   setInterval(() => {
-    console.log('[SW] 🔄 Background check 1: 15초마다');
-    checkNotifications();
-  }, 15 * 1000); // 15초마다
-  
-  setInterval(() => {
-    console.log('[SW] 🔄 Background check 2: 30초마다');
-    checkNotifications();
-  }, 30 * 1000); // 30초마다
-  
-  setInterval(() => {
-    console.log('[SW] 🔄 Background check 3: 45초마다');
-    checkNotifications();
-  }, 45 * 1000); // 45초마다
-  
-  setInterval(() => {
-    console.log('[SW] 🔄 Background check 4: 60초마다');
-    checkNotifications();
-  }, 60 * 1000); // 60초마다
-  
-  console.log('[SW] 🎯 ULTIMATE background timers started');
-  console.log('[SW] Multiple frequencies to prevent OS killing');
-}
-
-// 서비스 워커 생명주기 확장 (PWA 종료 후에도 유지)
-function keepServiceWorkerAlive() {
-  console.log('[SW] 🚀 Setting up ULTIMATE service worker keepalive...');
-  
-  // 여러 주파수로 keepalive (OS가 죽이지 못하도록)
-  setInterval(() => {
-    console.log('[SW] ⚡ Keepalive 1: 10초마다');
-    forceKeepalive();
-  }, 10 * 1000); // 10초마다
-  
-  setInterval(() => {
-    console.log('[SW] ⚡ Keepalive 2: 25초마다');
-    forceKeepalive();
-  }, 25 * 1000); // 25초마다
-  
-  setInterval(() => {
-    console.log('[SW] ⚡ Keepalive 3: 40초마다');
-    forceKeepalive();
-  }, 40 * 1000); // 40초마다
-  
-  setInterval(() => {
-    console.log('[SW] ⚡ Keepalive 4: 55초마다');
-    forceKeepalive();
-  }, 55 * 1000); // 55초마다
-  
-  console.log('[SW] 🎯 ULTIMATE keepalive mechanism activated');
-  console.log('[SW] Multiple frequencies to prevent OS killing');
-}
-
-// 강제 keepalive 실행
-function forceKeepalive() {
-  try {
-    // 서비스 워커가 살아있음을 확인하기 위한 강제 작업
+    console.log('[SW] 🔄 Background check every 5 seconds');
+    
+    // PWA가 백그라운드에 있는지 확인
     self.clients.matchAll().then(clients => {
-      if (clients.length === 0) {
-        // PWA가 완전히 종료된 상태
-        console.log('[SW] ⚡ PWA closed - Service Worker still alive for background notifications');
-        
-        // 강제로 알림 체크 실행
+      const hasActiveClients = clients.length > 0;
+      const hasVisibleClients = clients.some(client => client.visibilityState === 'visible');
+      
+      console.log('[SW] Active clients:', clients.length, 'Visible:', hasVisibleClients);
+      
+      // PWA가 백그라운드에 있으면 강제로 알림 체크
+      if (hasActiveClients && !hasVisibleClients) {
+        console.log('[SW] PWA in background - forcing notification check');
         checkNotifications();
-        
-        // 서비스 워커가 살아있음을 확인하기 위한 자가 메시지
-        self.postMessage({
-          type: 'SW_KEEPALIVE',
-          timestamp: Date.now(),
-          message: 'ULTIMATE KEEPALIVE ACTIVE'
-        });
       }
     });
     
-    // 추가적인 백그라운드 작업으로 서비스 워커 유지
-    const dummyWork = Date.now() + Math.random();
-    console.log('[SW] 🔧 Force keepalive work:', dummyWork);
+    // 서비스 워커가 살아있음을 확인
+    const timestamp = Date.now();
+    console.log('[SW] Service Worker alive at:', timestamp);
+    
+  }, 5000); // 5초마다
+  
+  console.log('[SW] 🎯 Simple but powerful background timer started');
+  console.log('[SW] Checking every 5 seconds to keep alive');
+}
+
+// 서비스 워커 생명주기 확장 (간단하고 강력하게)
+function keepServiceWorkerAlive() {
+  console.log('[SW] 🚀 Setting up SIMPLE but POWERFUL keepalive...');
+  
+  // 단일 강력한 keepalive (3초마다)
+  setInterval(() => {
+    console.log('[SW] ⚡ Keepalive every 3 seconds');
+    
+    // 서비스 워커가 살아있음을 확인
+    const timestamp = Date.now();
+    console.log('[SW] Service Worker keepalive at:', timestamp);
+    
+    // PWA 상태 확인
+    self.clients.matchAll().then(clients => {
+      if (clients.length === 0) {
+        console.log('[SW] ⚡ No active clients - Service Worker still alive');
+      } else {
+        const visibleClients = clients.filter(client => client.visibilityState === 'visible');
+        console.log('[SW] ⚡ Active clients:', clients.length, 'Visible:', visibleClients.length);
+      }
+    });
+    
+  }, 3000); // 3초마다
+  
+  console.log('[SW] 🎯 Simple but powerful keepalive activated');
+  console.log('[SW] Checking every 3 seconds to stay alive');
+}
+
+// 강제 keepalive 실행 (간단하게)
+function forceKeepalive() {
+  try {
+    // 서비스 워커가 살아있음을 확인
+    const timestamp = Date.now();
+    console.log('[SW] 🔧 Force keepalive at:', timestamp);
+    
+    // PWA 상태 확인
+    self.clients.matchAll().then(clients => {
+      if (clients.length === 0) {
+        console.log('[SW] ⚡ PWA closed - Service Worker still alive');
+      } else {
+        const visibleClients = clients.filter(client => client.visibilityState === 'visible');
+        console.log('[SW] ⚡ PWA active - Visible:', visibleClients.length);
+      }
+    });
     
   } catch (error) {
     console.error('[SW] Keepalive error:', error);
   }
 }
 
+// 백그라운드에서 계속 실행되도록 추가 이벤트
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data && event.data.type === 'KEEP_SW_ALIVE') {
+    console.log('[SW] Keepalive message received - Service Worker is alive!');
+    // 백그라운드 작업 강제 실행
+    checkNotifications();
+  }
+});
+
+// 서비스 워커가 백그라운드에서 계속 실행되도록 주기적 체크
+setInterval(() => {
+  console.log('[SW] 🔄 Background heartbeat - Service Worker is running');
+  
+  // PWA 상태 확인
+  self.clients.matchAll().then(clients => {
+    const hasActiveClients = clients.length > 0;
+    const hasVisibleClients = clients.some(client => client.visibilityState === 'visible');
+    
+    console.log('[SW] Background check - Active:', hasActiveClients, 'Visible:', hasVisibleClients);
+    
+    // 백그라운드에 있으면 알림 체크
+    if (hasActiveClients && !hasVisibleClients) {
+      console.log('[SW] PWA in background - checking notifications');
+      checkNotifications();
+    }
+  });
+}, 10000); // 10초마다
+
 console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');
 console.log('[SW] This service worker will handle both Firebase FCM and Web Push');
 console.log('[SW] PWA can be closed - notifications will still work!');
+console.log('[SW] Background heartbeat started every 10 seconds');

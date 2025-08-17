@@ -127,8 +127,11 @@ export default function NotificationManagerRefactored() {
         return;
       }
 
+      console.log('[Mobile] About to request permission...');
       const success = await notificationService.requestPermission();
       console.log('[Mobile] Permission request result:', success);
+      console.log('[Mobile] Current method:', notificationService.getCurrentMethod());
+      console.log('[Mobile] Has subscription:', !!notificationService.getCurrentSubscription());
       
       if (success) {
         // 구독 정보를 데이터베이스에 저장
