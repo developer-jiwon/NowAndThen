@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
-// VAPID 설정 (환경변수에서 가져오기)
+// VAPID 설정 (새로운 키로 직접 설정)
 const vapidKeys = {
-  publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-  privateKey: process.env.VAPID_PRIVATE_KEY || ''
+  publicKey: 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk',
+  privateKey: 'ZIaSEZS0_Qfw2JPMl0uIcPFnhIYhcJRtys0fz_jq0ms'
 };
 
 webpush.setVapidDetails(
@@ -15,16 +15,24 @@ webpush.setVapidDetails(
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[API] 🚀 Delayed push request received');
     const { subscription } = await request.json();
     
+    console.log('[API] 🔍 Subscription data:', {
+      hasSubscription: !!subscription,
+      endpoint: subscription?.endpoint?.substring(0, 50) + '...',
+      hasKeys: !!subscription?.keys
+    });
+    
     if (!subscription) {
+      console.log('[API] ❌ No subscription provided');
       return NextResponse.json(
         { error: 'Push subscription is required' },
         { status: 400 }
       );
     }
 
-    console.log('[API] Scheduling delayed push notification...');
+    console.log('[API] ✅ Scheduling delayed push notification...');
     
     // 20초 후 푸시 전송
     setTimeout(async () => {

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
-// VAPID 설정 (환경변수에서 가져오기)
+// VAPID 설정 (새로운 키로 직접 설정)
 const vapidKeys = {
-  publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-  privateKey: process.env.VAPID_PRIVATE_KEY || ''
+  publicKey: 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk',
+  privateKey: 'ZIaSEZS0_Qfw2JPMl0uIcPFnhIYhcJRtys0fz_jq0ms'
 };
 
 webpush.setVapidDetails(

@@ -270,17 +270,7 @@ export default function NotificationManagerRefactored() {
           
 
           
-          // 2. 서비스 워커를 통한 즉시 알림 (모바일 PWA에서 작동)
-          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-              type: 'test-notification'
-            });
-            console.log('[Test] Sent test notification via service worker');
-          } else {
-            console.warn('[Test] Service Worker not available');
-          }
-          
-          // 3. 실제 푸시 구독을 통한 서버 푸시 전송
+          // 3. 실제 푸시 구독을 통한 서버 푸시 전송 (20초 후 하나의 알림만)
           try {
             const currentSubscription = await notificationService.getCurrentSubscription();
             if (currentSubscription) {
@@ -291,7 +281,7 @@ export default function NotificationManagerRefactored() {
                   subscription: currentSubscription
                 })
               });
-              console.log('[Test] Delayed push notification scheduled via server');
+              console.log('[Test] Delayed push notification scheduled via server (20s)');
             } else {
               console.warn('[Test] No push subscription available');
             }

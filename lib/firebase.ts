@@ -62,10 +62,11 @@ export const requestNotificationPermission = async () => {
         }
       }
       
-      // 토큰 요청 (서비스 워커 준비 후)
+      // 토큰 요청 (통합 서비스 워커 사용)
       try {
         const token = await getToken(messaging, {
-          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+          serviceWorkerRegistration: await navigator.serviceWorker.ready
         });
         
         if (!token) {

@@ -36,42 +36,43 @@ export class NotificationService {
    * Detect the best notification method available
    */
   private async detectBestMethod(): Promise<NotificationMethod> {
+    console.log('[Notifications] 🔍 Starting method detection...');
+    
     // Try web push first (more stable)
     try {
+      console.log('[Notifications] 🔍 Checking Web Push support...');
       if (webPushManager.isSupported()) {
+        console.log('[Notifications] ✅ Web Push is supported');
         const permission = await webPushManager.requestPermission();
+        console.log('[Notifications] 🔍 Permission result:', permission);
         
         if (permission === 'granted') {
+          console.log('[Notifications] 🔍 Creating Web Push subscription...');
           const subscription = await webPushManager.subscribe();
+          console.log('[Notifications] 🔍 Subscription result:', !!subscription);
           
           if (subscription) {
             this.currentMethod = 'webpush';
             this.webpushSubscription = subscription;
-            console.log('[Notifications] Web Push enabled');
+            console.log('[Notifications] ✅ Web Push enabled successfully');
+            console.log('[Notifications] Subscription endpoint:', subscription.endpoint);
             return 'webpush';
+          } else {
+            console.log('[Notifications] ❌ Web Push subscription failed');
           }
+        } else {
+          console.log('[Notifications] ❌ Web Push permission denied');
         }
+      } else {
+        console.log('[Notifications] ❌ Web Push not supported');
       }
     } catch (error) {
-      console.log('[Notifications] Web Push unavailable, trying Firebase');
+      console.error('[Notifications] ❌ Web Push error:', error);
+      console.log('[Notifications] 🔄 Trying Firebase...');
     }
 
-    // If web push fails, try Firebase
-    try {
-      if (typeof window !== 'undefined') {
-        const { requestNotificationPermission } = await import('./firebase');
-        const token = await requestNotificationPermission();
-        
-        if (token) {
-          this.currentMethod = 'firebase';
-          this.firebaseToken = token;
-          console.log('[Notifications] Firebase FCM enabled');
-          return 'firebase';
-        }
-      }
-    } catch (error) {
-      console.log('[Notifications] Firebase also unavailable');
-    }
+    // Firebase는 현재 문제가 있어서 Web Push만 사용
+    console.log('[Notifications] Skipping Firebase, using Web Push only');
 
     console.warn('[Notifications] No notification method available');
     this.currentMethod = 'none';

@@ -3,6 +3,14 @@
  * Based on web standards without external dependencies
  */
 
+// Window 객체에 타입 추가
+declare global {
+  interface Window {
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY?: string;
+    webPushManager?: WebPushManager;
+  }
+}
+
 export interface PushSubscription {
   endpoint: string;
   keys: {
@@ -15,14 +23,31 @@ export class WebPushManager {
   private vapidPublicKey: string;
   
   constructor() {
-    // VAPID 키는 환경변수에서 가져오기
-    this.vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
-    
+    // VAPID 키는 나중에 설정 (생성자에서는 빈 문자열로 초기화)
+    this.vapidPublicKey = '';
+  }
+  
+  // VAPID 키 설정 메서드
+  setVapidKey(key: string) {
+    this.vapidPublicKey = key;
+    console.log('[WebPush] VAPID key set:', key.substring(0, 20) + '...');
+  }
+  
+  // VAPID 키 가져오기
+  getVapidKey(): string {
     if (!this.vapidPublicKey) {
-      console.warn('VAPID public key not found. Web push may not work.');
+      // 브라우저에서 window 객체에서 가져오기
+      if (typeof window !== 'undefined' && window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+        this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+        console.log('[WebPush] VAPID key loaded from window:', this.vapidPublicKey.substring(0, 20) + '...');
+      }
     }
     
-    console.log('[WebPush] VAPID public key loaded:', this.vapidPublicKey.substring(0, 20) + '...');
+    if (!this.vapidPublicKey) {
+      console.warn('[WebPush] VAPID public key not found. Web push may not work.');
+    }
+    
+    return this.vapidPublicKey;
   }
 
   /**
@@ -120,19 +145,33 @@ export class WebPushManager {
    */
   async subscribe(): Promise<PushSubscription | null> {
     try {
+      console.log('[WebPush] 🔍 Starting push subscription process...');
+      console.log('[WebPush] VAPID public key available:', !!this.vapidPublicKey);
+      console.log('[WebPush] VAPID key length:', this.vapidPublicKey.length);
+      
       const registration = await this.registerServiceWorker();
       
       // 기존 구독이 있는지 확인
+      console.log('[WebPush] 🔍 Checking existing subscription...');
       let subscription = await registration.pushManager.getSubscription();
+      console.log('[WebPush] Existing subscription:', !!subscription);
       
       if (!subscription) {
+        console.log('[WebPush] 🔍 Creating new push subscription...');
         // 새로운 구독 생성
-        const applicationServerKey = this.urlBase64ToUint8Array(this.vapidPublicKey);
+        const vapidKey = this.getVapidKey();
+        if (!vapidKey) {
+          throw new Error('VAPID key not available');
+        }
+        
+        const applicationServerKey = this.urlBase64ToUint8Array(vapidKey);
+        console.log('[WebPush] Application server key created:', !!applicationServerKey);
         
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: applicationServerKey
         });
+        console.log('[WebPush] New subscription result:', !!subscription);
       }
 
       if (!subscription) {
@@ -249,3 +288,8 @@ export class WebPushManager {
 
 // 싱글톤 인스턴스
 export const webPushManager = new WebPushManager();
+
+// 브라우저에서 전역으로 접근 가능하도록 설정
+if (typeof window !== 'undefined') {
+  window.webPushManager = webPushManager;
+}

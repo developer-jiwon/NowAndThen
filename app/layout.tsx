@@ -232,72 +232,89 @@ export default function RootLayout({
             if ('serviceWorker' in navigator) {
               console.log('Registering Unified Service Worker...');
               
-              // 기존 서비스 워커들 제거
+              // 기존 서비스 워커들 제거 (안전하게)
               navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                  registration.unregister();
-                  console.log('Old service worker unregistered');
-                }
-              });
-              
-              // 통합 서비스 워커 등록
-              navigator.serviceWorker.register('/sw-unified.js')
-                .then((registration) => {
-                  console.log('Unified Service Worker registered successfully:', registration);
+                const unregisterPromises = registrations.map(registration => {
+                  console.log('Unregistering old service worker:', registration.scope);
+                  return registration.unregister();
+                });
+                
+                return Promise.all(unregisterPromises);
+              }).then(() => {
+                console.log('All old service workers unregistered');
+                
+                // 잠시 대기 후 새 서비스 워커 등록
+                setTimeout(() => {
+                  console.log('Starting service worker registration...');
                   
-                  // 서비스 워커가 활성화될 때까지 대기
-                  return navigator.serviceWorker.ready;
-                })
-                .then((registration) => {
-                  console.log('Service Worker is ready:', registration);
-                  
-                  // 🚀 ULTIMATE 서비스 워커 생명 유지 (여러 주파수)
-                  setInterval(() => {
-                    if (navigator.serviceWorker.controller) {
-                      navigator.serviceWorker.controller.postMessage({
-                        type: 'KEEP_SW_ALIVE',
-                        timestamp: Date.now(),
-                        message: 'Keepalive 1: 20초마다'
-                      });
+                  // 통합 서비스 워커 등록
+                  navigator.serviceWorker.register('/sw-unified.js', {
+                    scope: '/',
+                    updateViaCache: 'none'
+                  }).then((registration) => {
+                    console.log('Unified Service Worker registered successfully:', registration);
+                    
+                    // 서비스 워커가 활성화될 때까지 대기
+                    return navigator.serviceWorker.ready;
+                  }).then((registration) => {
+                    console.log('Service Worker is ready:', registration);
+                    
+                    // VAPID 키를 window 객체에 설정
+                    if (typeof window !== 'undefined') {
+                      window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk';
+                      console.log('🔑 VAPID public key set to window object');
+                      
+                      // WebPushManager에 직접 VAPID 키 설정
+                      if (window.webPushManager) {
+                        window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+                        console.log('🔑 VAPID key set to WebPushManager');
+                      }
                     }
-                  }, 20000); // 20초마다
-                  
-                  setInterval(() => {
-                    if (navigator.serviceWorker.controller) {
-                      navigator.serviceWorker.controller.postMessage({
-                        type: 'KEEP_SW_ALIVE',
-                        timestamp: Date.now(),
-                        message: 'Keepalive 2: 40초마다'
-                      });
-                    }
-                  }, 40000); // 40초마다
-                  
-                  setInterval(() => {
-                    if (navigator.serviceWorker.controller) {
-                      navigator.serviceWorker.controller.postMessage({
-                        type: 'KEEP_SW_ALIVE',
-                        timestamp: Date.now(),
-                        message: 'Keepalive 3: 60초마다'
-                      });
-                    }
-                  }, 60000); // 60초마다
-                  
-                  // 백그라운드 테스트 버튼 추가
-                  if (typeof window !== 'undefined') {
-                    window.testBackgroundNotification = function() {
+                    
+                    // 서비스 워커 생명 유지
+                    setInterval(() => {
                       if (navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage({
-                          type: 'test-background'
+                          type: 'KEEP_SW_ALIVE',
+                          timestamp: Date.now()
                         });
-                        console.log('🧪 Background test notification requested');
                       }
-                    };
-                    console.log('🧪 Test function added: testBackgroundNotification()');
-                  }
-                })
-                .catch((error) => {
-                  console.error('Unified Service Worker registration failed:', error);
-                });
+                    }, 30000); // 30초마다
+                    
+                    // 테스트 함수들 추가
+                    if (typeof window !== 'undefined') {
+                      window.testBackgroundNotification = function() {
+                        if (navigator.serviceWorker.controller) {
+                          navigator.serviceWorker.controller.postMessage({
+                            type: 'test-background'
+                          });
+                          console.log('🧪 Background test notification requested');
+                        }
+                      };
+                      
+                      window.runNotificationTests = function() {
+                        console.log('🧪 Running notification tests...');
+                        console.log('🔍 Browser Support:', {
+                          serviceWorker: 'serviceWorker' in navigator,
+                          pushManager: 'PushManager' in window,
+                          notification: 'Notification' in window
+                        });
+                        console.log('🔔 Permission:', Notification.permission);
+                      };
+                      
+                      console.log('🧪 Test functions added');
+                    }
+                    
+                  }).catch((error) => {
+                    console.error('❌ Service Worker registration failed:', error);
+                  });
+                  
+                }, 1000); // 1초 대기
+                
+              }).catch((error) => {
+                console.error('❌ Service Worker unregistration failed:', error);
+              });
+              
             } else {
               console.log('Service Worker not supported in this browser');
             }
