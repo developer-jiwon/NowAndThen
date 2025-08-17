@@ -34,12 +34,12 @@ export async function POST(request: NextRequest) {
 
     console.log('[API] ✅ Scheduling delayed push notification...');
     
-    // 20초 후 푸시 전송
+    // 8초 후 푸시 전송
     setTimeout(async () => {
       try {
         const payload = {
           title: 'NowAndThen 테스트 알림',
-          body: '20초 후 푸시 알림이 도착했습니다! 🎉',
+          body: '8초 후 푸시 알림이 도착했습니다! 🎉',
           icon: '/favicon.ico',
           badge: '/favicon.ico',
           tag: 'test-delayed',
@@ -63,11 +63,11 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('[API] Delayed push failed:', error);
       }
-    }, 20000); // 20초
+    }, 8000); // 8초
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Delayed push notification scheduled for 20 seconds from now'
+      message: 'Delayed push notification scheduled for 8 seconds from now'
     });
     
   } catch (error) {

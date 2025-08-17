@@ -264,11 +264,22 @@ export default function RootLayout({
                       window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk';
                       console.log('🔑 VAPID public key set to window object');
                       
-                      // WebPushManager에 직접 VAPID 키 설정
-                      if (window.webPushManager) {
-                        window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
-                        console.log('🔑 VAPID key set to WebPushManager');
-                      }
+                      // WebPushManager에 직접 VAPID 키 설정 (약간의 지연 후)
+                      setTimeout(() => {
+                        if (window.webPushManager) {
+                          window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+                          console.log('🔑 VAPID key set to WebPushManager');
+                        } else {
+                          console.warn('⚠️ webPushManager not available yet, retrying...');
+                          // 재시도
+                          setTimeout(() => {
+                            if (window.webPushManager) {
+                              window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+                              console.log('🔑 VAPID key set to WebPushManager (retry)');
+                            }
+                          }, 1000);
+                        }
+                      }, 500);
                     }
                     
                     // 서비스 워커 생명 유지

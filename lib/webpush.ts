@@ -23,8 +23,14 @@ export class WebPushManager {
   private vapidPublicKey: string;
   
   constructor() {
-    // VAPID 키는 나중에 설정 (생성자에서는 빈 문자열로 초기화)
-    this.vapidPublicKey = '';
+    // 생성자에서 바로 VAPID 키 설정 시도
+    if (typeof window !== 'undefined' && window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+      this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      console.log('[WebPush] VAPID key set in constructor:', this.vapidPublicKey.substring(0, 20) + '...');
+    } else {
+      this.vapidPublicKey = '';
+      console.log('[WebPush] VAPID key not available in constructor, will set later');
+    }
   }
   
   // VAPID 키 설정 메서드
@@ -43,8 +49,10 @@ export class WebPushManager {
       }
     }
     
+    // VAPID 키가 여전히 없으면 하드코딩된 키 사용 (임시 해결책)
     if (!this.vapidPublicKey) {
-      console.warn('[WebPush] VAPID public key not found. Web push may not work.');
+      console.warn('[WebPush] VAPID public key not found, using hardcoded key as fallback');
+      this.vapidPublicKey = 'BPkvztDqKmqVqzYmBJTbGpATHDHXKBTukcbOGUd_z4dzaHSd2icshWEaEtUke2RphUjEQql2s5lhLTNxQlLsnXk';
     }
     
     return this.vapidPublicKey;

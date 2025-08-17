@@ -1,41 +1,19 @@
 /**
- * 통합 서비스 워커 - Firebase FCM + Web Push 모두 지원
+ * 간단한 서비스 워커 - Web Push 전용
  * PWA 종료 후에도 백그라운드 알림 보장
  */
 
-// Firebase 설정
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
-
 // 서비스 워커 버전
-const CACHE_VERSION = 'unified-v1';
-const CACHE_NAME = `nowandthen-unified-${CACHE_VERSION}`;
+const CACHE_VERSION = 'simple-v1';
+const CACHE_NAME = `nowandthen-simple-${CACHE_VERSION}`;
 
 // 설정 저장용 변수들
 let notificationSettings = null;
 let userTimezone = 'UTC';
 let countdownData = [];
-let messaging = null;
 
-console.log('=== UNIFIED SERVICE WORKER LOADED ===');
-console.log('[SW] Unified PWA notification service ready');
-
-// Firebase 초기화
-try {
-  firebase.initializeApp({
-    apiKey: "AIzaSyB1tU7Wejp2UTAA-7yUzKbzcBT2BVv6sKA",
-    authDomain: "nowandthen-notifications.firebaseapp.com",
-    projectId: "nowandthen-notifications",
-    storageBucket: "nowandthen-notifications.appspot.com",
-    messagingSenderId: "943076943487",
-    appId: "1:943076943487:web:9f95e1977968c1a194414a"
-  });
-  
-  messaging = firebase.messaging();
-  console.log('[SW] Firebase ready');
-} catch (error) {
-  console.error('[SW] Firebase failed:', error);
-}
+console.log('=== SIMPLE SERVICE WORKER LOADED ===');
+console.log('[SW] Simple PWA notification service ready');
 
 // 설치 이벤트
 self.addEventListener('install', (event) => {
@@ -121,32 +99,49 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Firebase 백그라운드 메시지 처리
-if (messaging) {
-  messaging.onBackgroundMessage((payload) => {
-    console.log('🚀 PWA CLOSED - Received background FCM message:', payload);
-    console.log('[SW] Firebase handling notification while PWA is closed!');
-    
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
-      body: payload.notification.body,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-      actions: [
-        { action: 'view', title: 'View Timer' },
-        { action: 'dismiss', title: 'Dismiss' }
-      ],
-      data: {
-        url: payload.data?.url || '/',
-        timerId: payload.data?.timerId
-      },
-      requireInteraction: true,
-      vibrate: [200, 100, 200]
-    };
+// Web Push 이벤트 처리 (간단하게)
+self.addEventListener('push', (event) => {
+  console.log('[SW] 🚀 Push event received:', event);
+  
+  let notificationData = {
+    title: 'NowAndThen 알림',
+    body: '새로운 알림이 있습니다',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    tag: 'default'
+  };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
-  });
-}
+  // 서버에서 보낸 데이터가 있으면 사용
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      notificationData = { ...notificationData, ...payload };
+      console.log('[SW] Parsed push payload:', payload);
+    } catch (error) {
+      console.error('[SW] Error parsing push data:', error);
+    }
+  }
+
+  const notificationOptions = {
+    body: notificationData.body,
+    icon: notificationData.icon,
+    badge: notificationData.badge,
+    tag: notificationData.tag,
+    requireInteraction: true,
+    actions: [
+      { action: 'view', title: '보기' },
+      { action: 'dismiss', title: '닫기' }
+    ],
+    data: {
+      url: '/',
+      ...notificationData.data
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title, notificationOptions)
+  );
+});
 
 // 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {

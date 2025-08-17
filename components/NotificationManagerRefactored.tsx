@@ -256,37 +256,51 @@ export default function NotificationManagerRefactored() {
       
       // PWA 종료 상태 확인을 위한 안내
       if (isPWA) {
-        toast.success('📱 20초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
+        toast.success('📱 8초 후 알림 전송! 지금 앱을 완전히 종료하세요 (최근 앱에서도 제거)');
       } else if (isMobile) {
-        toast.success('📱 20초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
+        toast.success('📱 8초 후 알림 전송! 지금 브라우저를 완전히 종료하세요');
       } else {
-        toast.success('💻 20초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
+        toast.success('💻 8초 후 알림 전송! 지금 브라우저 탭을 닫거나 최소화하세요');
       }
       
-      // 단 하나의 타이머만 설정 (중복 방지) - 20초로 변경
+      // 단 하나의 타이머만 설정 (중복 방지) - 8초로 변경
       const timeout = setTimeout(async () => {
         try {
-          console.log('[Test] Sending notification after 20 seconds...');
+          console.log('[Test] Sending notification after 8 seconds...');
           
 
           
           // 3. 실제 푸시 구독을 통한 서버 푸시 전송 (20초 후 하나의 알림만)
           try {
+            console.log('[Test] 🔍 Checking current subscription...');
             const currentSubscription = await notificationService.getCurrentSubscription();
+            console.log('[Test] Current subscription:', currentSubscription);
+            
             if (currentSubscription) {
-              await fetch('/api/test-push-delayed', {
+              console.log('[Test] ✅ Subscription found, sending to server...');
+              console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
+              
+              const response = await fetch('/api/test-push-delayed', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   subscription: currentSubscription
                 })
               });
-              console.log('[Test] Delayed push notification scheduled via server (20s)');
+              
+              if (response.ok) {
+                const result = await response.json();
+                console.log('[Test] ✅ Server response:', result);
+                console.log('[Test] Delayed push notification scheduled via server (20s)');
+              } else {
+                console.error('[Test] ❌ Server error:', response.status, response.statusText);
+              }
             } else {
-              console.warn('[Test] No push subscription available');
+              console.warn('[Test] ❌ No push subscription available');
+              console.log('[Test] Current method:', notificationService.getCurrentMethod());
             }
           } catch (pushError) {
-            console.error('[Test] Server push failed:', pushError);
+            console.error('[Test] ❌ Server push failed:', pushError);
           }
           
           setTestTimeout(null);
@@ -294,7 +308,7 @@ export default function NotificationManagerRefactored() {
           console.error('Error in delayed notification:', error);
           setTestTimeout(null);
         }
-      }, 20000);
+      }, 8000);
       
       setTestTimeout(timeout);
       
