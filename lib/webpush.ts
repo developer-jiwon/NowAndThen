@@ -82,7 +82,7 @@ export class WebPushManager {
   }
 
   /**
-   * 알림 권한 요청
+   * 알림 권한 요청 (모바일 최적화)
    */
   async requestPermission(): Promise<NotificationPermission> {
     if (!this.isSupported()) {
@@ -116,22 +116,29 @@ export class WebPushManager {
       throw new Error('Notifications are blocked. Please enable them in browser settings.');
     }
 
-    // 권한 요청 (모바일 PWA에서 더 안정적으로)
+    // 권한 요청 (모바일에서 더 안정적으로)
     let permission: NotificationPermission;
     
     try {
       console.log('[WebPush] Requesting notification permission...');
       
-      // 모바일 PWA에서는 더 안정적인 방법 사용
-      if (isMobile && isPWA) {
-        console.log('[WebPush] Mobile PWA detected - using stable permission request');
+      // 모바일에서는 더 안정적인 방법 사용
+      if (isMobile) {
+        console.log('[WebPush] Mobile device detected - using stable permission request');
         
-        // PWA 환경에서는 약간의 지연 후 권한 요청
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // 모바일에서는 약간의 지연 후 권한 요청
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // 모바일에서 권한 요청 전 추가 검증
+        if (!('Notification' in window)) {
+          throw new Error('Notifications not supported on this device');
+        }
         
         if ('requestPermission' in Notification) {
+          console.log('[WebPush] Using modern requestPermission API');
           permission = await Notification.requestPermission();
         } else {
+          console.log('[WebPush] Using legacy callback API');
           // Legacy callback API
           permission = await new Promise((resolve) => {
             Notification.requestPermission((result) => {
@@ -140,7 +147,8 @@ export class WebPushManager {
           });
         }
       } else {
-        // 일반 브라우저
+        // 데스크톱 브라우저
+        console.log('[WebPush] Desktop browser - using standard permission request');
         if ('requestPermission' in Notification) {
           permission = await Notification.requestPermission();
         } else {
@@ -155,10 +163,14 @@ export class WebPushManager {
       
       console.log('[WebPush] Permission result:', permission);
       
-      // 모바일 PWA에서 권한이 거부된 경우 추가 처리
-      if (isMobile && isPWA && permission === 'denied') {
-        console.log('[WebPush] Mobile PWA permission denied - providing helpful guidance');
-        throw new Error('Mobile PWA notifications require explicit permission. Please check your device settings and try again.');
+      // 권한이 거부된 경우 추가 처리
+      if (permission === 'denied') {
+        console.log('[WebPush] Permission denied - providing helpful guidance');
+        if (isMobile) {
+          throw new Error('Mobile notifications require explicit permission. Please allow notifications in your device settings.');
+        } else {
+          throw new Error('Notifications are blocked. Please enable them in your browser settings.');
+        }
       }
       
       return permission;
