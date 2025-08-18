@@ -61,16 +61,14 @@ export async function POST(request: NextRequest) {
           subscription,
           JSON.stringify(payload),
           {
-            TTL: 30, // 최대 생존 시간
-            headers: {
-              Urgency: 'high', // 즉시 전달 요청
-              Topic: 'test-delayed' // 동일 토픽은 병합 가능
-            }
+            TTL: 30,
+            headers: { Urgency: 'high', Topic: 'test-delayed' }
           }
         );
         console.log('[API] ✅ Delayed push sent:', result.statusCode);
-      } catch (error) {
-        console.error('[API] ❌ Delayed push failed:', error);
+      } catch (error:any) {
+        const status = error?.statusCode || error?.code || 'UNKNOWN';
+        console.error('[API] ❌ Delayed push failed:', status, error);
       }
     }, 10000);
  

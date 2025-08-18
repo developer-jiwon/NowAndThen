@@ -23,7 +23,7 @@ export default function NotificationManagerRefactored() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [testTimeout, setTestTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isSending, setIsSending] = useState(false);
   const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: true,
@@ -56,14 +56,7 @@ export default function NotificationManagerRefactored() {
     loadSettings();
   }, []);
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (testTimeout) {
-        clearTimeout(testTimeout);
-      }
-    };
-  }, [testTimeout]);
+  // no-op
 
   const loadSettings = () => {
     const saved = localStorage.getItem('nowandthen-notification-settings');
@@ -232,13 +225,7 @@ export default function NotificationManagerRefactored() {
   const sendTestNotification = async () => {
     if (!user) return;
     
-    // 이미 테스트가 진행 중이면 취소하고 새로 시작
-    if (testTimeout) {
-      clearTimeout(testTimeout);
-      setTestTimeout(null);
-      toast.info('이전 테스트를 취소하고 새로 시작합니다');
-    }
-
+    setIsSending(true);
     try {
       // 상세한 디바이스 및 알림 상태 체크
       const userAgent = navigator.userAgent;
@@ -329,6 +316,8 @@ export default function NotificationManagerRefactored() {
     } catch (error) {
       console.error('Error sending test notification:', error);
       toast.error('테스트 알림 전송 실패');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -413,9 +402,9 @@ export default function NotificationManagerRefactored() {
               size="sm"
               onClick={sendTestNotification}
               className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
-              disabled={isLoading || !!testTimeout}
+              disabled={isLoading || isSending}
             >
-              {testTimeout ? 'Testing...' : 'Test'}
+              {isSending ? 'Sending...' : 'Test'}
             </Button>
             <Button
               variant="outline"
