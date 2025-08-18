@@ -150,23 +150,46 @@ self.addEventListener('push', (event) => {
       notificationData = { ...notificationData, ...payload };
       console.log('[SW] Parsed push payload:', payload);
       
-      // 지연 알림인지 확인
-      if (payload.data && payload.data.type === 'delayed-server') {
+      // 지연 알림: 클라에서 delay 메타로 전송된 경우
+      if (payload.data && payload.data.type === 'delayed' && payload.data.delay) {
         const id = payload.data.id || pushId;
+        const delay = Number(payload.data.delay) || 10000;
         const tag = 'test-delayed';
-        
         if (self.dedupMap.get(id)) {
           console.log('[SW] 🔁 Duplicate delayed push ignored:', id);
           return;
         }
         self.dedupMap.set(id, true);
-        console.log('[SW] 🕐 Delayed-server notification, id:', id);
-        
-        // 즉시 표시 (서버에서 이미 지연됨); 기존 동일 태그 알림 닫기
-        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
-          notis.forEach(n => {
-            if (n.tag === tag) n.close();
+        console.log('[SW] 🕐 Delayed (client-meta) notification, id:', id, 'delay:', delay);
+        setTimeout(() => {
+          self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+            notis.forEach(n => { if (n.tag === tag) n.close(); });
+            const opts = {
+              body: notificationData.body,
+              icon: notificationData.icon,
+              badge: notificationData.badge,
+              tag,
+              requireInteraction: true,
+              data: { url: '/', id }
+            };
+            self.registration.showNotification(notificationData.title, opts);
+            console.log('[SW] ✅ Shown delayed (client-meta) id:', id);
           });
+        }, delay);
+        return;
+      }
+      
+      // 서버가 이미 지연 후 발사한 경우(type:'delayed-server') 즉시 표시
+      if (payload.data && payload.data.type === 'delayed-server') {
+        const id = payload.data.id || pushId;
+        const tag = 'test-delayed';
+        if (self.dedupMap.get(id)) {
+          console.log('[SW] 🔁 Duplicate delayed-server push ignored:', id);
+          return;
+        }
+        self.dedupMap.set(id, true);
+        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+          notis.forEach(n => { if (n.tag === tag) n.close(); });
           const opts = {
             body: notificationData.body,
             icon: notificationData.icon,
@@ -176,9 +199,9 @@ self.addEventListener('push', (event) => {
             data: { url: '/', id }
           };
           self.registration.showNotification(notificationData.title, opts);
-          console.log('[SW] ✅ Displayed single delayed-server notification id:', id);
+          console.log('[SW] ✅ Shown delayed-server id:', id);
         });
-        return; 
+        return;
       }
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
