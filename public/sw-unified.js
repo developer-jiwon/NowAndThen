@@ -399,29 +399,37 @@ function checkCountdownReminders(now) {
 function sendDailySummary() {
   console.log('[SW] Sending daily summary notification');
   
-  let summaryText = '오늘도 목표를 향해 나아가세요!';
+  const now = new Date();
+  const toMidnightLocal = (d) => new Date(d.toLocaleString('en-US', { timeZone: userTimezone }));
+  const daysLeft = (dateStr) => {
+    const target = new Date(dateStr);
+    const ms = target.getTime() - now.getTime();
+    return Math.ceil(ms / (1000 * 60 * 60 * 24));
+  };
   
-  // 카운트다운 데이터가 있으면 요약 생성
-  if (countdownData.length > 0) {
-    const todayCount = countdownData.filter(c => {
-      const diff = Math.ceil((new Date(c.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-      return diff === 0;
-    }).length;
+  let title = '데일리 리마인더';
+  let body = '오늘도 목표를 향해 한 걸음!';
+  
+  if (Array.isArray(countdownData) && countdownData.length > 0) {
+    const today = countdownData.filter(c => daysLeft(c.targetDate) === 0);
+    const soon = countdownData
+      .map(c => ({ ...c, d: daysLeft(c.targetDate) }))
+      .filter(c => c.d > 0 && c.d <= 7)
+      .sort((a,b) => a.d - b.d);
     
-    const soonCount = countdownData.filter(c => {
-      const diff = Math.ceil((new Date(c.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-      return diff > 0 && diff <= 7;
-    }).length;
-
-    if (todayCount > 0) {
-      summaryText = `오늘 마감되는 타이머가 ${todayCount}개 있어요!`;
-    } else if (soonCount > 0) {
-      summaryText = `이번 주 마감되는 타이머가 ${soonCount}개 있어요`;
+    if (today.length > 0) {
+      title = `오늘 마감 ${today.length}개`;
+      const first = today[0];
+      body = `첫 번째: “${first.title}” 오늘 마감됩니다.`;
+    } else if (soon.length > 0) {
+      const first = soon[0];
+      title = `이번 주 마감 ${soon.length}개`;
+      body = `가장 가까움: “${first.title}” D-${first.d}`;
     }
   }
-
-  self.registration.showNotification('오늘의 타이머 요약', {
-    body: summaryText,
+  
+  self.registration.showNotification(title, {
+    body,
     icon: '/favicon.ico',
     badge: '/favicon.ico',
     tag: 'daily-summary',
@@ -437,8 +445,14 @@ function sendDailySummary() {
 function sendCountdownReminder(countdown, daysLeft) {
   console.log(`[SW] Sending countdown reminder: ${countdown.title} - ${daysLeft} days left`);
   
-  const title = `${countdown.title} - ${daysLeft}일 남음`;
-  const body = `"${countdown.title}" 마감까지 ${daysLeft}일 남았습니다`;
+  const d = new Date(countdown.targetDate);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const dateStr = `${yyyy}-${mm}-${dd}`;
+  
+  const title = `D-${daysLeft} · ${countdown.title}`;
+  const body = `${dateStr} 마감 예정. 준비되셨죠?`;
 
   self.registration.showNotification(title, {
     body,
@@ -450,10 +464,7 @@ function sendCountdownReminder(countdown, daysLeft) {
       { action: 'view', title: '확인하기' },
       { action: 'dismiss', title: '닫기' }
     ],
-    data: { 
-      url: '/',
-      countdownId: countdown.id 
-    }
+    data: { url: '/', countdownId: countdown.id }
   });
 }
 
