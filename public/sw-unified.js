@@ -203,31 +203,19 @@ self.addEventListener('push', (event) => {
         });
         return;
       }
+
+      // 타입 정보가 없으면 표시하지 않음 (즉시 표시 방지)
+      console.log('[SW] ⚠️ Unsupported push payload format; skipping display');
+      return;
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
+      return;
     }
   }
 
-  // 즉시 알림 표시 (지연이 없는 경우)
-  const notificationOptions = {
-    body: notificationData.body,
-    icon: notificationData.icon,
-    badge: notificationData.badge,
-    tag: 'default',
-    requireInteraction: true,
-    actions: [
-      { action: 'view', title: '보기' },
-      { action: 'dismiss', title: '닫기' }
-    ],
-    data: {
-      url: '/',
-      ...notificationData.data
-    }
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(notificationData.title, notificationOptions)
-  );
+  // 데이터가 전혀 없으면 아무 것도 하지 않음 (즉시 표시 방지)
+  console.log('[SW] ⚠️ No data in push; skipping');
+  return;
 });
 
 // 알림 클릭 처리
