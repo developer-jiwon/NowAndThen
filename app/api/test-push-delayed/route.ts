@@ -34,40 +34,44 @@ export async function POST(request: NextRequest) {
 
     console.log('[API] ✅ Scheduling delayed push notification...');
     
-    // 10초 후 푸시 전송
-    setTimeout(async () => {
-      try {
-        const payload = {
-          title: 'NowAndThen 테스트 알림',
-          body: '10초 후 푸시 알림이 도착했습니다! 🎉',
-          icon: '/favicon.ico',
-          badge: '/favicon.ico',
-          tag: 'test-delayed',
-          requireInteraction: true,
-          actions: [
-            { action: 'view', title: '확인하기' },
-            { action: 'dismiss', title: '닫기' }
-          ],
-          data: { url: '/' }
-        };
-        
-        console.log('[API] Sending delayed push notification...');
-        
-        const result = await webpush.sendNotification(
-          subscription,
-          JSON.stringify(payload)
-        );
-        
-        console.log('[API] Delayed push sent successfully:', result.statusCode);
-        
-      } catch (error) {
-        console.error('[API] Delayed push failed:', error);
-      }
-    }, 10000); // 10초
+    // 즉시 푸시 전송 (서비스 워커에서 지연 처리)
+    try {
+      const payload = {
+        title: 'NowAndThen 테스트 알림',
+        body: '10초 후 푸시 알림이 도착했습니다! 🎉',
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        tag: 'test-delayed',
+        requireInteraction: true,
+        actions: [
+          { action: 'view', title: '확인하기' },
+          { action: 'dismiss', title: '닫기' }
+        ],
+        data: { 
+          url: '/',
+          type: 'delayed',
+          delay: 10000, // 10초 지연
+          timestamp: Date.now(),
+          scheduledTime: Date.now() + 10000 // 예정된 시간
+        }
+      };
+      
+      console.log('[API] 🚀 Sending push notification with delay data...');
+      
+      const result = await webpush.sendNotification(
+        subscription,
+        JSON.stringify(payload)
+      );
+      
+      console.log('[API] ✅ Push sent successfully:', result.statusCode);
+      
+    } catch (error) {
+      console.error('[API] ❌ Push failed:', error);
+    }
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Delayed push notification scheduled for 10 seconds from now'
+      message: 'Push notification sent immediately with 10s delay data'
     });
     
   } catch (error) {

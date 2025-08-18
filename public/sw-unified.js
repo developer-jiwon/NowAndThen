@@ -99,7 +99,7 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Web Push 이벤트 처리 (간단하게)
+// Web Push 이벤트 처리 (지연 알림 지원)
 self.addEventListener('push', (event) => {
   console.log('[SW] 🚀 Push event received:', event);
   
@@ -117,11 +117,54 @@ self.addEventListener('push', (event) => {
       const payload = event.data.json();
       notificationData = { ...notificationData, ...payload };
       console.log('[SW] Parsed push payload:', payload);
+      
+      // 지연 알림인지 확인
+      if (payload.data && payload.data.type === 'delayed' && payload.data.delay) {
+        const delay = payload.data.delay;
+        const scheduledTime = payload.data.scheduledTime;
+        
+        console.log('[SW] 🕐 Delayed notification detected:', {
+          delay: delay,
+          scheduledTime: new Date(scheduledTime).toISOString(),
+          currentTime: new Date().toISOString()
+        });
+        
+        // 지연 후 알림 표시
+        setTimeout(() => {
+          console.log('[SW] 🕐 Showing delayed notification after', delay, 'ms');
+          
+          const delayedNotificationOptions = {
+            body: notificationData.body,
+            icon: notificationData.icon,
+            badge: notificationData.badge,
+            tag: notificationData.tag + '-delayed',
+            requireInteraction: true,
+            actions: [
+              { action: 'view', title: '보기' },
+              { action: 'dismiss', title: '닫기' }
+            ],
+            data: {
+              url: '/',
+              type: 'delayed',
+              originalTimestamp: payload.data.timestamp,
+              actualDisplayTime: Date.now()
+            }
+          };
+          
+          self.registration.showNotification(notificationData.title, delayedNotificationOptions);
+          console.log('[SW] ✅ Delayed notification displayed successfully');
+          
+        }, delay);
+        
+        // 즉시 알림은 표시하지 않음
+        return;
+      }
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
     }
   }
 
+  // 즉시 알림 표시 (지연이 없는 경우)
   const notificationOptions = {
     body: notificationData.body,
     icon: notificationData.icon,

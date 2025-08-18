@@ -310,64 +310,50 @@ export default function NotificationManagerRefactored() {
           }
         }
         
-                // 2. 10초 후 서버 푸시 알림도 전송
-        toast.success('📱 즉시 알림 + 10초 후 푸시 알림 전송!');
+                // 2. 즉시 서버 푸시 전송 (지연 데이터 포함)
+        toast.success('📱 즉시 알림 + 서버 푸시 전송!');
         
         // PWA 종료 상태 확인을 위한 안내
         if (isPWA) {
-          toast.info('📱 10초 후 푸시 알림도 전송됩니다! 지금 앱을 완전히 종료해보세요');
+          toast.info('📱 서버에서 10초 후 알림을 보냅니다! 지금 앱을 완전히 종료해보세요');
         } else if (isMobile) {
-          toast.info('📱 10초 후 푸시 알림도 전송됩니다! 지금 브라우저를 완전히 종료해보세요');
+          toast.info('📱 서버에서 10초 후 알림을 보냅니다! 지금 브라우저를 완전히 종료해보세요');
         } else {
-          toast.info('💻 10초 후 푸시 알림도 전송됩니다! 지금 브라우저 탭을 닫거나 최소화해보세요');
+          toast.info('💻 서버에서 10초 후 알림을 보냅니다! 지금 브라우저 탭을 닫거나 최소화해보세요');
         }
         
-        // 10초 후 서버 푸시 전송
-        const timeout = setTimeout(async () => {
-          try {
-            console.log('[Test] Sending notification after 10 seconds...');
+        // 즉시 서버 푸시 전송 (지연 데이터 포함)
+        try {
+          console.log('[Test] 🔍 Sending immediate server push with delay data...');
+          const currentSubscription = await notificationService.getCurrentSubscription();
+          console.log('[Test] Current subscription:', currentSubscription);
+          
+          if (currentSubscription) {
+            console.log('[Test] ✅ Subscription found, sending to server...');
+            console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
             
-            // 실제 푸시 구독을 통한 서버 푸시 전송 (8초 후)
-            try {
-              console.log('[Test] 🔍 Checking current subscription...');
-              const currentSubscription = await notificationService.getCurrentSubscription();
-              console.log('[Test] Current subscription:', currentSubscription);
-              
-              if (currentSubscription) {
-                console.log('[Test] ✅ Subscription found, sending to server...');
-                console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
-                
-                const response = await fetch('/api/test-push-delayed', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    subscription: currentSubscription
-                  })
-                });
-                
-                if (response.ok) {
-                  const result = await response.json();
-                  console.log('[Test] ✅ Server response:', result);
-                  console.log('[Test] Delayed push notification scheduled via server (8s)');
-                } else {
-                  console.error('[Test] ❌ Server error:', response.status, response.statusText);
-                }
-              } else {
-                console.warn('[Test] ❌ No push subscription available');
-                console.log('[Test] Current method:', notificationService.getCurrentMethod());
-              }
-            } catch (pushError) {
-              console.error('[Test] ❌ Server push failed:', pushError);
+            const response = await fetch('/api/test-push-delayed', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                subscription: currentSubscription
+              })
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log('[Test] ✅ Server response:', result);
+              console.log('[Test] Server push sent with 10s delay data');
+            } else {
+              console.error('[Test] ❌ Server error:', response.status, response.statusText);
             }
-            
-            setTestTimeout(null);
-          } catch (error) {
-            console.error('Error in delayed notification:', error);
-            setTestTimeout(null);
+          } else {
+            console.warn('[Test] ❌ No push subscription available');
+            console.log('[Test] Current method:', notificationService.getCurrentMethod());
           }
-        }, 10000);
-        
-        setTestTimeout(timeout);
+        } catch (pushError) {
+          console.error('[Test] ❌ Server push failed:', pushError);
+        }
         
       } catch (immediateError) {
         console.error('[Test] ❌ Immediate test notification failed:', immediateError);
