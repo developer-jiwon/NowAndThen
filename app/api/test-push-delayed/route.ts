@@ -21,42 +21,36 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: 'Push subscription is required' }, { status: 400 });
 		}
 
-		const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-		console.log('[API] ⏱️ Scheduling server delay 10s, id:', uniqueId);
-		setTimeout(async () => {
-			try {
-				const tag = `test-delayed-${uniqueId}`;
-				const payload = {
-					title: 'NowAndThen 테스트 알림',
-					body: '10초 후 푸시 알림이 도착했습니다! 🎉',
-					icon: '/favicon.ico',
-					badge: '/favicon.ico',
-					tag,
-					requireInteraction: true,
-					actions: [
-						{ action: 'view', title: '확인하기' },
-						{ action: 'dismiss', title: '닫기' }
-					],
-					data: {
-						url: '/',
-						type: 'delayed-server',
-						id: uniqueId,
-						sentAt: Date.now()
-					}
-				};
-				console.log('[API] 🚀 Sending delayed push now, id:', uniqueId, 'tag:', tag);
-				const result = await webpush.sendNotification(
-					subscription,
-					JSON.stringify(payload),
-					{ TTL: 60, headers: { Urgency: 'high', Topic: uniqueId } }
-				);
-				console.log('[API] ✅ Delayed push sent:', result.statusCode);
-			} catch (error:any) {
-				console.error('[API] ❌ Delayed push failed:', error?.statusCode || error?.code || error);
-			}
-		}, 10000);
+		const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+		console.log('[API] ⏱️ Scheduling dual-shot (10s & 25s), id:', id);
 
-		return NextResponse.json({ success: true, scheduledInMs: 10000, id: uniqueId });
+		const send = async (label: string) => {
+			const tag = `test-delayed-${id}`;
+			const payload = {
+				title: 'NowAndThen 테스트 알림',
+				body: '알림 도착! (테스트)',
+				icon: '/favicon.ico',
+				badge: '/favicon.ico',
+				tag,
+				requireInteraction: true,
+				actions: [
+					{ action: 'view', title: '확인하기' },
+					{ action: 'dismiss', title: '닫기' }
+				],
+				data: { url: '/', type: 'delayed-server', id, sentAt: Date.now(), shot: label }
+			};
+			const result = await webpush.sendNotification(
+				subscription,
+				JSON.stringify(payload),
+				{ TTL: 60, headers: { Urgency: 'high', Topic: id } }
+			);
+			console.log(`[API] ✅ Shot ${label} sent:`, result.statusCode);
+		};
+
+		setTimeout(() => { send('A(10s)').catch(e => console.error('[API] ❌ Shot A failed:', e?.statusCode || e)); }, 10000);
+		setTimeout(() => { send('B(25s)').catch(e => console.error('[API] ❌ Shot B failed:', e?.statusCode || e)); }, 25000);
+
+		return NextResponse.json({ success: true, scheduled: [10000, 25000], id });
 	} catch (error: any) {
 		console.error('[API] ❌ Push failed:', error?.statusCode || error?.code || error);
 		return NextResponse.json({ error: 'Failed to schedule push' }, { status: 500 });
