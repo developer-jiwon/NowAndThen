@@ -58,30 +58,11 @@ self.addEventListener('activate', (event) => {
 
 self.dedupMap = self.dedupMap || new Map();
 
-function swBeacon(event, extra) {
-	try {
-		const payload = {
-			ts: Date.now(),
-			event,
-			...extra
-		};
-		// Use fetch keepalive so it works during termination
-		fetch('/api/sw-log', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),
-			keepalive: true
-		}).catch(() => {});
-	} catch (_) {}
-}
-
-// mark SW load
-swBeacon('SW_LOADED');
+// debug beacons removed
 
 // Web Push 이벤트 처리 (지연 알림 지원 + 중복 방지)
 self.addEventListener('push', (event) => {
   console.log('[SW] 🚀 Push event received:', event);
-  swBeacon('PUSH_RECEIVED');
   
   // 중복 푸시 방지를 위한 고유 ID
   let pushId = Date.now();
@@ -178,7 +159,6 @@ self.addEventListener('push', (event) => {
 // 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event);
-  swBeacon('NOTIFICATION_CLICK', { tag: event.notification?.tag });
   
   event.notification.close();
 
