@@ -99,9 +99,12 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Web Push 이벤트 처리 (지연 알림 지원)
+// Web Push 이벤트 처리 (지연 알림 지원 + 중복 방지)
 self.addEventListener('push', (event) => {
   console.log('[SW] 🚀 Push event received:', event);
+  
+  // 중복 푸시 방지를 위한 고유 ID 생성
+  const pushId = event.data ? JSON.parse(event.data.text()).data?.timestamp || Date.now() : Date.now();
   
   let notificationData = {
     title: 'NowAndThen 알림',
@@ -126,33 +129,45 @@ self.addEventListener('push', (event) => {
         console.log('[SW] 🕐 Delayed notification detected:', {
           delay: delay,
           scheduledTime: new Date(scheduledTime).toISOString(),
-          currentTime: new Date().toISOString()
+          currentTime: new Date().toISOString(),
+          pushId: pushId
         });
         
-        // 지연 후 알림 표시
+        // 지연 후 알림 표시 (중복 방지)
         setTimeout(() => {
-          console.log('[SW] 🕐 Showing delayed notification after', delay, 'ms');
+          console.log('[SW] 🕐 Showing delayed notification after', delay, 'ms, pushId:', pushId);
+          
+          // 기존 알림이 있는지 확인하고 제거
+          self.registration.getNotifications().then(notifications => {
+            notifications.forEach(notification => {
+              if (notification.tag === 'test-delayed-delayed') {
+                notification.close();
+                console.log('[SW] 🔄 Closed existing delayed notification');
+              }
+            });
+          });
           
           const delayedNotificationOptions = {
             body: notificationData.body,
             icon: notificationData.icon,
             badge: notificationData.badge,
-            tag: notificationData.tag + '-delayed',
+            tag: 'test-delayed-delayed', // 고유한 태그로 중복 방지
             requireInteraction: true,
             actions: [
-              { action: 'view', title: '보기' },
+              { action: 'view', title: '확인하기' },
               { action: 'dismiss', title: '닫기' }
             ],
             data: {
               url: '/',
               type: 'delayed',
               originalTimestamp: payload.data.timestamp,
-              actualDisplayTime: Date.now()
+              actualDisplayTime: Date.now(),
+              pushId: pushId
             }
           };
           
           self.registration.showNotification(notificationData.title, delayedNotificationOptions);
-          console.log('[SW] ✅ Delayed notification displayed successfully');
+          console.log('[SW] ✅ Delayed notification displayed successfully, pushId:', pushId);
           
         }, delay);
         
@@ -177,7 +192,8 @@ self.addEventListener('push', (event) => {
     ],
     data: {
       url: '/',
-      ...notificationData.data
+      ...notificationData.data,
+      pushId: pushId
     }
   };
 
