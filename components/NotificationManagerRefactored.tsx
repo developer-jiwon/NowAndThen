@@ -276,53 +276,19 @@ export default function NotificationManagerRefactored() {
       
       // 즉시 테스트 알림 전송 (서비스 워커를 통해)
       try {
-        console.log('[Test] 🔍 Sending immediate test notification...');
-        
-        // 1. 즉시 서비스 워커에 테스트 알림 요청
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'test-notification',
-            payload: {
-              title: 'NowAndThen 테스트 알림',
-              body: '즉시 테스트 알림이 도착했습니다! 🎉',
-              icon: '/favicon.ico',
-              badge: '/favicon.ico',
-              tag: 'test-immediate',
-              requireInteraction: true,
-              actions: [
-                { action: 'view', title: '확인하기' },
-                { action: 'dismiss', title: '닫기' }
-              ],
-              data: { url: '/' }
-            }
-          });
-          console.log('[Test] ✅ Immediate test notification sent to service worker');
-        } else {
-          // 서비스 워커가 없으면 브라우저 알림 API 직접 사용
-          console.log('[Test] Service worker not available, using browser notification API');
-          if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('NowAndThen 테스트 알림', {
-              body: '즉시 테스트 알림이 도착했습니다! 🎉',
-              icon: '/favicon.ico',
-              tag: 'test-fallback'
-            });
-            console.log('[Test] ✅ Fallback notification sent via browser API');
-          }
-        }
-        
-                // 2. 즉시 서버 푸시 전송 (지연 데이터 포함)
-        toast.success('📱 즉시 알림 + 서버 푸시 전송!');
+        // 1. 서버에 10초 지연 푸시만 요청 (클라이언트 즉시 알림 제거)
+        toast.success('📱 서버에 10초 후 푸시 알림을 요청했어요');
         
         // PWA 종료 상태 확인을 위한 안내
         if (isPWA) {
-          toast.info('📱 서버에서 10초 후 알림을 보냅니다! 지금 앱을 완전히 종료해보세요');
+          toast.info('📱 10초 후 알림 예정 (앱을 종료해도 도착)');
         } else if (isMobile) {
-          toast.info('📱 서버에서 10초 후 알림을 보냅니다! 지금 브라우저를 완전히 종료해보세요');
+          toast.info('📱 10초 후 알림 예정 (브라우저를 닫아도 도착)');
         } else {
-          toast.info('💻 서버에서 10초 후 알림을 보냅니다! 지금 브라우저 탭을 닫거나 최소화해보세요');
+          toast.info('💻 10초 후 알림 예정');
         }
         
-        // 즉시 서버 푸시 전송 (지연 데이터 포함)
+        // 서버 푸시 요청 (지연 데이터 포함)
         try {
           console.log('[Test] 🔍 Sending immediate server push with delay data...');
           const currentSubscription = await notificationService.getCurrentSubscription();
@@ -343,7 +309,7 @@ export default function NotificationManagerRefactored() {
             if (response.ok) {
               const result = await response.json();
               console.log('[Test] ✅ Server response:', result);
-              console.log('[Test] Server push sent with 10s delay data');
+              console.log('[Test] Server push scheduled for 10s');
             } else {
               console.error('[Test] ❌ Server error:', response.status, response.statusText);
             }
@@ -356,8 +322,8 @@ export default function NotificationManagerRefactored() {
         }
         
       } catch (immediateError) {
-        console.error('[Test] ❌ Immediate test notification failed:', immediateError);
-        toast.error('즉시 테스트 알림 전송 실패');
+        console.error('[Test] ❌ Test scheduling failed:', immediateError);
+        toast.error('테스트 알림 예약 실패');
       }
       
     } catch (error) {

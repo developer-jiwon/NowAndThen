@@ -34,45 +34,37 @@ export async function POST(request: NextRequest) {
 
     console.log('[API] ✅ Scheduling delayed push notification...');
     
-    // 즉시 푸시 전송 (서비스 워커에서 지연 처리)
-    try {
-      const payload = {
-        title: 'NowAndThen 테스트 알림',
-        body: '10초 후 푸시 알림이 도착했습니다! 🎉',
-        icon: '/favicon.ico',
-        badge: '/favicon.ico',
-        tag: 'test-delayed',
-        requireInteraction: true,
-        actions: [
-          { action: 'view', title: '확인하기' },
-          { action: 'dismiss', title: '닫기' }
-        ],
-        data: { 
-          url: '/',
-          type: 'delayed',
-          delay: 10000, // 10초 지연
-          timestamp: Date.now(),
-          scheduledTime: Date.now() + 10000 // 예정된 시간
-        }
-      };
-      
-      console.log('[API] 🚀 Sending push notification with delay data...');
-      
-      const result = await webpush.sendNotification(
-        subscription,
-        JSON.stringify(payload)
-      );
-      
-      console.log('[API] ✅ Push sent successfully:', result.statusCode);
-      
-    } catch (error) {
-      console.error('[API] ❌ Push failed:', error);
-    }
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Push notification sent immediately with 10s delay data'
-    });
+    // 서버에서 10초 뒤에 전송 (단일 전송)
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    setTimeout(async () => {
+      try {
+        const payload = {
+          title: 'NowAndThen 테스트 알림',
+          body: '10초 후 푸시 알림이 도착했습니다! 🎉',
+          icon: '/favicon.ico',
+          badge: '/favicon.ico',
+          tag: 'test-delayed',
+          requireInteraction: true,
+          actions: [
+            { action: 'view', title: '확인하기' },
+            { action: 'dismiss', title: '닫기' }
+          ],
+          data: {
+            url: '/',
+            type: 'delayed-server',
+            timestamp: Date.now(),
+            id: uniqueId
+          }
+        };
+        console.log('[API] 🚀 Sending delayed push (10s) with id:', uniqueId);
+        const result = await webpush.sendNotification(subscription, JSON.stringify(payload));
+        console.log('[API] ✅ Delayed push sent:', result.statusCode);
+      } catch (error) {
+        console.error('[API] ❌ Delayed push failed:', error);
+      }
+    }, 10000);
+ 
+    return NextResponse.json({ success: true, message: 'Server will send a single push in 10s' });
     
   } catch (error) {
     console.error('[API] Failed to schedule delayed push:', error);

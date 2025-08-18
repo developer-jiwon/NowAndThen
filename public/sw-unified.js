@@ -99,12 +99,20 @@ self.addEventListener('push', (event) => {
   );
 });
 
+self.dedupMap = self.dedupMap || new Map();
+
 // Web Push 이벤트 처리 (지연 알림 지원 + 중복 방지)
 self.addEventListener('push', (event) => {
   console.log('[SW] 🚀 Push event received:', event);
   
-  // 중복 푸시 방지를 위한 고유 ID 생성
-  const pushId = event.data ? JSON.parse(event.data.text()).data?.timestamp || Date.now() : Date.now();
+  // 중복 푸시 방지를 위한 고유 ID
+  let pushId = Date.now();
+  try {
+    if (event.data) {
+      const t = JSON.parse(event.data.text());
+      pushId = t?.data?.id || t?.data?.timestamp || pushId;
+    }
+  } catch (_) {}
   
   let notificationData = {
     title: 'NowAndThen 알림',
@@ -122,57 +130,34 @@ self.addEventListener('push', (event) => {
       console.log('[SW] Parsed push payload:', payload);
       
       // 지연 알림인지 확인
-      if (payload.data && payload.data.type === 'delayed' && payload.data.delay) {
-        const delay = payload.data.delay;
-        const scheduledTime = payload.data.scheduledTime;
+      if (payload.data && payload.data.type === 'delayed-server') {
+        const id = payload.data.id || pushId;
+        const tag = 'test-delayed';
         
-        console.log('[SW] 🕐 Delayed notification detected:', {
-          delay: delay,
-          scheduledTime: new Date(scheduledTime).toISOString(),
-          currentTime: new Date().toISOString(),
-          pushId: pushId
-        });
+        if (self.dedupMap.get(id)) {
+          console.log('[SW] 🔁 Duplicate delayed push ignored:', id);
+          return;
+        }
+        self.dedupMap.set(id, true);
+        console.log('[SW] 🕐 Delayed-server notification, id:', id);
         
-        // 지연 후 알림 표시 (중복 방지)
-        setTimeout(() => {
-          console.log('[SW] 🕐 Showing delayed notification after', delay, 'ms, pushId:', pushId);
-          
-          // 기존 알림이 있는지 확인하고 제거
-          self.registration.getNotifications().then(notifications => {
-            notifications.forEach(notification => {
-              if (notification.tag === 'test-delayed-delayed') {
-                notification.close();
-                console.log('[SW] 🔄 Closed existing delayed notification');
-              }
-            });
+        // 즉시 표시 (서버에서 이미 지연됨); 기존 동일 태그 알림 닫기
+        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+          notis.forEach(n => {
+            if (n.tag === tag) n.close();
           });
-          
-          const delayedNotificationOptions = {
+          const opts = {
             body: notificationData.body,
             icon: notificationData.icon,
             badge: notificationData.badge,
-            tag: 'test-delayed-delayed', // 고유한 태그로 중복 방지
+            tag,
             requireInteraction: true,
-            actions: [
-              { action: 'view', title: '확인하기' },
-              { action: 'dismiss', title: '닫기' }
-            ],
-            data: {
-              url: '/',
-              type: 'delayed',
-              originalTimestamp: payload.data.timestamp,
-              actualDisplayTime: Date.now(),
-              pushId: pushId
-            }
+            data: { url: '/', id }
           };
-          
-          self.registration.showNotification(notificationData.title, delayedNotificationOptions);
-          console.log('[SW] ✅ Delayed notification displayed successfully, pushId:', pushId);
-          
-        }, delay);
-        
-        // 즉시 알림은 표시하지 않음
-        return;
+          self.registration.showNotification(notificationData.title, opts);
+          console.log('[SW] ✅ Displayed single delayed-server notification id:', id);
+        });
+        return; 
       }
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
@@ -184,7 +169,7 @@ self.addEventListener('push', (event) => {
     body: notificationData.body,
     icon: notificationData.icon,
     badge: notificationData.badge,
-    tag: notificationData.tag,
+    tag: 'default',
     requireInteraction: true,
     actions: [
       { action: 'view', title: '보기' },
@@ -192,8 +177,7 @@ self.addEventListener('push', (event) => {
     ],
     data: {
       url: '/',
-      ...notificationData.data,
-      pushId: pushId
+      ...notificationData.data
     }
   };
 
