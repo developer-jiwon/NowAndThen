@@ -230,106 +230,27 @@ export default function RootLayout({
         <SupabaseProvider>
           <Script id="sw-register" strategy="afterInteractive">{`
             if ('serviceWorker' in navigator) {
-              console.log('Registering Unified Service Worker...');
-              
-              // 기존 서비스 워커들 제거 (안전하게)
-              navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                const unregisterPromises = registrations.map(registration => {
-                  console.log('Unregistering old service worker:', registration.scope);
-                  return registration.unregister();
-                });
-                
-                return Promise.all(unregisterPromises);
-              }).then(() => {
-                console.log('All old service workers unregistered');
-                
-                // 잠시 대기 후 새 서비스 워커 등록
-                setTimeout(() => {
-                  console.log('Starting service worker registration...');
-                  
-                  // 통합 서비스 워커 등록
-                  navigator.serviceWorker.register('/sw-unified.js', {
-                    scope: '/',
-                    updateViaCache: 'none'
-                  }).then((registration) => {
-                    console.log('Unified Service Worker registered successfully:', registration);
-                    
-                    // 서비스 워커가 활성화될 때까지 대기
-                    return navigator.serviceWorker.ready;
-                  }).then((registration) => {
-                    console.log('Service Worker is ready:', registration);
-                    
-                    // VAPID 키를 window 객체에 설정 (.env.local에서 가져오기)
-                    if (typeof window !== 'undefined') {
-                      // 환경 변수에서 VAPID 키 가져오기
-                      const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
-                      window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
-                      console.log('🔑 VAPID public key set to window object from .env.local');
-                      
-                      // WebPushManager에 직접 VAPID 키 설정 (약간의 지연 후)
-                      setTimeout(() => {
-                        if (window.webPushManager) {
-                          window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
-                          console.log('🔑 VAPID key set to WebPushManager');
-                        } else {
-                          console.warn('⚠️ webPushManager not available yet, retrying...');
-                          // 재시도
-                          setTimeout(() => {
-                            if (window.webPushManager) {
-                              window.webPushManager.setVapidKey(window.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
-                              console.log('🔑 VAPID key set to WebPushManager (retry)');
-                            }
-                          }, 1000);
-                        }
-                      }, 500);
-                    }
-                    
-                    // 서비스 워커 생명 유지
-                    setInterval(() => {
-                      if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                          type: 'KEEP_SW_ALIVE',
-                          timestamp: Date.now()
-                        });
-                      }
-                    }, 30000); // 30초마다
-                    
-                    // 테스트 함수들 추가
-                    if (typeof window !== 'undefined') {
-                      window.testBackgroundNotification = function() {
-                        if (navigator.serviceWorker.controller) {
-                          navigator.serviceWorker.controller.postMessage({
-                            type: 'test-background'
-                          });
-                          console.log('🧪 Background test notification requested');
-                        }
-                      };
-                      
-                      window.runNotificationTests = function() {
-                        console.log('🧪 Running notification tests...');
-                        console.log('🔍 Browser Support:', {
-                          serviceWorker: 'serviceWorker' in navigator,
-                          pushManager: 'PushManager' in window,
-                          notification: 'Notification' in window
-                        });
-                        console.log('🔔 Permission:', Notification.permission);
-                      };
-                      
-                      console.log('🧪 Test functions added');
-                    }
-                    
-                  }).catch((error) => {
-                    console.error('❌ Service Worker registration failed:', error);
-                  });
-                  
-                }, 1000); // 1초 대기
-                
-              }).catch((error) => {
-                console.error('❌ Service Worker unregistration failed:', error);
-              });
-              
-            } else {
-              console.log('Service Worker not supported in this browser');
+              console.log('Registering Service Worker (safe)...');
+              (async () => {
+                try {
+                  const existing = await navigator.serviceWorker.getRegistration();
+                  if (!existing) {
+                    await navigator.serviceWorker.register('/sw-unified.js', { scope: '/', updateViaCache: 'none' });
+                    console.log('SW registered');
+                  } else {
+                    existing.update();
+                    console.log('SW already registered, updated');
+                  }
+                  await navigator.serviceWorker.ready;
+                  if (typeof window !== 'undefined') {
+                    const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
+                    window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
+                    if (window.webPushManager) window.webPushManager.setVapidKey(vapidKey);
+                  }
+                } catch (e) {
+                  console.error('SW register error', e);
+                }
+              })();
             }
           `}</Script>
           <div className="relative flex flex-col">

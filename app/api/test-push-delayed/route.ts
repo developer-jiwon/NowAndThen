@@ -57,7 +57,17 @@ export async function POST(request: NextRequest) {
           }
         };
         console.log('[API] 🚀 Sending delayed push (10s) with id:', uniqueId);
-        const result = await webpush.sendNotification(subscription, JSON.stringify(payload));
+        const result = await webpush.sendNotification(
+          subscription,
+          JSON.stringify(payload),
+          {
+            TTL: 30, // 최대 생존 시간
+            headers: {
+              Urgency: 'high', // 즉시 전달 요청
+              Topic: 'test-delayed' // 동일 토픽은 병합 가능
+            }
+          }
+        );
         console.log('[API] ✅ Delayed push sent:', result.statusCode);
       } catch (error) {
         console.error('[API] ❌ Delayed push failed:', error);
