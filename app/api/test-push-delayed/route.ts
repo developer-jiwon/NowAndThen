@@ -22,35 +22,40 @@ export async function POST(request: NextRequest) {
 		}
 
 		const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-		const payload = {
-			title: 'NowAndThen 테스트 알림',
-			body: '10초 후 푸시 알림이 도착했습니다! 🎉',
-			icon: '/favicon.ico',
-			badge: '/favicon.ico',
-			tag: 'test-delayed',
-			requireInteraction: true,
-			actions: [
-				{ action: 'view', title: '확인하기' },
-				{ action: 'dismiss', title: '닫기' }
-			],
-			data: {
-				url: '/',
-				type: 'delayed',
-				delay: 10000,
-				timestamp: Date.now(),
-				id: uniqueId
+		console.log('[API] ⏱️ Scheduling server delay 10s, id:', uniqueId);
+		setTimeout(async () => {
+			try {
+				const payload = {
+					title: 'NowAndThen 테스트 알림',
+					body: '10초 후 푸시 알림이 도착했습니다! 🎉',
+					icon: '/favicon.ico',
+					badge: '/favicon.ico',
+					tag: 'test-delayed',
+					requireInteraction: true,
+					actions: [
+						{ action: 'view', title: '확인하기' },
+						{ action: 'dismiss', title: '닫기' }
+					],
+					data: {
+						url: '/',
+						type: 'delayed-server',
+						id: uniqueId,
+						sentAt: Date.now()
+					}
+				};
+				console.log('[API] 🚀 Sending delayed push now, id:', uniqueId);
+				const result = await webpush.sendNotification(
+					subscription,
+					JSON.stringify(payload),
+					{ TTL: 30, headers: { Urgency: 'high', Topic: 'test-delayed' } }
+				);
+				console.log('[API] ✅ Delayed push sent:', result.statusCode);
+			} catch (error:any) {
+				console.error('[API] ❌ Delayed push failed:', error?.statusCode || error?.code || error);
 			}
-		};
+		}, 10000);
 
-		console.log('[API] 🚀 Sending immediate push with delay(10s), id:', uniqueId);
-		const result = await webpush.sendNotification(
-			subscription,
-			JSON.stringify(payload),
-			{ TTL: 30, headers: { Urgency: 'high', Topic: 'test-delayed' } }
-		);
-		console.log('[API] ✅ Push queued:', result.statusCode);
-
-		return NextResponse.json({ success: true, id: uniqueId });
+		return NextResponse.json({ success: true, scheduledInMs: 10000, id: uniqueId });
 	} catch (error: any) {
 		console.error('[API] ❌ Push failed:', error?.statusCode || error?.code || error);
 		return NextResponse.json({ error: 'Failed to schedule push' }, { status: 500 });
