@@ -143,7 +143,27 @@ self.addEventListener('push', (event) => {
       }
 
       // 타입 정보가 없으면 표시하지 않음 (즉시 표시 방지)
-      console.log('[SW] ⚠️ Unsupported push payload format; skipping display');
+      try {
+        const id = pushId;
+        const tag = 'test-delayed';
+        if (self.dedupMap.get(id)) return;
+        self.dedupMap.set(id, true);
+        const delay = 10000; // 기본 10초
+        setTimeout(() => {
+          self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+            notis.forEach(n => { if (n.tag === tag) n.close(); });
+            const opts = {
+              body: notificationData.body,
+              icon: notificationData.icon,
+              badge: notificationData.badge,
+              tag,
+              requireInteraction: true,
+              data: { url: '/', id }
+            };
+            self.registration.showNotification(notificationData.title, opts);
+          });
+        }, delay);
+      } catch (_) {}
       return;
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
