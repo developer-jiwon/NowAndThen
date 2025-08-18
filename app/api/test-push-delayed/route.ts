@@ -25,12 +25,13 @@ export async function POST(request: NextRequest) {
 		console.log('[API] ⏱️ Scheduling server delay 10s, id:', uniqueId);
 		setTimeout(async () => {
 			try {
+				const tag = `test-delayed-${uniqueId}`;
 				const payload = {
 					title: 'NowAndThen 테스트 알림',
 					body: '10초 후 푸시 알림이 도착했습니다! 🎉',
 					icon: '/favicon.ico',
 					badge: '/favicon.ico',
-					tag: 'test-delayed',
+					tag,
 					requireInteraction: true,
 					actions: [
 						{ action: 'view', title: '확인하기' },
@@ -43,11 +44,11 @@ export async function POST(request: NextRequest) {
 						sentAt: Date.now()
 					}
 				};
-				console.log('[API] 🚀 Sending delayed push now, id:', uniqueId);
+				console.log('[API] 🚀 Sending delayed push now, id:', uniqueId, 'tag:', tag);
 				const result = await webpush.sendNotification(
 					subscription,
 					JSON.stringify(payload),
-					{ TTL: 30, headers: { Urgency: 'high', Topic: 'test-delayed' } }
+					{ TTL: 60, headers: { Urgency: 'high', Topic: uniqueId } }
 				);
 				console.log('[API] ✅ Delayed push sent:', result.statusCode);
 			} catch (error:any) {
