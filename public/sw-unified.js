@@ -15,6 +15,21 @@ let countdownData = [];
 console.log('=== SIMPLE SERVICE WORKER LOADED ===');
 console.log('[SW] Simple PWA notification service ready');
 
+// minimal beacon for server-side log
+function swBeacon(event, extra) {
+	try {
+		fetch('/api/sw-log', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ event, ts: Date.now(), ...extra }),
+			keepalive: true
+		}).catch(() => {});
+	} catch (_) {}
+}
+
+// mark SW load
+swBeacon('SW_LOADED');
+
 // 설치 이벤트
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing unified service worker...');
@@ -87,6 +102,7 @@ self.addEventListener('push', (event) => {
       const payload = event.data.json();
       notificationData = { ...notificationData, ...payload };
       console.log('[SW] Parsed push payload:', payload);
+      swBeacon('PUSH_RECEIVED', { id: pushId, hasData: true, type: payload?.data?.type || 'unknown' });
       
       // 지연 알림: 클라에서 delay 메타로 전송된 경우
       if (payload.data && payload.data.type === 'delayed' && payload.data.delay) {
@@ -95,6 +111,7 @@ self.addEventListener('push', (event) => {
         const tag = 'test-delayed';
         if (self.dedupMap.get(id)) {
           console.log('[SW] 🔁 Duplicate delayed push ignored:', id);
+          swBeacon('DISPLAY_SKIPPED', { id, reason: 'duplicate-delayed' });
           return;
         }
         self.dedupMap.set(id, true);
@@ -112,6 +129,7 @@ self.addEventListener('push', (event) => {
             };
             self.registration.showNotification(notificationData.title, opts);
             console.log('[SW] ✅ Shown delayed (client-meta) id:', id);
+            swBeacon('DISPLAY_SHOWN', { id, type: 'delayed', delay });
           });
         }, delay);
         return;
@@ -123,6 +141,7 @@ self.addEventListener('push', (event) => {
         const tag = 'test-delayed';
         if (self.dedupMap.get(id)) {
           console.log('[SW] 🔁 Duplicate delayed-server push ignored:', id);
+          swBeacon('DISPLAY_SKIPPED', { id, reason: 'duplicate-delayed-server' });
           return;
         }
         self.dedupMap.set(id, true);
@@ -138,6 +157,7 @@ self.addEventListener('push', (event) => {
           };
           self.registration.showNotification(notificationData.title, opts);
           console.log('[SW] ✅ Shown delayed-server id:', id);
+          swBeacon('DISPLAY_SHOWN', { id, type: 'delayed-server' });
         });
         return;
       }
@@ -149,6 +169,7 @@ self.addEventListener('push', (event) => {
         if (self.dedupMap.get(id)) return;
         self.dedupMap.set(id, true);
         const delay = 10000; // 기본 10초
+        swBeacon('FALLBACK_SCHEDULED', { id, delay });
         setTimeout(() => {
           self.registration.getNotifications({ includeTriggered: true }).then(notis => {
             notis.forEach(n => { if (n.tag === tag) n.close(); });
@@ -161,25 +182,28 @@ self.addEventListener('push', (event) => {
               data: { url: '/', id }
             };
             self.registration.showNotification(notificationData.title, opts);
+            swBeacon('DISPLAY_SHOWN', { id, type: 'fallback-delayed', delay });
           });
         }, delay);
       } catch (_) {}
       return;
     } catch (error) {
       console.error('[SW] Error parsing push data:', error);
+      swBeacon('DISPLAY_SKIPPED', { reason: 'parse-error' });
       return;
     }
   }
 
   // 데이터가 전혀 없으면 아무 것도 하지 않음 (즉시 표시 방지)
   console.log('[SW] ⚠️ No data in push; skipping');
+  swBeacon('DISPLAY_SKIPPED', { reason: 'no-data' });
   return;
 });
 
 // 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event);
-  
+  swBeacon('NOTIFICATION_CLICK', { tag: event.notification?.tag });
   event.notification.close();
 
   if (event.action === 'view' || !event.action) {
