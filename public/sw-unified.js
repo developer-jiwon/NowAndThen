@@ -400,13 +400,13 @@ function sendCountdownReminder(countdown, daysLeft) {
   });
 }
 
-// 백그라운드 타이머 시작 (간단하고 강력하게)
+// 백그라운드 타이머 시작 (ULTIMATE 강력하게)
 function startBackgroundTimers() {
-  console.log('[SW] 🚀 Starting SIMPLE but POWERFUL background timers...');
+  console.log('[SW] 🚀 Starting ULTIMATE background timers...');
   
-  // 단일 강력한 백그라운드 타이머 (5초마다)
+  // 다중 강력한 백그라운드 타이머 (더 자주)
   setInterval(() => {
-    console.log('[SW] 🔄 Background check every 5 seconds');
+    console.log('[SW] 🔄 Background check every 2 seconds');
     
     // PWA가 백그라운드에 있는지 확인
     self.clients.matchAll().then(clients => {
@@ -426,19 +426,25 @@ function startBackgroundTimers() {
     const timestamp = Date.now();
     console.log('[SW] Service Worker alive at:', timestamp);
     
-  }, 5000); // 5초마다
+  }, 2000); // 2초마다
   
-  console.log('[SW] 🎯 Simple but powerful background timer started');
-  console.log('[SW] Checking every 5 seconds to keep alive');
+  // 추가 백그라운드 체크 (10초마다)
+  setInterval(() => {
+    console.log('[SW] 🔄 Additional background check every 10 seconds');
+    checkNotifications();
+  }, 10000);
+  
+  console.log('[SW] 🎯 ULTIMATE background timers started');
+  console.log('[SW] Checking every 2s + 10s to keep alive');
 }
 
-// 서비스 워커 생명주기 확장 (간단하고 강력하게)
+// 서비스 워커 생명주기 확장 (ULTIMATE 강력하게)
 function keepServiceWorkerAlive() {
-  console.log('[SW] 🚀 Setting up SIMPLE but POWERFUL keepalive...');
+  console.log('[SW] 🚀 Setting up ULTIMATE keepalive...');
   
-  // 단일 강력한 keepalive (3초마다)
+  // 다중 강력한 keepalive (더 자주)
   setInterval(() => {
-    console.log('[SW] ⚡ Keepalive every 3 seconds');
+    console.log('[SW] ⚡ Keepalive every 1 second');
     
     // 서비스 워커가 살아있음을 확인
     const timestamp = Date.now();
@@ -454,10 +460,16 @@ function keepServiceWorkerAlive() {
       }
     });
     
-  }, 3000); // 3초마다
+  }, 1000); // 1초마다
   
-  console.log('[SW] 🎯 Simple but powerful keepalive activated');
-  console.log('[SW] Checking every 3 seconds to stay alive');
+  // 추가 keepalive (5초마다)
+  setInterval(() => {
+    console.log('[SW] ⚡ Additional keepalive every 5 seconds');
+    forceKeepalive();
+  }, 5000);
+  
+  console.log('[SW] 🎯 ULTIMATE keepalive activated');
+  console.log('[SW] Checking every 1s + 5s to stay alive');
 }
 
 // 강제 keepalive 실행 (간단하게)
@@ -493,26 +505,36 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// 서비스 워커가 백그라운드에서 계속 실행되도록 주기적 체크
+// 서비스 워커가 백그라운드에서 계속 실행되도록 주기적 체크 (ULTIMATE)
 setInterval(() => {
   console.log('[SW] 🔄 Background heartbeat - Service Worker is running');
   
+  // 강제로 알림 체크 실행
+  try {
+    checkNotifications();
+    console.log('[SW] 🔄 Forced notification check from heartbeat');
+  } catch (error) {
+    console.error('[SW] Heartbeat notification check failed:', error);
+  }
+}, 5000); // 5초마다
+
+// 추가 강력한 heartbeat (15초마다)
+setInterval(() => {
+  console.log('[SW] 🔄 ULTIMATE heartbeat - Service Worker is alive and kicking');
+  
+  // 강제로 keepalive 실행
+  forceKeepalive();
+  
   // PWA 상태 확인
   self.clients.matchAll().then(clients => {
-    const hasActiveClients = clients.length > 0;
-    const hasVisibleClients = clients.some(client => client.visibilityState === 'visible');
-    
-    console.log('[SW] Background check - Active:', hasActiveClients, 'Visible:', hasVisibleClients);
-    
-    // 백그라운드에 있으면 알림 체크
-    if (hasActiveClients && !hasVisibleClients) {
-      console.log('[SW] PWA in background - checking notifications');
-      checkNotifications();
+    console.log('[SW] 🔄 ULTIMATE heartbeat - Clients:', clients.length);
+    if (clients.length === 0) {
+      console.log('[SW] 🔄 ULTIMATE heartbeat - PWA closed but Service Worker alive!');
     }
   });
-}, 10000); // 10초마다
+}, 15000); // 15초마다
 
-console.log('[SW] 🎯 Unified Service Worker ready for BACKGROUND notifications');
-console.log('[SW] This service worker will handle both Firebase FCM and Web Push');
+console.log('[SW] 🎯 ULTIMATE Service Worker ready for BACKGROUND notifications');
+console.log('[SW] This service worker will handle Web Push notifications');
 console.log('[SW] PWA can be closed - notifications will still work!');
-console.log('[SW] Background heartbeat started every 10 seconds');
+console.log('[SW] ULTIMATE background timers: 2s + 10s + 5s + 15s');
