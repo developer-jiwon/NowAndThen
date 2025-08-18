@@ -54,50 +54,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Push 이벤트 처리 (PWA가 종료되어도 실행됨)
-self.addEventListener('push', (event) => {
-  console.log('[SW] 🚀 Push event received - PWA BACKGROUND:', event);
-  console.log('[SW] PWA is closed, but service worker is handling notification!');
-  
-  let notificationData = {
-    title: 'NowAndThen 알림',
-    body: '새로운 알림이 있습니다',
-    icon: '/favicon.ico',
-    badge: '/favicon.ico',
-    tag: 'default'
-  };
-
-  // 서버에서 보낸 데이터가 있으면 사용
-  if (event.data) {
-    try {
-      const payload = event.data.json();
-      notificationData = { ...notificationData, ...payload };
-      console.log('[SW] Parsed push payload:', payload);
-    } catch (error) {
-      console.error('[SW] Error parsing push data:', error);
-    }
-  }
-
-  const notificationOptions = {
-    body: notificationData.body,
-    icon: notificationData.icon,
-    badge: notificationData.badge,
-    tag: notificationData.tag,
-    requireInteraction: true,
-    actions: [
-      { action: 'view', title: '보기' },
-      { action: 'dismiss', title: '닫기' }
-    ],
-    data: {
-      url: '/',
-      ...notificationData.data
-    }
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(notificationData.title, notificationOptions)
-  );
-});
+// (Removed legacy generic push handler that caused immediate display)
 
 self.dedupMap = self.dedupMap || new Map();
 
