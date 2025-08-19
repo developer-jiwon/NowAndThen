@@ -103,6 +103,33 @@ self.addEventListener('push', (event) => {
       notificationData = { ...notificationData, ...payload };
       console.log('[SW] Parsed push payload:', payload);
       swBeacon('PUSH_RECEIVED', { id: pushId, hasData: true, type: payload?.data?.type || 'unknown' });
+
+      // 서버 테스트 푸시는 즉시 표시 (flaky 방지)
+      if (payload.data && (payload.data.type === 'test-direct' || payload.data.type === 'server-test')) {
+        const id = payload.data.id || pushId;
+        const tag = 'test-direct';
+        if (self.dedupMap.get(id)) {
+          console.log('[SW] 🔁 Duplicate server-test push ignored:', id);
+          swBeacon('DISPLAY_SKIPPED', { id, reason: 'duplicate-server-test' });
+          return;
+        }
+        self.dedupMap.set(id, true);
+        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+          notis.forEach(n => { if (n.tag === tag) n.close(); });
+          const opts = {
+            body: notificationData.body,
+            icon: notificationData.icon,
+            badge: notificationData.badge,
+            tag,
+            requireInteraction: true,
+            data: { url: '/', id }
+          };
+          self.registration.showNotification(notificationData.title, opts);
+          console.log('[SW] ✅ Shown server-test notification id:', id);
+          swBeacon('DISPLAY_SHOWN', { id, type: 'server-test' });
+        });
+        return;
+      }
       
       // 지연 알림: 클라에서 delay 메타로 전송된 경우
       if (payload.data && payload.data.type === 'delayed' && payload.data.delay) {
@@ -162,29 +189,25 @@ self.addEventListener('push', (event) => {
         return;
       }
 
-      // 타입 정보가 없으면 표시하지 않음 (즉시 표시 방지)
+      // 타입 정보가 없으면 즉시 표시 (서버 전송 신뢰성 우선)
       try {
         const id = pushId;
-        const tag = 'test-delayed';
+        const tag = 'server-generic';
         if (self.dedupMap.get(id)) return;
         self.dedupMap.set(id, true);
-        const delay = 10000; // 기본 10초
-        swBeacon('FALLBACK_SCHEDULED', { id, delay });
-        setTimeout(() => {
-          self.registration.getNotifications({ includeTriggered: true }).then(notis => {
-            notis.forEach(n => { if (n.tag === tag) n.close(); });
-            const opts = {
-              body: notificationData.body,
-              icon: notificationData.icon,
-              badge: notificationData.badge,
-              tag,
-              requireInteraction: true,
-              data: { url: '/', id }
-            };
-            self.registration.showNotification(notificationData.title, opts);
-            swBeacon('DISPLAY_SHOWN', { id, type: 'fallback-delayed', delay });
-          });
-        }, delay);
+        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+          notis.forEach(n => { if (n.tag === tag) n.close(); });
+          const opts = {
+            body: notificationData.body,
+            icon: notificationData.icon,
+            badge: notificationData.badge,
+            tag,
+            requireInteraction: true,
+            data: { url: '/', id }
+          };
+          self.registration.showNotification(notificationData.title, opts);
+          swBeacon('DISPLAY_SHOWN', { id, type: 'server-generic' });
+        });
       } catch (_) {}
       return;
     } catch (error) {
@@ -271,6 +294,28 @@ self.addEventListener('message', (event) => {
           body,
           ...options
         });
+      }
+      break;
+
+    case 'schedule-test-notification':
+      // 지연된 테스트 알림 (PWA 닫혀도 SW가 스케줄링)
+      if (payload) {
+        const { title, body, delay = 10000, options } = payload;
+        setTimeout(() => {
+          self.registration.showNotification(title || '🧪 테스트 알림', {
+            body: body || '지연 테스트 알림입니다',
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: 'test-delayed',
+            requireInteraction: true,
+            actions: [
+              { action: 'view', title: '확인' },
+              { action: 'dismiss', title: '닫기' }
+            ],
+            data: { url: '/' },
+            ...(options || {})
+          });
+        }, Number(delay) || 10000);
       }
       break;
 

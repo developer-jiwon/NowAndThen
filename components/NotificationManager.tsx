@@ -145,64 +145,27 @@ export default function NotificationManager() {
 
   const sendTestNotification = async () => {
     try {
-      console.log('=== TESTING BACKEND NOTIFICATION ===');
-      
-      // 백엔드에서 실제 알림 내용 가져오기
-      const response = await fetch('/api/test-daily-summary', {
+      console.log('=== TESTING RELIABLE SERVER PUSH ===');
+
+      const response = await fetch('/api/test-push-direct', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user?.id,
-          testTime: settings.dailySummaryTime
+          title: '🚀 Server Push Test',
+          message: '서버에서 전송한 테스트 알림 (PWA 닫혀도 도착해야 함)'
         })
       });
-      
+
       if (response.ok) {
-        const result = await response.json();
-        console.log('=== SENDING PUSH NOTIFICATION ===');
-        console.log('Title:', result.title);
-        console.log('Body:', result.body);
-        
-        // Service Worker를 통해 10초 후 알림 전송
-        if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
-          toast.success('10초 후 테스트 알림이 전송됩니다. PWA를 닫으세요!');
-          
-          // Service Worker에 10초 후 알림 전송 요청
-          navigator.serviceWorker.ready.then((registration) => {
-            if (registration.active) {
-              registration.active.postMessage({
-                type: 'schedule-test-notification',
-                payload: {
-                  title: result.title,
-                  body: result.body,
-                  delay: 10000 // 10초
-                }
-              });
-            }
-          });
-          
-          if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-              type: 'schedule-test-notification',
-              payload: {
-                title: result.title,
-                body: result.body,
-                delay: 10000 // 10초
-              }
-            });
-          }
-        } else {
-          toast.error('알림 권한이 필요합니다');
-        }
+        toast.success('서버 푸시 전송! 기기 알림 도착 여부를 확인하세요.');
       } else {
-        console.error('Backend test failed:', response.status);
-        toast.error('테스트 실패');
+        console.error('Server push failed:', response.status);
+        toast.error('서버 푸시 실패');
       }
     } catch (error) {
-      console.error('Failed to test backend notification:', error);
-      toast.error('테스트 실패');
+      console.error('Failed to send server push:', error);
+      toast.error('서버 푸시 실패');
     }
   };
 
