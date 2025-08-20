@@ -78,27 +78,15 @@ export default function NotificationManager() {
         return;
       }
       toast.info('Requesting notification permission...');
-      process.env.NODE_ENV === 'development' && console.log('Requesting notification permission...');
-      const result = await Notification.requestPermission();
-      process.env.NODE_ENV === 'development' && console.log('Permission result:', result);
-      
-      setPermission(result);
-      // Do not auto-enable UI based on permission alone
-      setIsEnabled(false);
-      
-      if (result === 'granted') {
-        const ok = await registerForNotifications();
-        if (ok) {
-          toast.success('Notifications enabled. We\'ll remind you every day at 08:30.');
-          setSuccessMessage("We will remind you every day at 08:30.");
-          setShowSuccessPopup(true);
-        } else {
-          toast.error('Failed to register push subscription. Please try again.');
-        }
-      } else if (result === 'denied') {
-        toast.error('Notification permission denied. Please allow it in your browser settings.');
+      // One unified flow: request + subscribe + save
+      const ok = await registerForNotifications();
+      if (ok) {
+        setPermission('granted');
+        toast.success('Notifications enabled. We\'ll remind you every day at 08:30.');
+        setSuccessMessage("We will remind you every day at 08:30.");
+        setShowSuccessPopup(true);
       } else {
-        toast.info('Notification permission requested. Please allow it in your browser.');
+        toast.error('Failed to enable notifications. Please check browser settings and try again.');
       }
     } catch (error) {
       console.warn('Notification permission request failed:', error);
