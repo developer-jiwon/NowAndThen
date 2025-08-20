@@ -47,7 +47,7 @@ export default function NotificationManager() {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       const currentPermission = Notification.permission;
-      console.log('Initial notification permission:', currentPermission);
+      process.env.NODE_ENV === 'development' && console.log('Initial notification permission:', currentPermission);
       setPermission(currentPermission);
       setIsEnabled(currentPermission === 'granted');
     }
@@ -60,9 +60,9 @@ export default function NotificationManager() {
     }
 
     try {
-      console.log('Requesting notification permission...');
+      process.env.NODE_ENV === 'development' && console.log('Requesting notification permission...');
       const result = await Notification.requestPermission();
-      console.log('Permission result:', result);
+      process.env.NODE_ENV === 'development' && console.log('Permission result:', result);
       
       setPermission(result);
       setIsEnabled(result === 'granted');
@@ -93,8 +93,8 @@ export default function NotificationManager() {
       const fcmToken = await requestNotificationPermission();
       
       if (fcmToken) {
-        console.log('FCM Token received:', fcmToken);
-        console.log('User ID:', user.id);
+        process.env.NODE_ENV === 'development' && console.log('FCM Token received:', fcmToken);
+        process.env.NODE_ENV === 'development' && console.log('User ID:', user.id);
         
         // Supabase에 FCM 토큰 저장 (upsert 사용)
         const { error } = await supabase
@@ -115,7 +115,7 @@ export default function NotificationManager() {
           console.error('Error saving FCM token:', error);
           toast.error('Failed to register for notifications');
         } else {
-          console.log('FCM token saved successfully');
+          process.env.NODE_ENV === 'development' && console.log('FCM token saved successfully');
           
           // 저장된 데이터 확인
           const { data: checkData, error: checkError } = await supabase
@@ -123,13 +123,13 @@ export default function NotificationManager() {
             .select('*')
             .eq('user_id', user.id);
             
-          console.log('Saved subscription data:', checkData);
+          process.env.NODE_ENV === 'development' && console.log('Saved subscription data:', checkData);
           if (checkError) console.error('Check error:', checkError);
           
           toast.success('Successfully registered for notifications!');
         }
       } else {
-        console.log('No FCM token received');
+        process.env.NODE_ENV === 'development' && console.log('No FCM token received');
         toast.error('Failed to get FCM token');
       }
     } catch (error) {
@@ -145,7 +145,7 @@ export default function NotificationManager() {
 
   const sendTestNotification = async () => {
     try {
-      console.log('=== TESTING RELIABLE SERVER PUSH ===');
+      process.env.NODE_ENV === 'development' && console.log('=== TESTING RELIABLE SERVER PUSH ===');
 
       const response = await fetch('/api/test-push-direct', {
         method: 'POST',
@@ -171,7 +171,7 @@ export default function NotificationManager() {
 
   const runAutomatedTest = async () => {
     try {
-      console.log('=== RUNNING AUTOMATED NOTIFICATION FLOW TEST ===');
+      process.env.NODE_ENV === 'development' && console.log('=== RUNNING AUTOMATED NOTIFICATION FLOW TEST ===');
       
       const response = await fetch('/api/test-notification-flow', {
         method: 'POST',
@@ -185,8 +185,8 @@ export default function NotificationManager() {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('=== AUTOMATED TEST RESULTS ===');
-        console.log(result);
+        process.env.NODE_ENV === 'development' && console.log('=== AUTOMATED TEST RESULTS ===');
+        process.env.NODE_ENV === 'development' && console.log(result);
         
         if (result.success) {
           let resultText = '🚀 자동화 테스트 결과:\n\n';
@@ -253,12 +253,12 @@ export default function NotificationManager() {
   };
 
   const saveSettings = () => {
-    console.log('Saving notification settings:', settings);
+    process.env.NODE_ENV === 'development' && console.log('Saving notification settings:', settings);
     
     try {
       // Save settings to localStorage
       localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
-      console.log('Settings saved to localStorage successfully');
+      process.env.NODE_ENV === 'development' && console.log('Settings saved to localStorage successfully');
       
       toast.success('Notification settings saved!');
       setShowSettings(false);
@@ -466,7 +466,7 @@ export default function NotificationManager() {
             <div className="flex gap-3 mt-8">
               <Button
                 onClick={async (e) => {
-                  console.log('=== SAVE BUTTON CLICKED ===');
+                  process.env.NODE_ENV === 'development' && console.log('=== SAVE BUTTON CLICKED ===');
                   
                   try {
                     // Save to localStorage
@@ -476,8 +476,8 @@ export default function NotificationManager() {
                     
                     // Update Supabase with new settings
                     if (user) {
-                      console.log('Updating preferences for user:', user.id);
-                      console.log('New settings:', settings);
+                      process.env.NODE_ENV === 'development' && console.log('Updating preferences for user:', user.id);
+                      process.env.NODE_ENV === 'development' && console.log('New settings:', settings);
                       
                       const { error } = await supabase
                         .from('push_subscriptions')
@@ -494,7 +494,7 @@ export default function NotificationManager() {
                         console.error('Error updating notification preferences:', error);
                         
                         // FCM 토큰 다시 등록 시도
-                        console.log('Retrying FCM token registration...');
+                        process.env.NODE_ENV === 'development' && console.log('Retrying FCM token registration...');
                         const { requestNotificationPermission } = await import('@/lib/firebase');
                         const fcmToken = await requestNotificationPermission();
                         
@@ -514,11 +514,11 @@ export default function NotificationManager() {
                             });
                             
                           if (!forceError) {
-                            console.log('FCM token force registered successfully');
+                            process.env.NODE_ENV === 'development' && console.log('FCM token force registered successfully');
                           }
                         }
                       } else {
-                        console.log('Notification preferences updated in database');
+                        process.env.NODE_ENV === 'development' && console.log('Notification preferences updated in database');
                         
                         // 업데이트 후 데이터 확인
                         const { data: updatedData, error: fetchError } = await supabase
@@ -526,7 +526,7 @@ export default function NotificationManager() {
                           .select('*')
                           .eq('user_id', user.id);
                           
-                        console.log('Updated subscription data:', updatedData);
+                        process.env.NODE_ENV === 'development' && console.log('Updated subscription data:', updatedData);
                         if (fetchError) console.error('Fetch error:', fetchError);
                       }
                     }

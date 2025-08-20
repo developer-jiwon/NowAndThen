@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('=== SENDING DIRECT FCM NOTIFICATION ===');
+    process.env.NODE_ENV === 'development' && console.log('=== SENDING DIRECT FCM NOTIFICATION ===');
 
     const fcmToken = "dcl5St_9AM9ENzEBpi_-qP:APA91bHBQlUJbs70mloYnAIyhDQJRGaZthA6z0F08vbJdN2KzwaC12MmOWCDdh_bkNvsmJUs-Xbq2kxLnWbzzjkBRh98aS9pFBZ006CLdutO7ZrWSlR9fMo";
     
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       }
     };
 
-    console.log('Sending FCM message:', JSON.stringify(message, null, 2));
+    process.env.NODE_ENV === 'development' && console.log('Sending FCM message:', JSON.stringify(message, null, 2));
 
     const response = await fetch('https://fcm.googleapis.com/fcm/send', {
       method: 'POST',
@@ -33,8 +33,8 @@ export async function POST(req: NextRequest) {
 
     const responseText = await response.text();
     
-    console.log('FCM Response Status:', response.status);
-    console.log('FCM Response:', responseText);
+    process.env.NODE_ENV === 'development' && console.log('FCM Response Status:', response.status);
+    process.env.NODE_ENV === 'development' && console.log('FCM Response:', responseText);
 
     return NextResponse.json({
       success: response.ok,
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     console.error('Error sending direct notification:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

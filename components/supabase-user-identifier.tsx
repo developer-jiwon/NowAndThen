@@ -9,11 +9,11 @@ export default function SupabaseUserIdentifier() {
   
   // Debug: Log user object structure
   useEffect(() => {
-    console.log("SupabaseUserIdentifier - user:", user);
-    console.log("SupabaseUserIdentifier - user_metadata:", user?.user_metadata);
-    console.log("SupabaseUserIdentifier - provider:", user?.user_metadata?.provider);
-    console.log("SupabaseUserIdentifier - email:", user?.email);
-    console.log("SupabaseUserIdentifier - app_metadata:", user?.app_metadata);
+    process.env.NODE_ENV === 'development' && console.log("SupabaseUserIdentifier - user:", user);
+    process.env.NODE_ENV === 'development' && console.log("SupabaseUserIdentifier - user_metadata:", user?.user_metadata);
+    process.env.NODE_ENV === 'development' && console.log("SupabaseUserIdentifier - provider:", user?.user_metadata?.provider);
+    process.env.NODE_ENV === 'development' && console.log("SupabaseUserIdentifier - email:", user?.email);
+    process.env.NODE_ENV === 'development' && console.log("SupabaseUserIdentifier - app_metadata:", user?.app_metadata);
   }, [user]);
   
   // Simplified check: authenticated users have an email, anonymous users don't

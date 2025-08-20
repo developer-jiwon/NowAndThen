@@ -24,14 +24,19 @@ export default function HomePage() {
       setActiveTab(hash);
     }
     const hasSeen = localStorage.getItem('nowandthen-v2.0');
-    if (!hasSeen) {
-      setTimeout(() => setShowUpdatePopup(true), 600);
+    const lastShown = localStorage.getItem('nowandthen-v2.0-last-shown');
+    const now = Date.now();
+    
+    // 한 번도 본 적이 없거나, 마지막으로 본 지 7일이 지났으면 표시
+    if (!hasSeen || (lastShown && now - parseInt(lastShown) > 7 * 24 * 60 * 60 * 1000)) {
+      setTimeout(() => setShowUpdatePopup(true), 2000); // 2초 후 표시로 변경
     }
   }, []);
   
   const handleCloseUpdatePopup = () => {
     setShowUpdatePopup(false);
     localStorage.setItem('nowandthen-v2.0', 'true');
+    localStorage.setItem('nowandthen-v2.0-last-shown', Date.now().toString());
   };
 
   return (

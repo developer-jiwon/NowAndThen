@@ -225,16 +225,8 @@ export default function CountdownCard({
       const newTimeRemaining = calculateTimeRemaining(exactDate, isCountUp);
       setTimeRemaining(newTimeRemaining);
       
-      // Check if timer reached 0 and show notification
-      if (!isCountUp && newTimeRemaining.days === 0 && newTimeRemaining.isToday) {
-        // Timer reached today - could show notification here
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification(`${countdown.title} 시간입니다`, {
-            body: '설정한 타이머가 도달했습니다',
-            icon: '/favicon.ico'
-          });
-        }
-      }
+      // Removed in-page Notification API popup to avoid random-time alerts when visiting the page
+      // Push-based reminders (SW/Server) now handle arrival notifications reliably
     };
     
     // Update immediately

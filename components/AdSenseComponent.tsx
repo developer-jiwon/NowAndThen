@@ -53,7 +53,7 @@ export default function AdSenseComponent({
       setHasContent(hasSufficientContent);
       
       if (!hasSufficientContent) {
-        // console.log(`Insufficient content for ads: ${wordCount} words (minimum: ${minWords})`);
+        // process.env.NODE_ENV === 'development' && console.log(`Insufficient content for ads: ${wordCount} words (minimum: ${minWords})`);
         setAdStatus('no-content');
       }
     };
@@ -71,7 +71,7 @@ export default function AdSenseComponent({
     if (adRef.current) {
       const containerWidth = adRef.current.offsetWidth;
       if (containerWidth < 300) {
-        console.log(`Container too narrow for ads: ${containerWidth}px (minimum: 300px)`);
+        process.env.NODE_ENV === 'development' && console.log(`Container too narrow for ads: ${containerWidth}px (minimum: 300px)`);
         setAdStatus('container-too-small');
         return;
       }
@@ -101,11 +101,11 @@ export default function AdSenseComponent({
                 
                 if (status === 'filled' && height > 50) {
                   setAdStatus('filled');
-                  console.log('Ad successfully loaded and filled');
+                  process.env.NODE_ENV === 'development' && console.log('Ad successfully loaded and filled');
                 } else if (status === 'unfilled' || height < 50) {
                   setAdStatus('unfilled');
                   setAdError('No ads available');
-                  console.log('Ad space unfilled or too small');
+                  process.env.NODE_ENV === 'development' && console.log('Ad space unfilled or too small');
                 }
               }
             };

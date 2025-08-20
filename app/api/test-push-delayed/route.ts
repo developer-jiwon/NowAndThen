@@ -15,14 +15,14 @@ webpush.setVapidDetails(
 
 export async function POST(request: NextRequest) {
 	try {
-		console.log('[API] 🚀 Delayed push request received');
+		process.env.NODE_ENV === 'development' && console.log('[API] 🚀 Delayed push request received');
 		const { subscription } = await request.json();
 		if (!subscription) {
 			return NextResponse.json({ error: 'Push subscription is required' }, { status: 400 });
 		}
 
 		const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-		console.log('[API] ⏱️ Scheduling dual-shot (10s & 25s), id:', id);
+		process.env.NODE_ENV === 'development' && console.log('[API] ⏱️ Scheduling dual-shot (10s & 25s), id:', id);
 
 		const send = async (label: string) => {
 			const tag = `test-delayed-${id}`;
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 				JSON.stringify(payload),
 				{ TTL: 60, headers: { Urgency: 'high', Topic: id } }
 			);
-			console.log(`[API] ✅ Shot ${label} sent:`, result.statusCode);
+			process.env.NODE_ENV === 'development' && console.log(`[API] ✅ Shot ${label} sent:`, result.statusCode);
 		};
 
 		setTimeout(() => { send('A(10s)').catch(e => console.error('[API] ❌ Shot A failed:', e?.statusCode || e)); }, 10000);

@@ -26,11 +26,20 @@ export async function POST(request: NextRequest) {
         step: 1,
         issue: 'No subscription found',
         solution: 'Enable notifications first',
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
 
-    const result = {
+    const result: {
+      success: boolean;
+      subscription: {
+        hasFirebase: boolean;
+        hasWebPush: boolean;
+        preferences: any;
+      };
+      timestamp: string;
+      webPushTest?: any;
+    } = {
       success: true,
       subscription: {
         hasFirebase: !!subscription.fcm_token,
@@ -75,7 +84,7 @@ export async function POST(request: NextRequest) {
       { 
         success: false,
         error: 'Internal server error', 
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error' 
       },
       { status: 500 }
     );

@@ -12,11 +12,11 @@ const nextConfig = {
   },
   // TypeScript 체크에서 supabase functions 제외
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
-  // ESLint 에러도 무시
+  // ESLint 에러도 확인
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 };
 

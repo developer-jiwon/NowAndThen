@@ -7,13 +7,13 @@ export async function POST() {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
           for(let registration of registrations) {
             registration.unregister();
-            console.log('[SW] Unregistered:', registration.scope);
+            process.env.NODE_ENV === 'development' && console.log('[SW] Unregistered:', registration.scope);
           }
           
           // 새로운 서비스 워커 등록
           setTimeout(() => {
             navigator.serviceWorker.register('/firebase-messaging-sw.js?v=5.0')
-              .then(reg => console.log('[SW] Re-registered:', reg.scope))
+              .then(reg => process.env.NODE_ENV === 'development' && console.log('[SW] Re-registered:', reg.scope))
               .catch(err => console.error('[SW] Re-registration failed:', err));
           }, 1000);
         });

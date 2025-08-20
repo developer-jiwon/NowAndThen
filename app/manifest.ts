@@ -15,10 +15,6 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'ko',
     dir: 'ltr',
     prefer_related_applications: false,
-    // 모바일 PWA 최적화
-    edge_side_panel: {
-      preferred_width: 400
-    },
     shortcuts: [
       {
         name: 'Add Timer',

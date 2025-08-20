@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('[API] Sending push notification to:', subscription.endpoint);
+    process.env.NODE_ENV === 'development' && console.log('[API] Sending push notification to:', subscription.endpoint);
     
     // 푸시 전송
     const result = await webpush.sendNotification(
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       JSON.stringify(payload)
     );
     
-    console.log('[API] Push sent successfully:', result.statusCode);
+    process.env.NODE_ENV === 'development' && console.log('[API] Push sent successfully:', result.statusCode);
     
     return NextResponse.json({ 
       success: true, 

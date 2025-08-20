@@ -36,43 +36,43 @@ export class NotificationService {
    * Detect the best notification method available
    */
   private async detectBestMethod(): Promise<NotificationMethod> {
-    console.log('[Notifications] 🔍 Starting method detection...');
+    process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Starting method detection...');
     
     // Try web push first (more stable)
     try {
-      console.log('[Notifications] 🔍 Checking Web Push support...');
+      process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Checking Web Push support...');
       if (webPushManager.isSupported()) {
-        console.log('[Notifications] ✅ Web Push is supported');
+        process.env.NODE_ENV === 'development' && console.log('[Notifications] ✅ Web Push is supported');
         const permission = await webPushManager.requestPermission();
-        console.log('[Notifications] 🔍 Permission result:', permission);
+        process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Permission result:', permission);
         
         if (permission === 'granted') {
-          console.log('[Notifications] 🔍 Creating Web Push subscription...');
+          process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Creating Web Push subscription...');
           const subscription = await webPushManager.subscribe();
-          console.log('[Notifications] 🔍 Subscription result:', !!subscription);
+          process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Subscription result:', !!subscription);
           
           if (subscription) {
             this.currentMethod = 'webpush';
             this.webpushSubscription = subscription;
-            console.log('[Notifications] ✅ Web Push enabled successfully');
-            console.log('[Notifications] Subscription endpoint:', subscription.endpoint);
+            process.env.NODE_ENV === 'development' && console.log('[Notifications] ✅ Web Push enabled successfully');
+            process.env.NODE_ENV === 'development' && console.log('[Notifications] Subscription endpoint:', subscription.endpoint);
             return 'webpush';
           } else {
-            console.log('[Notifications] ❌ Web Push subscription failed');
+            process.env.NODE_ENV === 'development' && console.log('[Notifications] ❌ Web Push subscription failed');
           }
         } else {
-          console.log('[Notifications] ❌ Web Push permission denied');
+          process.env.NODE_ENV === 'development' && console.log('[Notifications] ❌ Web Push permission denied');
         }
       } else {
-        console.log('[Notifications] ❌ Web Push not supported');
+        process.env.NODE_ENV === 'development' && console.log('[Notifications] ❌ Web Push not supported');
       }
     } catch (error) {
       console.error('[Notifications] ❌ Web Push error:', error);
-      console.log('[Notifications] 🔄 Trying Firebase...');
+      process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔄 Trying Firebase...');
     }
 
     // Firebase는 현재 문제가 있어서 Web Push만 사용
-    console.log('[Notifications] Skipping Firebase, using Web Push only');
+    process.env.NODE_ENV === 'development' && console.log('[Notifications] Skipping Firebase, using Web Push only');
 
     console.warn('[Notifications] No notification method available');
     this.currentMethod = 'none';
@@ -147,7 +147,7 @@ export class NotificationService {
         return false;
       }
 
-      console.log('[Notifications] Subscription saved');
+      process.env.NODE_ENV === 'development' && console.log('[Notifications] Subscription saved');
       return true;
 
     } catch (error) {
@@ -185,7 +185,7 @@ export class NotificationService {
         });
       }
 
-      console.log('[Notifications] Settings synced to unified service worker');
+      process.env.NODE_ENV === 'development' && console.log('[Notifications] Settings synced to unified service worker');
 
     } catch (error) {
       console.error('Error updating Service Worker settings:', error);
@@ -199,7 +199,7 @@ export class NotificationService {
     try {
       if (this.currentMethod === 'firebase') {
         // Firebase는 서버를 통해 전송해야 함
-        console.log('[NotificationService] Firebase test notification requires server');
+        process.env.NODE_ENV === 'development' && console.log('[NotificationService] Firebase test notification requires server');
         return false;
       } else if (this.currentMethod === 'webpush') {
         // 순수 웹 푸시는 즉시 전송 가능

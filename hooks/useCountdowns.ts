@@ -215,7 +215,7 @@ export function useCountdowns(category: string) {
           table: 'countdowns',
         },
         (payload) => {
-          console.log('Real-time update:', payload);
+          process.env.NODE_ENV === 'development' && console.log('Real-time update:', payload);
           
           if (payload.eventType === 'INSERT') {
             const newCountdown = transformCountdown(payload.new as CountdownRow);

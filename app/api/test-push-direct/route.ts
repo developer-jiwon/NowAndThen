@@ -5,9 +5,9 @@ import { cookies } from 'next/headers';
 export async function POST(request: NextRequest) {
   try {
     // 환경변수 체크
-    console.log('🔧 [Config Check] FCM_SERVER_KEY exists:', !!process.env.FCM_SERVER_KEY);
-    console.log('🔧 [Config Check] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
-    console.log('🔧 [Config Check] VAPID keys:', {
+    process.env.NODE_ENV === 'development' && console.log('🔧 [Config Check] FCM_SERVER_KEY exists:', !!process.env.FCM_SERVER_KEY);
+    process.env.NODE_ENV === 'development' && console.log('🔧 [Config Check] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
+    process.env.NODE_ENV === 'development' && console.log('🔧 [Config Check] VAPID keys:', {
       public: !!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       private: !!process.env.VAPID_PRIVATE_KEY
     });
@@ -33,18 +33,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
     }
 
-    console.log('🚀 [PWA CLOSED TEST] Starting notification test for user:', userId);
-    console.log('📱 [PWA CLOSED TEST] FCM Token available:', !!subscription.fcm_token);
-    console.log('🌐 [PWA CLOSED TEST] Web Push subscription available:', !!subscription.push_subscription);
-    console.log('⏰ [PWA CLOSED TEST] Current time:', new Date().toISOString());
-    console.log('🎯 [PWA CLOSED TEST] This notification MUST reach even when PWA is completely closed');
+    process.env.NODE_ENV === 'development' && console.log('🚀 [PWA CLOSED TEST] Starting notification test for user:', userId);
+    process.env.NODE_ENV === 'development' && console.log('📱 [PWA CLOSED TEST] FCM Token available:', !!subscription.fcm_token);
+    process.env.NODE_ENV === 'development' && console.log('🌐 [PWA CLOSED TEST] Web Push subscription available:', !!subscription.push_subscription);
+    process.env.NODE_ENV === 'development' && console.log('⏰ [PWA CLOSED TEST] Current time:', new Date().toISOString());
+    process.env.NODE_ENV === 'development' && console.log('🎯 [PWA CLOSED TEST] This notification MUST reach even when PWA is completely closed');
     
     // 구독 정보 상세 로깅
     if (subscription.fcm_token) {
-      console.log('🔑 [FCM] Token exists, length:', subscription.fcm_token.length);
+      process.env.NODE_ENV === 'development' && console.log('🔑 [FCM] Token exists, length:', subscription.fcm_token.length);
     }
     if (subscription.push_subscription) {
-      console.log('🔔 [WebPush] Subscription endpoint:', subscription.push_subscription.endpoint?.substring(0, 50) + '...');
+      process.env.NODE_ENV === 'development' && console.log('🔔 [WebPush] Subscription endpoint:', subscription.push_subscription.endpoint?.substring(0, 50) + '...');
     }
 
     let results = [];
@@ -99,11 +99,11 @@ export async function POST(request: NextRequest) {
         });
 
         const fcmResult = await fcmResponse.json();
-        console.log('📲 [FCM] Response status:', fcmResponse.status, fcmResponse.statusText);
-        console.log('📲 [FCM] Full result:', JSON.stringify(fcmResult, null, 2));
+        process.env.NODE_ENV === 'development' && console.log('📲 [FCM] Response status:', fcmResponse.status, fcmResponse.statusText);
+        process.env.NODE_ENV === 'development' && console.log('📲 [FCM] Full result:', JSON.stringify(fcmResult, null, 2));
         
         if (fcmResponse.ok) {
-          console.log('✅ [FCM] Notification sent successfully! Should reach device even when PWA is closed.');
+          process.env.NODE_ENV === 'development' && console.log('✅ [FCM] Notification sent successfully! Should reach device even when PWA is closed.');
         } else {
           console.error('❌ [FCM] Notification failed:', fcmResult);
         }
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         results.push({
           method: 'FCM',
           success: false,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error'
         });
       }
     }
@@ -141,11 +141,11 @@ export async function POST(request: NextRequest) {
         });
 
         const webPushResult = await webPushResponse.json();
-        console.log('🌐 [WebPush] Response status:', webPushResponse.status, webPushResponse.statusText);
-        console.log('🌐 [WebPush] Full result:', JSON.stringify(webPushResult, null, 2));
+        process.env.NODE_ENV === 'development' && console.log('🌐 [WebPush] Response status:', webPushResponse.status, webPushResponse.statusText);
+        process.env.NODE_ENV === 'development' && console.log('🌐 [WebPush] Full result:', JSON.stringify(webPushResult, null, 2));
         
         if (webPushResponse.ok) {
-          console.log('✅ [WebPush] Notification sent successfully! Should reach device even when PWA is closed.');
+          process.env.NODE_ENV === 'development' && console.log('✅ [WebPush] Notification sent successfully! Should reach device even when PWA is closed.');
         } else {
           console.error('❌ [WebPush] Notification failed:', webPushResult);
         }
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         results.push({
           method: 'Web Push',
           success: false,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error'
         });
       }
     }
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error in test-push-direct:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

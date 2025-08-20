@@ -19,10 +19,10 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
   const isAnonymous = !user || user.user_metadata?.provider === 'anonymous' || !user.email;
 
   const handleLogout = async () => {
-    console.log('Logout button clicked');
+    process.env.NODE_ENV === 'development' && console.log('Logout button clicked');
     try {
       await supabase.auth.signOut();
-      console.log('Sign out successful');
+      process.env.NODE_ENV === 'development' && console.log('Sign out successful');
       window.location.reload();
     } catch (error) {
       console.error('Sign out error:', error);

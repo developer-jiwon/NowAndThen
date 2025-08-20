@@ -220,43 +220,16 @@ export default function RootLayout({
           <ConsentBanner />
           <Script id="sw-register" strategy="afterInteractive">{`
             if ('serviceWorker' in navigator) {
-              console.log('Registering Service Worker (safe)...');
-              (async () => {
-                try {
-                  // 1) 기존에 now-unified가 아닌 SW는 제거 (이전 잔재 제거)
-                  const regs = await navigator.serviceWorker.getRegistrations();
-                  await Promise.all(
-                    regs.map(r => {
-                      const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
-                      if (!url.includes('/sw-unified.js')) {
-                        console.log('Unregistering legacy SW:', url);
-                        return r.unregister();
-                      }
-                      return Promise.resolve(true);
-                    })
-                  );
-
-                  // 2) 캐시버스트 버전으로 등록하여 강제 업데이트
-                  const swUrl = '/sw-unified.js?v=5';
-                  const existing = await navigator.serviceWorker.getRegistration();
-                  if (!existing || !(existing.active?.scriptURL || '').includes(swUrl)) {
-                    await navigator.serviceWorker.register(swUrl, { scope: '/', updateViaCache: 'none' });
-                    console.log('SW registered:', swUrl);
-                  } else {
-                    existing.update();
-                    console.log('SW already registered (updated):', existing.active?.scriptURL);
-                  }
-
-                  await navigator.serviceWorker.ready;
-                  if (typeof window !== 'undefined') {
-                    const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
-                    window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
-                    if (window.webPushManager) window.webPushManager.setVapidKey(vapidKey);
-                  }
-                } catch (e) {
-                  console.error('SW register error', e);
+              navigator.serviceWorker.register('/sw-unified.js?v=6', { 
+                scope: '/', 
+                updateViaCache: 'none' 
+              }).then(reg => {
+                if (typeof window !== 'undefined') {
+                  const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
+                  window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
+                  if (window.webPushManager) window.webPushManager.setVapidKey(vapidKey);
                 }
-              })();
+              }).catch(e => console.error('SW register error:', e));
             }
           `}</Script>
           <div className="relative flex flex-col">

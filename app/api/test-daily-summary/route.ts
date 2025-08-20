@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    console.log('=== TESTING DAILY SUMMARY FOR USER ===');
-    console.log('User ID:', userId);
-    console.log('Test time:', testTime);
+    process.env.NODE_ENV === 'development' && console.log('=== TESTING DAILY SUMMARY FOR USER ===');
+    process.env.NODE_ENV === 'development' && console.log('User ID:', userId);
+    process.env.NODE_ENV === 'development' && console.log('Test time:', testTime);
 
     // Service Role 권한으로 사용자의 타이머들 가져오기
     const { data: timers, error: timersError } = await supabaseAdmin
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       .eq('user_id', userId)
       .order('date', { ascending: true });
       
-    console.log('Raw query result:', { timers, error: timersError });
+    process.env.NODE_ENV === 'development' && console.log('Raw query result:', { timers, error: timersError });
     
     // 숨김 타이머 필터링은 코드에서 처리
     const visibleTimers = timers?.filter(timer => !timer.hidden) || [];
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch timers' }, { status: 500 });
     }
 
-    console.log('Found timers:', timers?.length || 0);
-    console.log('Visible timers:', visibleTimers?.length || 0);
-    console.log('Timer data:', visibleTimers);
+    process.env.NODE_ENV === 'development' && console.log('Found timers:', timers?.length || 0);
+    process.env.NODE_ENV === 'development' && console.log('Visible timers:', visibleTimers?.length || 0);
+    process.env.NODE_ENV === 'development' && console.log('Timer data:', visibleTimers);
 
     // 오늘, 내일, 이번 주 타이머들 분류
     const today = new Date();
@@ -109,10 +109,10 @@ export async function POST(req: NextRequest) {
       allTimers: visibleTimers?.map(t => ({ title: t.title, date: t.date })) || []
     };
 
-    console.log('=== NOTIFICATION RESULT ===');
-    console.log('Title:', result.title);
-    console.log('Body:', result.body);
-    console.log('Timers breakdown:', {
+    process.env.NODE_ENV === 'development' && console.log('=== NOTIFICATION RESULT ===');
+    process.env.NODE_ENV === 'development' && console.log('Title:', result.title);
+    process.env.NODE_ENV === 'development' && console.log('Body:', result.body);
+    process.env.NODE_ENV === 'development' && console.log('Timers breakdown:', {
       total: result.timersCount,
       today: result.todayCount,
       tomorrow: result.tomorrowCount,

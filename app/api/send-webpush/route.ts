@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         results.push({
           success: false,
           subscription: subscription.push_subscription?.endpoint || 'unknown',
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
           statusCode: error.statusCode
         });
       }
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error in send-webpush API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

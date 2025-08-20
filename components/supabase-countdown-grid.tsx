@@ -206,12 +206,12 @@ export default function SupabaseCountdownGrid({
     if (!countdown) return;
     
     try {
-      console.log('Updating memo for countdown:', id, 'memo:', memo);
+      process.env.NODE_ENV === 'development' && console.log('Updating memo for countdown:', id, 'memo:', memo);
       await updateCountdown(
         { ...countdown, memo },
         user.id
       );
-      console.log('Memo updated successfully');
+      process.env.NODE_ENV === 'development' && console.log('Memo updated successfully');
       // No forced reload; state already updated optimistically in hook
     } catch (error) {
       console.error('Error updating memo:', error);
@@ -356,7 +356,7 @@ export default function SupabaseCountdownGrid({
     // 샘플 카드 삭제 핸들러 (화면에서만 제거)
     const handleSampleRemove = (sampleId: string) => {
       // 샘플은 DB에 없으므로 화면에서만 제거 (실제로는 아무것도 안함)
-      console.log('Sample removed:', sampleId);
+      process.env.NODE_ENV === 'development' && console.log('Sample removed:', sampleId);
     };
 
     // 모든 샘플 삭제 핸들러

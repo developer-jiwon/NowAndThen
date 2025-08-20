@@ -32,7 +32,7 @@ function getOrCreateUserId(): string {
   // If no user ID exists, create a new one and store it
   if (!userId) {
     userId = generateShortId();
-    console.log("Generated new userId:", userId);
+    process.env.NODE_ENV === 'development' && console.log("Generated new userId:", userId);
     localStorage.setItem(USER_ID_KEY, userId);
   } else if (userId.length > 8) {
     // If the ID is too long (from a previous version or deployment), truncate it
@@ -68,7 +68,7 @@ export function createShareableUrl(): string {
       url.searchParams.set('data', dataString);
     }
     
-    console.log("Created shareable URL with data for sharing purposes");
+    process.env.NODE_ENV === 'development' && console.log("Created shareable URL with data for sharing purposes");
     return url.toString();
   } catch (error) {
     console.error("Error creating shareable URL:", error);
@@ -83,18 +83,18 @@ export function createShareableUrl(): string {
 export function processUrlParameters(): void {
   if (typeof window === "undefined") return;
   
-  console.log("Processing URL parameters...");
+  process.env.NODE_ENV === 'development' && console.log("Processing URL parameters...");
   
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const urlUserId = urlParams.get('uid');
   const sharedData = urlParams.get('data');
   
-  console.log("URL parameters:", { urlUserId, hasSharedData: !!sharedData });
+  process.env.NODE_ENV === 'development' && console.log("URL parameters:", { urlUserId, hasSharedData: !!sharedData });
   
   // Process the user ID from URL if present
   if (urlUserId) {
-    console.log("Setting user ID from URL:", urlUserId);
+    process.env.NODE_ENV === 'development' && console.log("Setting user ID from URL:", urlUserId);
     
     // Ensure the ID is not too long
     const shortUrlUserId = urlUserId.length > 8 ? urlUserId.substring(0, 8) : urlUserId;
@@ -105,13 +105,13 @@ export function processUrlParameters(): void {
     
     // Process shared data if present and we don't have local data
     if (sharedData && !hasLocalData) {
-      console.log("Found shared data in URL and no local data, importing...");
+      process.env.NODE_ENV === 'development' && console.log("Found shared data in URL and no local data, importing...");
       
       try {
         // Import the data
         importCountdownsFromSharedData(sharedData, shortUrlUserId);
         
-        console.log("Data imported successfully from URL");
+        process.env.NODE_ENV === 'development' && console.log("Data imported successfully from URL");
         
         // Set a flag to indicate that we've processed the URL data
         localStorage.setItem(URL_DATA_PROCESSED_KEY, 'true');
@@ -122,7 +122,7 @@ export function processUrlParameters(): void {
         console.error("Error importing shared data from URL:", error);
       }
     } else if (sharedData && hasLocalData) {
-      console.log("Found shared data in URL but local data exists, using local data");
+      process.env.NODE_ENV === 'development' && console.log("Found shared data in URL but local data exists, using local data");
       
       // Clean up the URL by removing the data parameter
       updateUrlWithUserId(shortUrlUserId, false);
@@ -137,7 +137,7 @@ export function processUrlParameters(): void {
 export function getUserId(): string {
   // Check if we're in a browser environment
   if (typeof window === "undefined") {
-    console.log("Not in browser environment");
+    process.env.NODE_ENV === 'development' && console.log("Not in browser environment");
     return "";
   }
 
@@ -160,7 +160,7 @@ export function getUserId(): string {
 export function updateUrlWithUserId(userId: string, includeData: boolean = false): void {
   if (typeof window === "undefined") return;
   
-  console.log("Updating URL with user ID:", userId);
+  process.env.NODE_ENV === 'development' && console.log("Updating URL with user ID:", userId);
   
   try {
     const url = new URL(window.location.href);
@@ -175,7 +175,7 @@ export function updateUrlWithUserId(userId: string, includeData: boolean = false
     
     // Update the URL without reloading the page
     window.history.replaceState({}, '', url.toString());
-    console.log("URL updated successfully with only user ID");
+    process.env.NODE_ENV === 'development' && console.log("URL updated successfully with only user ID");
   } catch (error) {
     console.error("Error updating URL:", error);
   }
@@ -230,7 +230,7 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
   if (typeof window === "undefined") return;
   
   try {
-    console.log("Starting import of shared data...");
+    process.env.NODE_ENV === 'development' && console.log("Starting import of shared data...");
     
     // Decode the base64 string and parse the JSON
     const jsonString = atob(sharedData);
@@ -238,7 +238,7 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
     
     // Get the user ID (either provided or from localStorage/new)
     const userId = specificUserId || getOrCreateUserId();
-    console.log("Importing data for user ID:", userId);
+    process.env.NODE_ENV === 'development' && console.log("Importing data for user ID:", userId);
     
     // Track if we've imported any countdowns
     let importedCount = 0;
@@ -246,11 +246,11 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
     // Import countdowns for each category
     Object.entries(importData).forEach(([category, countdowns]) => {
       if (!countdowns || !Array.isArray(countdowns) || countdowns.length === 0) {
-        console.log(`No countdowns to import for category: ${category}`);
+        process.env.NODE_ENV === 'development' && console.log(`No countdowns to import for category: ${category}`);
         return;
       }
       
-      console.log(`Importing ${countdowns.length} countdowns for category: ${category}`);
+      process.env.NODE_ENV === 'development' && console.log(`Importing ${countdowns.length} countdowns for category: ${category}`);
       
       const storageKey = getUserStorageKey(`countdowns_${category}`, userId);
       
@@ -275,23 +275,23 @@ export function importCountdownsFromSharedData(sharedData: string, specificUserI
           
           // Save the merged data
           localStorage.setItem(storageKey, JSON.stringify(existingCountdowns));
-          console.log(`Merged ${importedCount} countdowns for category: ${category}`);
+          process.env.NODE_ENV === 'development' && console.log(`Merged ${importedCount} countdowns for category: ${category}`);
         } catch (error) {
           console.error(`Error merging ${category} countdowns:`, error);
           // If there's an error, just overwrite with the imported data
           localStorage.setItem(storageKey, JSON.stringify(countdowns));
           importedCount += countdowns.length;
-          console.log(`Overwrote with ${countdowns.length} countdowns for category: ${category}`);
+          process.env.NODE_ENV === 'development' && console.log(`Overwrote with ${countdowns.length} countdowns for category: ${category}`);
         }
       } else {
         // No existing data, just save the imported data
         localStorage.setItem(storageKey, JSON.stringify(countdowns));
         importedCount += countdowns.length;
-        console.log(`Saved ${countdowns.length} new countdowns for category: ${category}`);
+        process.env.NODE_ENV === 'development' && console.log(`Saved ${countdowns.length} new countdowns for category: ${category}`);
       }
     });
     
-    console.log(`Successfully imported ${importedCount} shared countdowns`);
+    process.env.NODE_ENV === 'development' && console.log(`Successfully imported ${importedCount} shared countdowns`);
     
     // Set a flag to indicate data has been imported
     localStorage.setItem(DATA_IMPORTED_KEY, 'true');

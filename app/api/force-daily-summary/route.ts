@@ -9,15 +9,15 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('=== FORCING DAILY SUMMARY TEST ===');
+    process.env.NODE_ENV === 'development' && console.log('=== FORCING DAILY SUMMARY TEST ===');
 
     // 현재 시간 + 1분으로 설정
     const now = new Date();
     const targetTime = new Date(now.getTime() + 60000); // 1분 후
     const timeString = targetTime.toTimeString().slice(0, 5); // HH:MM 형식
     
-    console.log('Current time:', now.toTimeString().slice(0, 5));
-    console.log('Target time (1 min later):', timeString);
+    process.env.NODE_ENV === 'development' && console.log('Current time:', now.toTimeString().slice(0, 5));
+    process.env.NODE_ENV === 'development' && console.log('Target time (1 min later):', timeString);
 
     // 1. 모든 구독 찾기
     const { data: subscriptions, error: subError } = await supabaseAdmin
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log('Found subscriptions:', subscriptions.length);
+    process.env.NODE_ENV === 'development' && console.log('Found subscriptions:', subscriptions.length);
 
     // 2. 첫 번째 구독의 Daily Summary 시간을 1분 후로 강제 설정
     const subscription = subscriptions[0];
@@ -57,15 +57,15 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log('✅ Updated notification time to:', timeString);
+    process.env.NODE_ENV === 'development' && console.log('✅ Updated notification time to:', timeString);
 
     // 3. 백엔드 daily summary 함수 직접 호출해서 테스트
     const backendUrl = process.env.NEXT_PUBLIC_SUPABASE_URL + '/functions/v1/send-daily-summary';
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    console.log('Calling backend function...');
-    console.log('URL:', backendUrl);
-    console.log('Has service key:', !!serviceKey);
+    process.env.NODE_ENV === 'development' && console.log('Calling backend function...');
+    process.env.NODE_ENV === 'development' && console.log('URL:', backendUrl);
+    process.env.NODE_ENV === 'development' && console.log('Has service key:', !!serviceKey);
 
     const backendResponse = await fetch(backendUrl, {
       method: 'POST',
@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
     });
 
     const backendResult = await backendResponse.text();
-    console.log('Backend response status:', backendResponse.status);
-    console.log('Backend response:', backendResult);
+    process.env.NODE_ENV === 'development' && console.log('Backend response status:', backendResponse.status);
+    process.env.NODE_ENV === 'development' && console.log('Backend response:', backendResult);
 
     let backendData;
     try {
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     console.error('Error in force daily summary:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

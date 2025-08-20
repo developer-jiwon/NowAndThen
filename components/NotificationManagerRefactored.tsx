@@ -86,7 +86,7 @@ export default function NotificationManagerRefactored() {
     setIsLoading(true);
     
     try {
-      console.log('[Mobile] Starting notification permission request...');
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] Starting notification permission request...');
       
       // 상세한 모바일 디바이스 정보 로깅
       const userAgent = navigator.userAgent;
@@ -96,7 +96,7 @@ export default function NotificationManagerRefactored() {
       const isChrome = /Chrome/i.test(userAgent);
       const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
       
-      console.log('[Mobile] Device info:', {
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] Device info:', {
         userAgent,
         isMobile,
         isIOS,
@@ -119,17 +119,17 @@ export default function NotificationManagerRefactored() {
         return;
       }
 
-      console.log('[Mobile] About to request permission...');
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] About to request permission...');
       
       // 모바일 PWA에서 권한 요청 전 추가 검증
       if (isMobile && isPWA) {
-        console.log('[Mobile] Mobile PWA detected - additional validation...');
+        process.env.NODE_ENV === 'development' && console.log('[Mobile] Mobile PWA detected - additional validation...');
         
         // PWA 환경에서 서비스 워커 상태 확인
         if ('serviceWorker' in navigator) {
           try {
             const registration = await navigator.serviceWorker.getRegistration();
-            console.log('[Mobile] Service Worker registration:', !!registration);
+            process.env.NODE_ENV === 'development' && console.log('[Mobile] Service Worker registration:', !!registration);
             if (!registration) {
               throw new Error('Service Worker not registered in PWA mode');
             }
@@ -141,9 +141,9 @@ export default function NotificationManagerRefactored() {
       }
       
       const success = await notificationService.requestPermission();
-      console.log('[Mobile] Permission request result:', success);
-      console.log('[Mobile] Current method:', notificationService.getCurrentMethod());
-      console.log('[Mobile] Has subscription:', !!notificationService.getCurrentSubscription());
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] Permission request result:', success);
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] Current method:', notificationService.getCurrentMethod());
+      process.env.NODE_ENV === 'development' && console.log('[Mobile] Has subscription:', !!notificationService.getCurrentSubscription());
       
       if (success) {
         // 구독 정보를 데이터베이스에 저장
@@ -235,7 +235,7 @@ export default function NotificationManagerRefactored() {
       const currentMethod = notificationService.getCurrentMethod();
       const currentPermission = Notification.permission;
       
-      console.log('[TestNotification] Device & Notification Status:', {
+      process.env.NODE_ENV === 'development' && console.log('[TestNotification] Device & Notification Status:', {
         userAgent,
         isMobile,
         isIOS,
@@ -272,7 +272,7 @@ export default function NotificationManagerRefactored() {
           const t = await resp.text();
           throw new Error(`server ${resp.status}: ${t}`)
         }
-        console.log('[Test] ✅ test-push-direct queued with delayMs=10000')
+        process.env.NODE_ENV === 'development' && console.log('[Test] ✅ test-push-direct queued with delayMs=10000')
       } catch (e) {
         console.error('[Test] ❌ Direct push failed:', e)
         toast.error('서버 푸시 요청 실패')

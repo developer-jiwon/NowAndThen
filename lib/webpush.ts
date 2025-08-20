@@ -26,18 +26,18 @@ export class WebPushManager {
     // 생성자에서 바로 VAPID 키 설정 시도
     if (typeof window !== 'undefined' && window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
       this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      console.log('[WebPush] VAPID key set in constructor:', this.vapidPublicKey.substring(0, 20) + '...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key set in constructor:', this.vapidPublicKey.substring(0, 20) + '...');
     } else {
       // 환경 변수에서 직접 가져오기 시도
       this.vapidPublicKey = '';
-      console.log('[WebPush] VAPID key not available in constructor, will set later');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key not available in constructor, will set later');
       
       // 약간의 지연 후 다시 시도
       if (typeof window !== 'undefined') {
         setTimeout(() => {
           if (window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
             this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-            console.log('[WebPush] VAPID key set after delay:', this.vapidPublicKey.substring(0, 20) + '...');
+            process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key set after delay:', this.vapidPublicKey.substring(0, 20) + '...');
           }
         }, 1000);
       }
@@ -47,7 +47,7 @@ export class WebPushManager {
   // VAPID 키 설정 메서드
   setVapidKey(key: string) {
     this.vapidPublicKey = key;
-    console.log('[WebPush] VAPID key set:', key.substring(0, 20) + '...');
+    process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key set:', key.substring(0, 20) + '...');
   }
   
   // VAPID 키 가져오기
@@ -56,7 +56,7 @@ export class WebPushManager {
       // 브라우저에서 window 객체에서 가져오기
       if (typeof window !== 'undefined' && window.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
         this.vapidPublicKey = window.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-        console.log('[WebPush] VAPID key loaded from window:', this.vapidPublicKey.substring(0, 20) + '...');
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key loaded from window:', this.vapidPublicKey.substring(0, 20) + '...');
       }
     }
     
@@ -64,7 +64,7 @@ export class WebPushManager {
     if (!this.vapidPublicKey) {
       console.warn('[WebPush] VAPID key not found, using hardcoded key as fallback');
       this.vapidPublicKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
-      console.log('[WebPush] Fallback VAPID key set:', this.vapidPublicKey.substring(0, 20) + '...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Fallback VAPID key set:', this.vapidPublicKey.substring(0, 20) + '...');
     }
     
     return this.vapidPublicKey;
@@ -94,25 +94,25 @@ export class WebPushManager {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isPWA = window.matchMedia('(display-mode: standalone)').matches;
     
-    console.log('[WebPush] Device check - Mobile:', isMobile, 'iOS:', isIOS, 'PWA:', isPWA);
+    process.env.NODE_ENV === 'development' && console.log('[WebPush] Device check - Mobile:', isMobile, 'iOS:', isIOS, 'PWA:', isPWA);
     
     // iOS Safari는 PWA에서만 웹푸시 지원
     if (isIOS && !isPWA) {
-      console.log('[WebPush] iOS detected - PWA mode required for notifications');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] iOS detected - PWA mode required for notifications');
       throw new Error('iOS requires PWA mode for notifications');
     }
 
     // 현재 권한 상태 확인
     const currentPermission = Notification.permission;
-    console.log('[WebPush] Current permission:', currentPermission);
+    process.env.NODE_ENV === 'development' && console.log('[WebPush] Current permission:', currentPermission);
     
     if (currentPermission === 'granted') {
-      console.log('[WebPush] Permission already granted');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Permission already granted');
       return 'granted';
     }
     
     if (currentPermission === 'denied') {
-      console.log('[WebPush] Permission denied, cannot request again');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Permission denied, cannot request again');
       throw new Error('Notifications are blocked. Please enable them in browser settings.');
     }
 
@@ -120,11 +120,11 @@ export class WebPushManager {
     let permission: NotificationPermission;
     
     try {
-      console.log('[WebPush] Requesting notification permission...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Requesting notification permission...');
       
       // 모바일에서는 더 안정적인 방법 사용
       if (isMobile) {
-        console.log('[WebPush] Mobile device detected - using stable permission request');
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] Mobile device detected - using stable permission request');
         
         // 모바일에서는 약간의 지연 후 권한 요청
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -135,10 +135,10 @@ export class WebPushManager {
         }
         
         if ('requestPermission' in Notification) {
-          console.log('[WebPush] Using modern requestPermission API');
+          process.env.NODE_ENV === 'development' && console.log('[WebPush] Using modern requestPermission API');
           permission = await Notification.requestPermission();
         } else {
-          console.log('[WebPush] Using legacy callback API');
+          process.env.NODE_ENV === 'development' && console.log('[WebPush] Using legacy callback API');
           // Legacy callback API
           permission = await new Promise((resolve) => {
             Notification.requestPermission((result) => {
@@ -148,7 +148,7 @@ export class WebPushManager {
         }
       } else {
         // 데스크톱 브라우저
-        console.log('[WebPush] Desktop browser - using standard permission request');
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] Desktop browser - using standard permission request');
         if ('requestPermission' in Notification) {
           permission = await Notification.requestPermission();
         } else {
@@ -161,11 +161,11 @@ export class WebPushManager {
         }
       }
       
-      console.log('[WebPush] Permission result:', permission);
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Permission result:', permission);
       
       // 권한이 거부된 경우 추가 처리
       if (permission === 'denied') {
-        console.log('[WebPush] Permission denied - providing helpful guidance');
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] Permission denied - providing helpful guidance');
         if (isMobile) {
           throw new Error('Mobile notifications require explicit permission. Please allow notifications in your device settings.');
         } else {
@@ -191,10 +191,10 @@ export class WebPushManager {
 
     try {
       // 통합 서비스 워커 사용
-      console.log('[WebPush] Using unified service worker for background notifications...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Using unified service worker for background notifications...');
       
       const registration = await navigator.serviceWorker.ready;
-      console.log('[WebPush] Unified Service Worker ready for background notifications');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Unified Service Worker ready for background notifications');
       
       return registration;
     } catch (error) {
@@ -208,19 +208,19 @@ export class WebPushManager {
    */
   async subscribe(): Promise<PushSubscription | null> {
     try {
-      console.log('[WebPush] 🔍 Starting push subscription process...');
-      console.log('[WebPush] VAPID public key available:', !!this.vapidPublicKey);
-      console.log('[WebPush] VAPID key length:', this.vapidPublicKey.length);
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] 🔍 Starting push subscription process...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID public key available:', !!this.vapidPublicKey);
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key length:', this.vapidPublicKey.length);
       
       const registration = await this.registerServiceWorker();
       
       // 기존 구독이 있는지 확인
-      console.log('[WebPush] 🔍 Checking existing subscription...');
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] 🔍 Checking existing subscription...');
       let subscription = await registration.pushManager.getSubscription();
-      console.log('[WebPush] Existing subscription:', !!subscription);
+      process.env.NODE_ENV === 'development' && console.log('[WebPush] Existing subscription:', !!subscription);
       
       if (!subscription) {
-        console.log('[WebPush] 🔍 Creating new push subscription...');
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] 🔍 Creating new push subscription...');
         // 새로운 구독 생성
         const vapidKey = this.getVapidKey();
         if (!vapidKey) {
@@ -228,13 +228,13 @@ export class WebPushManager {
         }
         
         const applicationServerKey = this.urlBase64ToUint8Array(vapidKey);
-        console.log('[WebPush] Application server key created:', !!applicationServerKey);
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] Application server key created:', !!applicationServerKey);
         
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: applicationServerKey
+          applicationServerKey: applicationServerKey as BufferSource
         });
-        console.log('[WebPush] New subscription result:', !!subscription);
+        process.env.NODE_ENV === 'development' && console.log('[WebPush] New subscription result:', !!subscription);
       }
 
       if (!subscription) {

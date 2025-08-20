@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
   try {
     const { userId } = await req.json();
     
-    console.log('=== AUTOMATED NOTIFICATION FLOW TEST ===');
-    console.log('Testing for user:', userId);
+    process.env.NODE_ENV === 'development' && console.log('=== AUTOMATED NOTIFICATION FLOW TEST ===');
+    process.env.NODE_ENV === 'development' && console.log('Testing for user:', userId);
 
     // 사용자가 없으면 모든 구독 확인
     let query = supabaseAdmin.from('push_subscriptions').select('*');
@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
     // 1. FCM 토큰 확인
     const { data: subscriptions, error: subError } = await query;
 
-    console.log('🔍 STEP 1: FCM Token Check');
-    console.log('Subscriptions found:', subscriptions?.length || 0);
-    console.log('Subscription data:', subscriptions);
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 1: FCM Token Check');
+    process.env.NODE_ENV === 'development' && console.log('Subscriptions found:', subscriptions?.length || 0);
+    process.env.NODE_ENV === 'development' && console.log('Subscription data:', subscriptions);
     
     if (!subscriptions || subscriptions.length === 0) {
       return NextResponse.json({
@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log('✅ FCM token exists:', subscription.fcm_token.substring(0, 20) + '...');
+    process.env.NODE_ENV === 'development' && console.log('✅ FCM token exists:', subscription.fcm_token.substring(0, 20) + '...');
 
     // 2. Daily Summary 설정 확인
     const prefs = subscription.notification_preferences;
-    console.log('🔍 STEP 2: Daily Summary Settings Check');
-    console.log('Notification preferences:', prefs);
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 2: Daily Summary Settings Check');
+    process.env.NODE_ENV === 'development' && console.log('Notification preferences:', prefs);
     
     if (!prefs?.dailySummary) {
       return NextResponse.json({
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log('✅ Daily summary enabled at:', prefs.dailySummaryTime);
+    process.env.NODE_ENV === 'development' && console.log('✅ Daily summary enabled at:', prefs.dailySummaryTime);
 
     // 3. 사용자 타이머 데이터 확인
     const { data: timers, error: timersError } = await supabaseAdmin
@@ -71,15 +71,15 @@ export async function POST(req: NextRequest) {
       .eq('user_id', userId)
       .order('date', { ascending: true });
 
-    console.log('🔍 STEP 3: User Timer Data Check');
-    console.log('Timers found:', timers?.length || 0);
-    console.log('Timer data:', timers?.map(t => ({ title: t.title, date: t.date, hidden: t.hidden })));
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 3: User Timer Data Check');
+    process.env.NODE_ENV === 'development' && console.log('Timers found:', timers?.length || 0);
+    process.env.NODE_ENV === 'development' && console.log('Timer data:', timers?.map(t => ({ title: t.title, date: t.date, hidden: t.hidden })));
 
     const visibleTimers = timers?.filter(timer => !timer.hidden) || [];
-    console.log('Visible timers:', visibleTimers.length);
+    process.env.NODE_ENV === 'development' && console.log('Visible timers:', visibleTimers.length);
 
     // 4. 백엔드 알림 함수 시뮬레이션
-    console.log('🔍 STEP 4: Backend Notification Simulation');
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 4: Backend Notification Simulation');
     
     // 타이머 분류
     const today = new Date();
@@ -139,13 +139,13 @@ export async function POST(req: NextRequest) {
       summaryText = '일주일 안에 예정된 타이머가 없습니다.';
     }
 
-    console.log('✅ Notification content generated:', summaryText);
+    process.env.NODE_ENV === 'development' && console.log('✅ Notification content generated:', summaryText);
 
     // 5. FCM 전송 시뮬레이션 (실제로는 보내지 않음)
-    console.log('🔍 STEP 5: FCM Send Simulation');
-    console.log('Would send FCM to token:', subscription.fcm_token.substring(0, 20) + '...');
-    console.log('Title: 오늘의 타이머 요약');
-    console.log('Body:', summaryText);
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 5: FCM Send Simulation');
+    process.env.NODE_ENV === 'development' && console.log('Would send FCM to token:', subscription.fcm_token.substring(0, 20) + '...');
+    process.env.NODE_ENV === 'development' && console.log('Title: 오늘의 타이머 요약');
+    process.env.NODE_ENV === 'development' && console.log('Body:', summaryText);
 
     // 6. 시간 매칭 시뮬레이션
     const now = new Date();
@@ -157,10 +157,10 @@ export async function POST(req: NextRequest) {
       hour12: false 
     });
     
-    console.log('🔍 STEP 6: Time Matching Simulation');
-    console.log('User timezone:', userTimezone);
-    console.log('Current time:', currentTime);
-    console.log('Daily summary time:', prefs.dailySummaryTime);
+    process.env.NODE_ENV === 'development' && console.log('🔍 STEP 6: Time Matching Simulation');
+    process.env.NODE_ENV === 'development' && console.log('User timezone:', userTimezone);
+    process.env.NODE_ENV === 'development' && console.log('Current time:', currentTime);
+    process.env.NODE_ENV === 'development' && console.log('Daily summary time:', prefs.dailySummaryTime);
     
     const [targetHour, targetMinute] = prefs.dailySummaryTime.split(':').map(Number);
     const [currentHour, currentMinute] = currentTime.split(':').map(Number);
@@ -169,9 +169,9 @@ export async function POST(req: NextRequest) {
     const currentMinutes = currentHour * 60 + currentMinute;
     const timeDiff = Math.abs(targetMinutes - currentMinutes);
     
-    console.log('Time difference:', timeDiff, 'minutes');
+    process.env.NODE_ENV === 'development' && console.log('Time difference:', timeDiff, 'minutes');
     const wouldSend = timeDiff <= 2;
-    console.log('Would send notification now?', wouldSend);
+    process.env.NODE_ENV === 'development' && console.log('Would send notification now?', wouldSend);
 
     return NextResponse.json({
       success: true,
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
     console.error('Error in automated test:', error);
     return NextResponse.json({ 
       success: false, 
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error' 
     }, { status: 500 });
   }
 }

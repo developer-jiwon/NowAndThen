@@ -34,7 +34,7 @@ export const messaging = (() => {
 
 export const requestNotificationPermission = async () => {
   if (typeof window === 'undefined' || !messaging || !hasFirebaseConfig) {
-    console.log('Firebase not configured, skipping notification setup');
+    process.env.NODE_ENV === 'development' && console.log('Firebase not configured, skipping notification setup');
     return null;
   }
   
@@ -55,7 +55,7 @@ export const requestNotificationPermission = async () => {
             });
           }
           
-          console.log('[Firebase] Using unified service worker');
+          process.env.NODE_ENV === 'development' && console.log('[Firebase] Using unified service worker');
         } catch (swError) {
           console.warn('[Firebase] Service worker not ready:', swError);
           // 서비스 워커 실패해도 계속 진행

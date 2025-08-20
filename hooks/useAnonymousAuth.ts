@@ -15,7 +15,7 @@ export function useAnonymousAuth() {
         if (!session) {
           // Try to restore previous guest_id from localStorage
           const previousGuestId = localStorage.getItem('guest_id');
-          console.log('No session found, signing in anonymously...');
+          process.env.NODE_ENV === 'development' && console.log('No session found, signing in anonymously...');
           const { data, error } = await supabase.auth.signInAnonymously();
           
           if (error) {
@@ -25,7 +25,7 @@ export function useAnonymousAuth() {
           }
           
           if (data.user) {
-            console.log('Anonymous user created:', data.user.id);
+            process.env.NODE_ENV === 'development' && console.log('Anonymous user created:', data.user.id);
             // Store guest_id in localStorage for first creation or restoration
             if (!previousGuestId) {
               localStorage.setItem('guest_id', data.user.id);
@@ -33,7 +33,7 @@ export function useAnonymousAuth() {
             setUser(data.user);
           }
         } else {
-          // console.log('Existing session found:', session.user.id);
+          // process.env.NODE_ENV === 'development' && console.log('Existing session found:', session.user.id);
           // If anonymous user, store guest_id in localStorage
           if (session.user.user_metadata?.provider === 'anonymous') {
             localStorage.setItem('guest_id', session.user.id);
@@ -52,7 +52,7 @@ export function useAnonymousAuth() {
     // Listen for authentication state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        // console.log('Auth state changed:', event, session?.user?.id);
+        // process.env.NODE_ENV === 'development' && console.log('Auth state changed:', event, session?.user?.id);
         // After logout, try to restore previous guest_id
         if (event === 'SIGNED_OUT') {
           const previousGuestId = localStorage.getItem('guest_id');

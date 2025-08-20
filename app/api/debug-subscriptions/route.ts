@@ -9,17 +9,17 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('=== DEBUGGING SUBSCRIPTION ISSUE ===');
+    process.env.NODE_ENV === 'development' && console.log('=== DEBUGGING SUBSCRIPTION ISSUE ===');
 
     // 1. 모든 구독 데이터 원시 조회
     const { data: allSubs, error: allError } = await supabaseAdmin
       .from('push_subscriptions')
       .select('*');
 
-    console.log('🔍 RAW SUBSCRIPTIONS:');
-    console.log('Total found:', allSubs?.length || 0);
-    console.log('Error:', allError);
-    console.log('Data:', JSON.stringify(allSubs, null, 2));
+    process.env.NODE_ENV === 'development' && console.log('🔍 RAW SUBSCRIPTIONS:');
+    process.env.NODE_ENV === 'development' && console.log('Total found:', allSubs?.length || 0);
+    process.env.NODE_ENV === 'development' && console.log('Error:', allError);
+    process.env.NODE_ENV === 'development' && console.log('Data:', JSON.stringify(allSubs, null, 2));
 
     if (!allSubs || allSubs.length === 0) {
       return NextResponse.json({
@@ -34,13 +34,13 @@ export async function POST(req: NextRequest) {
     const analysis = allSubs.map((sub, index) => {
       const prefs = sub.notification_preferences;
       
-      console.log(`\n🔍 SUBSCRIPTION ${index + 1}:`);
-      console.log('User ID:', sub.user_id);
-      console.log('FCM Token exists:', !!sub.fcm_token);
-      console.log('FCM Token length:', sub.fcm_token?.length || 0);
-      console.log('Notification Preferences:', JSON.stringify(prefs, null, 2));
-      console.log('Daily Summary enabled:', prefs?.dailySummary);
-      console.log('Daily Summary type:', typeof prefs?.dailySummary);
+      process.env.NODE_ENV === 'development' && console.log(`\n🔍 SUBSCRIPTION ${index + 1}:`);
+      process.env.NODE_ENV === 'development' && console.log('User ID:', sub.user_id);
+      process.env.NODE_ENV === 'development' && console.log('FCM Token exists:', !!sub.fcm_token);
+      process.env.NODE_ENV === 'development' && console.log('FCM Token length:', sub.fcm_token?.length || 0);
+      process.env.NODE_ENV === 'development' && console.log('Notification Preferences:', JSON.stringify(prefs, null, 2));
+      process.env.NODE_ENV === 'development' && console.log('Daily Summary enabled:', prefs?.dailySummary);
+      process.env.NODE_ENV === 'development' && console.log('Daily Summary type:', typeof prefs?.dailySummary);
       
       return {
         index: index + 1,
@@ -57,25 +57,25 @@ export async function POST(req: NextRequest) {
     });
 
     // 3. 백엔드 로직 시뮬레이션
-    console.log('\n🔍 SIMULATING BACKEND LOGIC:');
+    process.env.NODE_ENV === 'development' && console.log('\n🔍 SIMULATING BACKEND LOGIC:');
     
     const validSubscriptions = allSubs.filter(sub => {
       const prefs = sub.notification_preferences;
       const hasFcmToken = sub.fcm_token && sub.fcm_token !== null;
       const hasDailySummary = prefs && (prefs.dailySummary === true || prefs.dailySummary === 'true');
       
-      console.log(`User ${sub.user_id}:`);
-      console.log('  - Has FCM token:', hasFcmToken);
-      console.log('  - Daily summary setting:', prefs?.dailySummary);
-      console.log('  - Daily summary check:', hasDailySummary);
-      console.log('  - Passes filter:', hasFcmToken && hasDailySummary);
+      process.env.NODE_ENV === 'development' && console.log(`User ${sub.user_id}:`);
+      process.env.NODE_ENV === 'development' && console.log('  - Has FCM token:', hasFcmToken);
+      process.env.NODE_ENV === 'development' && console.log('  - Daily summary setting:', prefs?.dailySummary);
+      process.env.NODE_ENV === 'development' && console.log('  - Daily summary check:', hasDailySummary);
+      process.env.NODE_ENV === 'development' && console.log('  - Passes filter:', hasFcmToken && hasDailySummary);
       
       return hasFcmToken && hasDailySummary;
     });
 
-    console.log('\n✅ FILTER RESULTS:');
-    console.log('Valid subscriptions:', validSubscriptions.length);
-    console.log('This should be subscriptionsChecked value');
+    process.env.NODE_ENV === 'development' && console.log('\n✅ FILTER RESULTS:');
+    process.env.NODE_ENV === 'development' && console.log('Valid subscriptions:', validSubscriptions.length);
+    process.env.NODE_ENV === 'development' && console.log('This should be subscriptionsChecked value');
 
     return NextResponse.json({
       success: true,
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     console.error('Error in debug subscriptions:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
