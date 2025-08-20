@@ -97,16 +97,26 @@ export default function NotificationManager() {
     }
   };
 
-  // FCM 토큰 등록
+  // Create/ensure subscription (supports anonymous users)
   const registerForNotifications = async (): Promise<boolean> => {
-    if (!user) return false;
     try {
+      // Ensure we have a user id (anonymous allowed)
+      let uid = user?.id;
+      if (!uid) {
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error || !data?.user) {
+          console.error('Anonymous sign-in failed:', error);
+          return false;
+        }
+        uid = data.user.id;
+      }
+
       // Ensure web push subscription exists
       const ok = await notificationService.requestPermission();
       if (!ok) return false;
 
-      // Save minimal prefs: dailySummary true @ 08:30 (server uses fixed slots)
-      const success = await notificationService.saveSubscription(user.id, { ...settings, enabled: true });
+      // Save minimal prefs: dailySummary true @ 08:30 (server fixed slots)
+      const success = await notificationService.saveSubscription(uid, { ...settings, enabled: true });
       if (success) setIsEnabled(true);
       return success;
     } catch (error) {
@@ -278,9 +288,7 @@ export default function NotificationManager() {
     loadSettings();
   }, []);
 
-  if (!user) {
-    return null;
-  }
+  // Render even if not logged in (we create anonymous on enable)
 
   return (
     <>
