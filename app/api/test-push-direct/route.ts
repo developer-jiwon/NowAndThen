@@ -52,15 +52,14 @@ export async function POST(request: NextRequest) {
     let fcmOk = false;
     let webpushOk = false;
 
-    // Schedule a single delayed shot via internal API (10s) to avoid reliance on SW timers
+    // Enqueue to server-side queue (due_at = now + 10s)
     try {
-      if (subscription.push_subscription) {
-        fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/test-push-delayed`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription: subscription.push_subscription, id: pushId })
-        }).catch(() => {});
-      }
+      const dueAt = new Date(Date.now() + 10000).toISOString();
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/test-queue`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pushId, userId, dueAt, payload: { title: '이번엔 작동합니다.', body: '', data: { type: 'server-test', id: pushId } } })
+      });
+      if (!res.ok) console.error('enqueue failed', await res.text());
     } catch {}
 
     // server-side beacon for trace
