@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 		const send = async (label: string) => {
 			const tag = `test-delayed-${id}`;
 			const payload = {
-				title: 'NowAndThen 테스트 알림',
-				body: '알림 도착! (테스트)',
+				title: '이번엔 작동합니다.',
+				body: '',
 				icon: '/favicon.ico',
 				badge: '/favicon.ico',
 				tag,
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 					{ action: 'view', title: '확인하기' },
 					{ action: 'dismiss', title: '닫기' }
 				],
-				data: { url: '/', type: 'delayed-server', id, sentAt: Date.now(), shot: label }
+				data: { url: '/', type: 'delayed-server', id, sentAt: Date.now(), shot: label, delayMs: 10000 }
 			};
 			const result = await webpush.sendNotification(
 				subscription,

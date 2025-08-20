@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
         const pushSubscription = subscription.push_subscription;
         
         const payload = JSON.stringify({
-          title: title || 'NowAndThen 알림',
-          body: message || '새로운 알림이 있습니다',
+          title: title || '이번엔 작동합니다.',
+          body: message || '',
           icon: '/favicon.ico',
           badge: '/favicon.ico',
           data: data || { url: '/', id }
