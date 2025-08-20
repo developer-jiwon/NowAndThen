@@ -10,7 +10,7 @@ import { useUser } from "@supabase/auth-helpers-react";
 import LoginButton from "@/components/login-button";
 import UpdatePopup from "@/components/update-popup";
 import AdSenseComponent from "@/components/AdSenseComponent";
-import NotificationManagerRefactored from "@/components/NotificationManagerRefactored";
+import NotificationManager from "@/components/NotificationManager";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 export default function HomePage() {
@@ -67,9 +67,9 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-2 mb-2">
             <LoginButton />
-            {/* Wrap NotificationManager in error boundary to prevent mobile crashes */}
+            {/* Notification manager without Settings UI */}
             <div className="notification-manager-wrapper">
-              <NotificationManagerRefactored />
+              <NotificationManager />
             </div>
           </div>
           <div className="text-center mt-2">
