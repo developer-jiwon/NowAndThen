@@ -1,6 +1,5 @@
 "use client"
 
-import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
 // Declare global window type for adsbygoogle
@@ -11,7 +10,7 @@ declare global {
 }
 
 interface AdSenseProps {
-  adSlot?: string;
+  adSlot: string; // REQUIRED: real slot id
   adFormat?: string;
   adLayout?: string;
   adLayoutKey?: string;
@@ -20,7 +19,7 @@ interface AdSenseProps {
 }
 
 export default function AdSenseComponent({ 
-  adSlot = "auto",
+  adSlot,
   adFormat = "auto", 
   adLayout,
   adLayoutKey,
@@ -29,6 +28,7 @@ export default function AdSenseComponent({
 }: AdSenseProps) {
   // Check if AdSense is approved via environment variable
   const isAdSenseApproved = process.env.NEXT_PUBLIC_ADSENSE_APPROVED === 'true';
+  const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT; // e.g. ca-pub-xxxxxxxx
   
   const adRef = useRef<HTMLModElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -46,8 +46,8 @@ export default function AdSenseComponent({
       const textContent = mainContent?.textContent || '';
       const wordCount = textContent.trim().split(/\s+/).length;
       
-      // Minimum 100 words for content pages, 50 for app pages
-      const minWords = pageType === 'content' ? 100 : 50;
+      // Slightly relaxed thresholds to avoid unnecessary suppression
+      const minWords = pageType === 'content' ? 70 : 30;
       const hasSufficientContent = wordCount >= minWords;
       
       setHasContent(hasSufficientContent);
@@ -64,14 +64,14 @@ export default function AdSenseComponent({
   }, [pageType]);
 
   useEffect(() => {
-    // Don't load ads if not approved or no content
-    if (!isAdSenseApproved || !hasContent) return;
+    // Don't load ads if not approved or no content or missing config
+    if (!isAdSenseApproved || !hasContent || !adClient || !adSlot) return;
     
     // Check if container is wide enough for ads
     if (adRef.current) {
       const containerWidth = adRef.current.offsetWidth;
-      if (containerWidth < 320) {
-        console.log(`Container too narrow for ads: ${containerWidth}px (minimum: 320px)`);
+      if (containerWidth < 300) {
+        console.log(`Container too narrow for ads: ${containerWidth}px (minimum: 300px)`);
         setAdStatus('container-too-small');
         return;
       }
@@ -140,8 +140,8 @@ export default function AdSenseComponent({
     };
   }, []);
 
-  // Don't render anything if AdSense is not approved
-  if (!isAdSenseApproved) {
+  // Don't render anything if AdSense is not approved or missing config
+  if (!isAdSenseApproved || !adClient || !adSlot) {
     return null;
   }
 
@@ -152,26 +152,11 @@ export default function AdSenseComponent({
 
   return (
     <div className={className} style={{ minHeight: 280 }}>
-      <Script
-        id="adsense-script"
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4588308927468413"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-        onLoad={() => {
-          console.log('AdSense script loaded successfully');
-        }}
-        onError={(e) => {
-          console.error("AdSense script error:", e);
-          setAdError("Failed to load AdSense script");
-          setAdStatus('error');
-        }}
-      />
       <ins 
         ref={adRef}
         className="adsbygoogle"
         style={{ display: "block", textAlign: "center", minHeight: 250 }}
-        data-ad-client="ca-pub-4588308927468413"
+        data-ad-client={adClient}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-ad-layout={adLayout}

@@ -120,6 +120,7 @@ export default function HomePage() {
             className="flex justify-center w-full min-w-[320px]"
             adFormat="auto"
             pageType="content"
+            adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME as string}
           />
         </div>
       </div>

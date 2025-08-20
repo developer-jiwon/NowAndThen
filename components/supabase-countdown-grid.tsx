@@ -658,6 +658,7 @@ export default function SupabaseCountdownGrid({
                 className="flex justify-center my-6"
                 adFormat="auto"
                 pageType="app"
+                adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_GRID as string}
               />
             </div>
           )}

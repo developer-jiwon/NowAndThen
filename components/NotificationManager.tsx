@@ -297,11 +297,6 @@ export default function NotificationManager() {
   return (
     <>
       <div className="flex items-center gap-2">
-        {isPWA && (
-          <div className="text-xs text-[#4E724C] bg-[#4E724C]/10 px-2 py-1 rounded-full">
-            PWA Mode
-          </div>
-        )}
         
         {permission === 'denied' ? (
           <div className="text-xs text-gray-500 flex items-center gap-1">

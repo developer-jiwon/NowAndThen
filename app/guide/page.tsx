@@ -152,6 +152,7 @@ export default function Guide() {
             className="flex justify-center"
             adFormat="auto"
             pageType="content"
+            adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_GUIDE as string}
           />
         </div>
 

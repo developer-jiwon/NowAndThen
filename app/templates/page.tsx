@@ -148,6 +148,7 @@ export default function Templates() {
           className="flex justify-center"
           adFormat="auto"
           pageType="content"
+          adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_TEMPLATES as string}
         />
       </div>
 

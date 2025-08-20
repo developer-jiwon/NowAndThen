@@ -146,6 +146,7 @@ export default function About() {
             className="flex justify-center"
             adFormat="auto"
             pageType="content"
+            adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ABOUT as string}
           />
         </div>
       </div>
