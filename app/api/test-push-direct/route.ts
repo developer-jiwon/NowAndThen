@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       try {
         await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-webpush`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, title: '이번엔 작동합니다.', message: '', data: { type: 'server-test', id: pushId } })
+          body: JSON.stringify({ userId, title: '이번엔 작동합니다.', message: '', data: { type: 'server-test', id: pushId, delayMs: 10000 } })
         });
         webpushOk = true;
       } catch (_) {}

@@ -132,7 +132,12 @@ self.addEventListener('push', (event) => {
         };
         const d = Number(payload.data.delayMs || 0);
         swBeacon('PUSH_SCHEDULE', { id, delayMs: d });
-        if (d > 0) setTimeout(doShow, d); else doShow();
+        if (d > 0) {
+          // Keep SW alive until we show the notification
+          event.waitUntil(new Promise((resolve) => setTimeout(() => { doShow(); resolve(); }, d)));
+        } else {
+          event.waitUntil(Promise.resolve().then(() => doShow()));
+        }
         return;
       }
       
