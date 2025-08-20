@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		const id = incomingId || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-		process.env.NODE_ENV === 'development' && console.log('[API] ⏱️ Scheduling dual-shot (10s & 25s), id:', id);
+		process.env.NODE_ENV === 'development' && console.log('[API] ⏱️ Scheduling single-shot (10s), id:', id);
 
 		const send = async (label: string) => {
 			const tag = `test-delayed-${id}`;
@@ -48,9 +48,8 @@ export async function POST(request: NextRequest) {
 		};
 
 		setTimeout(() => { send('A(10s)').catch(e => console.error('[API] ❌ Shot A failed:', e?.statusCode || e)); }, 10000);
-		setTimeout(() => { send('B(25s)').catch(e => console.error('[API] ❌ Shot B failed:', e?.statusCode || e)); }, 25000);
 
-		return NextResponse.json({ success: true, scheduled: [10000, 25000], id });
+		return NextResponse.json({ success: true, scheduled: [10000], id });
 	} catch (error: any) {
 		console.error('[API] ❌ Push failed:', error?.statusCode || error?.code || error);
 		return NextResponse.json({ error: 'Failed to schedule push' }, { status: 500 });

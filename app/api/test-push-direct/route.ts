@@ -47,136 +47,18 @@ export async function POST(request: NextRequest) {
       process.env.NODE_ENV === 'development' && console.log('🔔 [WebPush] Subscription endpoint:', subscription.push_subscription.endpoint?.substring(0, 50) + '...');
     }
 
-    let results = [];
+    // 즉시 발사는 하지 않음. 아래에서 서버 단일 지연 샷으로만 스케줄.
+    const results: any[] = [];
     let fcmOk = false;
     let webpushOk = false;
 
-    // Firebase FCM 시도
-    if (subscription.fcm_token) {
-      try {
-        const fcmResponse = await fetch('https://fcm.googleapis.com/fcm/send', {
-          method: 'POST',
-          headers: {
-            'Authorization': `key=${process.env.FCM_SERVER_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: subscription.fcm_token,
-            priority: 'high',  // 높은 우선순위 (PWA 종료 상태에서 필수)
-            notification: {
-              title: title || '🚀 PWA 종료 테스트 성공!',
-              body: message || 'PWA가 완전히 종료되어도 알림이 정상 작동합니다! 🎉',
-              icon: '/favicon.ico',
-              click_action: '/',
-              require_interaction: true
-            },
-            data: {
-              url: '/',
-              type: 'server-test',
-              timestamp: Date.now().toString(),
-              priority: 'high',
-              delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0,
-              id: pushId
-            },
-            // Android 전용 설정
-            android: {
-              priority: 'high',
-              notification: {
-                channel_id: 'default',
-                priority: 'high',
-                visibility: 'public'
-              }
-            },
-            // 웹푸시 전용 설정
-            webpush: {
-              headers: {
-                Urgency: 'high'
-              },
-              notification: {
-                requireInteraction: true,
-                silent: false
-              }
-            }
-          })
-        });
-
-        const fcmResult = await fcmResponse.json();
-        process.env.NODE_ENV === 'development' && console.log('📲 [FCM] Response status:', fcmResponse.status, fcmResponse.statusText);
-        process.env.NODE_ENV === 'development' && console.log('📲 [FCM] Full result:', JSON.stringify(fcmResult, null, 2));
-        
-        if (fcmResponse.ok) {
-          process.env.NODE_ENV === 'development' && console.log('✅ [FCM] Notification sent successfully! Should reach device even when PWA is closed.');
-          fcmOk = true;
-        } else {
-          console.error('❌ [FCM] Notification failed:', fcmResult);
-        }
-
-        results.push({
-          method: 'FCM',
-          success: fcmResponse.ok,
-          result: fcmResult,
-          httpStatus: fcmResponse.status
-        });
-      } catch (error) {
-        console.error('[Test] FCM Error:', error);
-        results.push({
-          method: 'FCM',
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-    }
-
-    // Web Push 시도
-    if (subscription.push_subscription) {
-      try {
-        const webPushResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-webpush`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId,
-            title: title || '🚀 PWA 종료 테스트 성공!',
-            message: message || 'Web Push로 PWA 종료 상태에서도 알림 전달! 🚀',
-            data: { url: '/', type: 'server-test', delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0, id: pushId }
-          })
-        });
-
-        const webPushResult = await webPushResponse.json();
-        process.env.NODE_ENV === 'development' && console.log('🌐 [WebPush] Response status:', webPushResponse.status, webPushResponse.statusText);
-        process.env.NODE_ENV === 'development' && console.log('🌐 [WebPush] Full result:', JSON.stringify(webPushResult, null, 2));
-        
-        if (webPushResponse.ok) {
-          process.env.NODE_ENV === 'development' && console.log('✅ [WebPush] Notification sent successfully! Should reach device even when PWA is closed.');
-          webpushOk = true;
-        } else {
-          console.error('❌ [WebPush] Notification failed:', webPushResult);
-        }
-
-        results.push({
-          method: 'Web Push',
-          success: webPushResponse.ok,
-          result: webPushResult,
-          httpStatus: webPushResponse.status
-        });
-      } catch (error) {
-        console.error('[Test] Web Push Error:', error);
-        results.push({
-          method: 'Web Push',
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-    }
-
-    // Redundant fallback: schedule additional delayed shots via internal API (10s & 25s)
+    // Schedule a single delayed shot via internal API (10s) to avoid reliance on SW timers
     try {
       if (subscription.push_subscription) {
         fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/test-push-delayed`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription: subscription.push_subscription })
+          body: JSON.stringify({ subscription: subscription.push_subscription, id: pushId })
         }).catch(() => {});
       }
     } catch {}
@@ -191,14 +73,15 @@ export async function POST(request: NextRequest) {
     } catch {}
 
     return NextResponse.json({
-      success: results.some(r => r.success),
+      success: true,
+      scheduled: true,
       subscription: {
         hasFirebase: !!subscription.fcm_token,
         hasWebPush: !!subscription.push_subscription,
         preferences: subscription.notification_preferences
       },
       results,
-      message: '✅ PWA를 완전히 종료하고 10초 후 알림을 확인하세요! (앱을 최근 앱 목록에서도 제거해주세요)'
+      message: '✅ 서버에서 10초 후 단일 푸시가 예약되었습니다.'
     });
 
   } catch (error: any) {
