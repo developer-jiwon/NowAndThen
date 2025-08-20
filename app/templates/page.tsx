@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import Script from "next/script";
 import { Briefcase, PartyPopper, Dumbbell, BookOpen, PiggyBank, Palette } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
@@ -141,49 +142,57 @@ export default function Templates() {
         ← Back
       </Link>
       
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">Timer Templates</h1>
-        <p className="text-lg text-gray-600">Ready-to-use countdown ideas for every area of life.</p>
+      <div className="mb-12 text-center">
+        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">Timer Templates</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Ready-to-use countdown ideas with real examples and pro tips for every area of life.
+        </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {templates.map((template) => (
-          <Card key={template.id} className="hover:shadow-md transition-all">
-            <CardHeader className="flex flex-row items-center gap-3 pb-2">
-              <div>{template.emoji}</div>
+          <Card key={template.id} className="hover:shadow-lg transition-all duration-300 border-gray-200/60 group">
+            <CardHeader className="flex flex-row items-center gap-4 pb-4">
+              <div className="group-hover:scale-110 transition-transform duration-200">{template.emoji}</div>
               <div>
-                <CardTitle className="text-lg font-semibold">{template.title}</CardTitle>
-                <CardDescription>{template.description}</CardDescription>
+                <CardTitle className="text-xl font-bold text-gray-900">{template.title}</CardTitle>
+                <CardDescription className="text-gray-600">{template.description}</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
             <div className="space-y-4">
               <div className="space-y-2">
                 {template.examples.map((example, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-900">{example.title}</span>
-                      <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">{example.days}</span>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-gray-200">
-                      <span className="text-xs font-medium text-gray-700">Memo: </span>
-                      <span className="text-xs text-gray-600">{example.memo}</span>
-                    </div>
-                  </div>
+                  <Card key={index} className="bg-gradient-to-r from-gray-50 to-white border-gray-200/60">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-semibold text-gray-900">{example.title}</span>
+                        <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full">{example.days}</span>
+                      </div>
+                      <div className="bg-white/80 rounded-md p-2 border border-gray-100">
+                        <span className="text-xs font-medium text-gray-800">Memo: </span>
+                        <span className="text-xs text-gray-700">{example.memo}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
               
-              <div className="border-t border-gray-200 pt-3">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">Pro Tips:</h4>
-                <ul className="space-y-1">
-                  {template.tips.map((tip, index) => (
-                    <li key={index} className="text-xs text-gray-600 flex items-start">
-                      <span className="w-1 h-1 bg-gray-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                      {tip}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+                <CardContent className="p-4">
+                  <h4 className="text-sm font-bold text-yellow-900 mb-3 flex items-center gap-2">
+                    💡 Pro Tips
+                  </h4>
+                  <ul className="space-y-2">
+                    {template.tips.map((tip, index) => (
+                      <li key={index} className="text-xs text-yellow-800 flex items-start gap-2">
+                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
             </CardContent>
           </Card>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import Script from "next/script";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "FAQ | Now & Then",
@@ -95,39 +97,48 @@ export default function FAQ() {
         ← Back
       </Link>
       
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">FAQ</h1>
-        <p className="text-lg text-gray-600">Quick answers to common questions.</p>
+      <div className="mb-12 text-center">
+        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">FAQ</h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          Quick answers to everything you need to know about Now & Then.
+        </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid gap-4">
         {faqItems.map((item, index) => (
-          <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-5 hover:shadow-sm transition-shadow">
-            <h2 className="font-semibold text-gray-900 mb-3">{item.question}</h2>
-            <p className="text-gray-600 text-sm leading-relaxed">{item.answer}</p>
-          </div>
+          <Card key={index} className="border-gray-200/60 hover:shadow-lg transition-all duration-300 group">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                ❓ {item.question}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-gray-700 leading-relaxed">{item.answer}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="mt-10 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
-        <p className="text-sm text-gray-600 mb-3">
-          Still have questions?
-        </p>
-        <div className="flex justify-center gap-3">
-          <Link
-            href="/guide"
-            className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-          >
-            Read Guide
-          </Link>
-          <Link
-            href="/contact"
-            className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-          >
-            Contact Us
-          </Link>
-        </div>
-      </div>
+      <Card className="mt-12 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="p-8 text-center">
+          <h2 className="text-xl font-bold text-blue-900 mb-3">Still have questions?</h2>
+          <p className="text-blue-800 mb-6">
+            Check out our comprehensive guide or get in touch directly.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Link href="/guide">
+                📚 Read Guide
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+              <Link href="/contact">
+                💬 Contact Us
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </main>
   );
 } 
