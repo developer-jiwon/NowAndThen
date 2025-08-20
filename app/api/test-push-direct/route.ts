@@ -170,15 +170,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Redundant fallback: schedule additional delayed shots via internal API (10s & 25s)
+    try {
+      if (subscription.push_subscription) {
+        fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/test-push-delayed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscription: subscription.push_subscription })
+        }).catch(() => {});
+      }
+    } catch {}
+
     // server-side beacon for trace
     try {
       const site = process.env.NEXT_PUBLIC_SITE_URL || '';
+      const payload = { event: 'SERVER_PUSH_SENT', id: pushId, fcmOk, webpushOk, delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0, ts: Date.now() };
       if (site) {
-        fetch(`${site}/api/sw-log`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ event: 'SERVER_PUSH_SENT', id: pushId, fcmOk, webpushOk, delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0, ts: Date.now() })
-        }).catch(() => {});
+        fetch(`${site}/api/sw-log`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {});
       }
     } catch {}
 

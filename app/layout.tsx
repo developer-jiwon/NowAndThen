@@ -220,16 +220,39 @@ export default function RootLayout({
           <ConsentBanner />
           <Script id="sw-register" strategy="afterInteractive">{`
             if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.register('/sw-unified.js?v=6', { 
-                scope: '/', 
-                updateViaCache: 'none' 
-              }).then(reg => {
-                if (typeof window !== 'undefined') {
-                  const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
-                  window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
-                  if (window.webPushManager) window.webPushManager.setVapidKey(vapidKey);
+              (async () => {
+                try {
+                  // 1) 기존에 unified가 아닌 SW 정리
+                  const regs = await navigator.serviceWorker.getRegistrations();
+                  await Promise.all(
+                    regs.map(r => {
+                      const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || '';
+                      if (!url.includes('/sw-unified.js')) {
+                        return r.unregister();
+                      }
+                      return Promise.resolve(true);
+                    })
+                  );
+
+                  // 2) 버전 캐시버스트로 강제 업데이트
+                  const swUrl = '/sw-unified.js?v=7';
+                  const existing = await navigator.serviceWorker.getRegistration();
+                  if (!existing || !(existing.active?.scriptURL || '').includes(swUrl)) {
+                    await navigator.serviceWorker.register(swUrl, { scope: '/', updateViaCache: 'none' });
+                  } else {
+                    existing.update();
+                  }
+
+                  await navigator.serviceWorker.ready;
+                  if (typeof window !== 'undefined') {
+                    const vapidKey = 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s';
+                    window.NEXT_PUBLIC_VAPID_PUBLIC_KEY = vapidKey;
+                    if (window.webPushManager) window.webPushManager.setVapidKey(vapidKey);
+                  }
+                } catch (e) {
+                  console.error('SW register error', e);
                 }
-              }).catch(e => console.error('SW register error:', e));
+              })();
             }
           `}</Script>
           <div className="relative flex flex-col">

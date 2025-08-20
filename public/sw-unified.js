@@ -131,6 +131,7 @@ self.addEventListener('push', (event) => {
           });
         };
         const d = Number(payload.data.delayMs || 0);
+        swBeacon('PUSH_SCHEDULE', { id, delayMs: d });
         if (d > 0) setTimeout(doShow, d); else doShow();
         return;
       }

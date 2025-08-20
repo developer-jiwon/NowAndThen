@@ -30,8 +30,10 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
 	const url = new URL(req.url);
 	const format = url.searchParams.get('format') || url.searchParams.get('fmt') || url.searchParams.get('f');
+	const filterId = url.searchParams.get('id') || url.searchParams.get('pushId') || undefined;
 	if (format === 'txt' || format === 'text') {
-		const lines = LOGS.map((e) => {
+		const filtered = filterId ? LOGS.filter((e) => (e as any).id === filterId) : LOGS;
+		const lines = filtered.map((e) => {
 			const { seq } = e as { seq?: number };
 			const pretty = JSON.stringify(e, null, 2);
 			return `${seq ?? '?'}\n${pretty}`;
@@ -40,6 +42,33 @@ export async function GET(req: NextRequest) {
 			status: 200,
 			headers: { 'Content-Type': 'text/plain; charset=utf-8' },
 		});
+	}
+
+	if (format === 'timeline') {
+		// Group by id and output ordered, de-duplicated steps
+		const map = new Map<string, Array<Record<string, unknown>>>();
+		for (const e of LOGS) {
+			const id = (e as any).id || 'no-id';
+			if (filterId && id !== filterId) continue;
+			if (!map.has(id)) map.set(id, []);
+			map.get(id)!.push(e);
+		}
+		const out: Record<string, any> = {};
+		for (const [id, arr] of map.entries()) {
+			// sort by ts
+			const sorted = arr.slice().sort((a: any, b: any) => (a.ts ?? 0) - (b.ts ?? 0));
+			// de-duplicate same event consecutively
+			const steps: any[] = [];
+			let lastKey = '';
+			for (const e of sorted) {
+				const key = `${e.event}-${e.reason ?? ''}`;
+				if (key === lastKey) continue;
+				lastKey = key;
+				steps.push(e);
+			}
+			out[id] = steps;
+		}
+		return NextResponse.json({ ok: true, timeline: out });
 	}
 	return NextResponse.json({ ok: true, lines: LOGS });
 }
