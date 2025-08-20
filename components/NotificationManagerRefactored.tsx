@@ -263,6 +263,14 @@ export default function NotificationManagerRefactored() {
       // 서버에 직접 푸시 요청(FCM + WebPush), 동일 id로 로그를 잇기
       try {
         const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        // 구독 최신화(수정/재등록 후 DB 반영) — 스테일 엔드포인트로 인한 미수신 방지
+        try {
+          await notificationService.saveSubscription(user.id, settings);
+          fetch('/api/sw-log', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: 'CLIENT_SUB_REPAIRED', id, ts: Date.now() })
+          }).catch(()=>{});
+        } catch {}
         // 클릭 로그 비컨
         fetch('/api/sw-log', {
           method: 'POST',
