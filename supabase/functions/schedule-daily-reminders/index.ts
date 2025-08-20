@@ -87,8 +87,8 @@ serve(async (req) => {
     const list = countdownsByUser[userId] || [];
     if (list.length === 0) {
       return hhmm === '08:30'
-        ? { title: '아침 리마인더', body: '오늘의 순간을 간단히 기록해볼까요?' }
-        : { title: '저녁 리마인더', body: '오늘 남긴 순간이 있나요? 한 줄만 기록해요.' };
+        ? { title: '다음 이벤트', body: '등록된 일정이 없어요. 새로운 이벤트를 추가해보세요.' }
+        : { title: '최근 이벤트', body: '등록된 일정이 없어요. 새로운 이벤트를 추가해보세요.' };
     }
     const enriched = list.map((c) => ({ ...c, d: daysLeft(c.date) }));
     const upcoming = enriched.filter((c) => c.d >= 0).sort((a,b) => a.d - b.d);
@@ -99,9 +99,10 @@ serve(async (req) => {
     const d = chosen.d;
     const dStr = d === 0 ? '오늘' : d > 0 ? `D-${d}` : `D+${Math.abs(d)}`;
     const title = `${dStr} · ${chosen.title}`;
-    const body = hhmm === '08:30'
-      ? '오늘의 순간을 기록해볼까요?'
-      : '하루를 간단히 마무리해요.';
+    let body = '';
+    if (d > 0) body = `다음 이벤트까지 ${d}일 남았습니다.`;
+    else if (d === 0) body = '오늘 예정된 이벤트입니다.';
+    else body = `이벤트가 ${Math.abs(d)}일 지났습니다.`;
     return { title, body };
   }
 
