@@ -49,7 +49,16 @@ export default function NotificationManager() {
       const currentPermission = Notification.permission;
       process.env.NODE_ENV === 'development' && console.log('Initial notification permission:', currentPermission);
       setPermission(currentPermission);
-      setIsEnabled(currentPermission === 'granted');
+      // Enabled only if there is an active push subscription
+      (async () => {
+        try {
+          const reg = await navigator.serviceWorker.getRegistration();
+          const sub = await reg?.pushManager.getSubscription();
+          setIsEnabled(!!sub);
+        } catch {
+          setIsEnabled(false);
+        }
+      })();
     }
   }, []);
 
