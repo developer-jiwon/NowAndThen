@@ -135,65 +135,70 @@ export default function Templates() {
         "@type": "Article",
         headline: "Timer Templates for Common Use Cases",
         author: { "@type": "Person", name: "Now & Then Team" },
-        datePublished: "2025-01-01",
-        dateModified: "2025-01-01"
+        datePublished: "2024-12-15",
+        dateModified: "2025-08-20"
       })}</Script>
       <Link href="/" className="inline-block mb-6 text-sm text-gray-500 hover:text-gray-700 transition-colors">
         ← Back
       </Link>
       
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">Timer Templates</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Ready-to-use countdown ideas with real examples and pro tips for every area of life.
-        </p>
+      <div className="mb-12">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="font-merriweather text-4xl font-light text-slate-900 mb-6 leading-tight">
+            Templates
+          </h1>
+          <div className="border-l-2 border-slate-900 pl-6 max-w-3xl">
+            <p className="text-lg text-slate-700 leading-relaxed mb-4 font-light">
+              Proven timer patterns for work, life, and everything between.
+            </p>
+            <p className="text-base text-slate-600 leading-relaxed">
+              Each template includes real examples and strategic insights from productive users.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-12">
         {templates.map((template) => (
-          <Card key={template.id} className="hover:shadow-lg transition-all duration-300 border-gray-200/60 group">
-            <CardHeader className="flex flex-row items-center gap-4 pb-4">
-              <div className="group-hover:scale-110 transition-transform duration-200">{template.emoji}</div>
-              <div>
-                <CardTitle className="text-xl font-bold text-gray-900">{template.title}</CardTitle>
-                <CardDescription className="text-gray-600">{template.description}</CardDescription>
-              </div>
+          <Card key={template.id} className="border-slate-200 hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-6">
+              <CardTitle className="font-merriweather text-xl font-light text-slate-900 mb-2">
+                {template.title}
+              </CardTitle>
+              <CardDescription className="text-slate-600 leading-relaxed">
+                {template.description}
+              </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                {template.examples.map((example, index) => (
-                  <Card key={index} className="bg-gradient-to-r from-gray-50 to-white border-gray-200/60">
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm font-semibold text-gray-900">{example.title}</span>
-                        <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full">{example.days}</span>
+              <div className="space-y-6">
+                {/* Examples */}
+                <div className="space-y-3">
+                  {template.examples.map((example, index) => (
+                    <div key={index} className="border-l-2 border-slate-300 pl-4 py-3">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-medium text-slate-900">{example.title}</span>
+                        <span className="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded">{example.days}</span>
                       </div>
-                      <div className="bg-white/80 rounded-md p-2 border border-gray-100">
-                        <span className="text-xs font-medium text-gray-800">Memo: </span>
-                        <span className="text-xs text-gray-700">{example.memo}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-                <CardContent className="p-4">
-                  <h4 className="text-sm font-bold text-yellow-900 mb-3 flex items-center gap-2">
-                    💡 Pro Tips
-                  </h4>
+                      <p className="text-xs text-slate-600 leading-relaxed italic">
+                        {example.memo}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Strategy Notes */}
+                <div className="bg-slate-50 p-4 border border-slate-200">
+                  <h4 className="font-semibold text-slate-900 mb-3">Strategy Notes</h4>
                   <ul className="space-y-2">
                     {template.tips.map((tip, index) => (
-                      <li key={index} className="text-xs text-yellow-800 flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                      <li key={index} className="text-sm text-slate-700 flex items-start gap-2">
+                        <span className="w-1 h-1 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
                         {tip}
                       </li>
                     ))}
                   </ul>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}

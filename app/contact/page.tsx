@@ -17,156 +17,148 @@ export default function Contact() {
         ← Back
       </Link>
       
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">Contact Us</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-        </p>
+      <div className="mb-12">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="font-merriweather text-4xl font-light text-slate-900 mb-6 leading-tight">
+            Contact
+          </h1>
+          <div className="border-l-2 border-slate-900 pl-6 max-w-3xl">
+            <p className="text-lg text-slate-700 leading-relaxed mb-4 font-light">
+              Questions, suggestions, technical issues.
+            </p>
+            <p className="text-base text-slate-600 leading-relaxed">
+              We aim to respond within 1-2 business days.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-16">
         {/* Contact Information */}
-        <Card className="border-gray-200/60 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-3">
-              📧 Get In Touch
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
-                  ✉️ Email
-                </h3>
-                <p className="mb-2">
-                  <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-700 hover:text-blue-800 font-semibold text-lg hover:underline">
+        <section className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16">
+            <div>
+              <h2 className="font-merriweather text-2xl font-light text-slate-900 mb-6">
+                Email
+              </h2>
+              <div className="space-y-6">
+                <div>
+                  <a href="mailto:dev.jiwonnie@gmail.com" className="text-xl text-slate-900 hover:text-slate-600 transition-colors underline decoration-2 underline-offset-4">
                     dev.jiwonnie@gmail.com
                   </a>
+                </div>
+                <p className="text-slate-600 leading-relaxed">
+                  For technical support, feature requests, general feedback, or collaboration inquiries.
                 </p>
-                <p className="text-sm text-blue-800">
-                  For general inquiries, support, or feedback
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-              <CardContent className="p-6">
-                <h3 className="font-bold text-green-900 mb-2 flex items-center gap-2">
-                  ⏱️ Response Time
-                </h3>
-                <p className="text-green-800">We typically respond within 24-48 hours</p>
-              </CardContent>
-            </Card>
-          </CardContent>
-        </Card>
-
-        {/* What to contact us about */}
-        <Card className="border-gray-200/60 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-3">
-              🤝 What Can We Help With?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="bg-gradient-to-br from-red-50 to-pink-50 border-red-200 hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-red-900 mb-4 flex items-center gap-2">
-                    🔧 Technical Support
-                  </h3>
-                  <ul className="text-sm text-red-800 space-y-2">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                      Login or sync issues
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                      Timer not working properly
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                      Data loss or recovery
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                      Browser compatibility
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200 hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-purple-900 mb-4 flex items-center gap-2">
-                    💬 General Inquiries
-                  </h3>
-                  <ul className="text-sm text-purple-800 space-y-2">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                      Feature requests
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                      Partnership opportunities
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                      Press and media
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                      General feedback
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
+            <div>
+              <h2 className="font-merriweather text-2xl font-light text-slate-900 mb-6">
+                Response
+              </h2>
+              <div className="space-y-6">
+                <div className="text-xl text-slate-900">
+                  1-2 business days
+                </div>
+                <p className="text-slate-600 leading-relaxed">
+                  Every message gets a personal response. Complex technical issues may require additional time to investigate.
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        {/* Before you contact */}
-        <Card className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-0">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">💡 Check These First</h2>
-            <p className="text-gray-300 mb-8">
-              Your question might already be answered in our comprehensive resources:
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="bg-white text-gray-900 hover:bg-gray-100">
-                <Link href="/faq">
-                  ❓ View FAQ
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-gray-900">
-                <Link href="/guide">
-                  📚 Read Guide
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-gray-900">
-                <Link href="/templates">
-                  📝 Browse Templates
-                </Link>
-              </Button>
+        {/* What we help with */}
+        <section className="max-w-4xl mx-auto">
+          <h2 className="font-merriweather text-2xl font-light text-slate-900 mb-12 text-center">
+            What We Address
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold text-slate-900">Technical Issues</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Sync problems across devices</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Timer display or calculation errors</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Data recovery assistance</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Browser compatibility</span>
+                </li>
+              </ul>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold text-slate-900">General Inquiries</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Feature suggestions and requests</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Collaboration inquiries</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">General feedback and suggestions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-slate-700">Usage feedback and suggestions</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-        {/* Privacy note */}
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-2xl">🔒</span>
-              <h3 className="text-lg font-bold text-green-900">Privacy Protected</h3>
-            </div>
-            <p className="text-sm text-green-800">
-              We respect your privacy. Your contact information will only be used to respond to your inquiry.
-              <br className="hidden sm:block" />
-              <span className="sm:inline block mt-1 sm:mt-0">
-                Read our <Link href="/privacy-policy" className="text-green-900 hover:underline font-bold">Privacy Policy</Link> for more details.
-              </span>
-            </p>
-          </CardContent>
-        </Card>
+        {/* Before contacting */}
+        <section className="max-w-2xl mx-auto text-center py-16 border-t border-slate-200">
+          <h2 className="font-merriweather text-xl font-light text-slate-900 mb-4">
+            Before Emailing
+          </h2>
+          <p className="text-slate-600 mb-8 leading-relaxed">
+            Many questions are answered in our existing documentation.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white">
+              <Link href="/faq" className="font-medium">
+                Check FAQ
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+              <Link href="/guide" className="font-medium">
+                Read Guide
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+              <Link href="/templates" className="font-medium">
+                Browse Templates
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* Privacy */}
+        <section className="max-w-2xl mx-auto text-center py-8 border-t border-slate-200">
+          <p className="text-sm text-slate-600">
+            We respect your privacy. Contact information is used only for responding to your message.
+            <br className="hidden sm:block" />
+            <span className="sm:inline block mt-1 sm:mt-0">
+              Details in our <Link href="/privacy-policy" className="text-slate-900 hover:underline font-medium">Privacy Policy</Link>.
+            </span>
+          </p>
+        </section>
       </div>
     </main>
   );

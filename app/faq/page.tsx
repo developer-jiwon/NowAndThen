@@ -97,48 +97,55 @@ export default function FAQ() {
         ← Back
       </Link>
       
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">FAQ</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Quick answers to everything you need to know about Now & Then.
-        </p>
+      <div className="mb-12">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="font-merriweather text-4xl font-light text-slate-900 mb-6 leading-tight">
+            Questions
+          </h1>
+          <div className="border-l-2 border-slate-900 pl-6 max-w-3xl">
+            <p className="text-lg text-slate-700 leading-relaxed mb-4 font-light">
+              Direct answers to common concerns.
+            </p>
+            <p className="text-base text-slate-600 leading-relaxed">
+              Technical details, usage patterns, and everything else users typically ask.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="max-w-4xl mx-auto space-y-8">
         {faqItems.map((item, index) => (
-          <Card key={index} className="border-gray-200/60 hover:shadow-lg transition-all duration-300 group">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                ❓ {item.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="text-gray-700 leading-relaxed">{item.answer}</p>
-            </CardContent>
-          </Card>
+          <div key={index} className="border-b border-slate-200 pb-8">
+            <h3 className="font-semibold text-slate-900 text-lg mb-4">
+              {item.question}
+            </h3>
+            <p className="text-slate-700 leading-relaxed">
+              {item.answer}
+            </p>
+          </div>
         ))}
       </div>
 
-      <Card className="mt-12 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-        <CardContent className="p-8 text-center">
-          <h2 className="text-xl font-bold text-blue-900 mb-3">Still have questions?</h2>
-          <p className="text-blue-800 mb-6">
-            Check out our comprehensive guide or get in touch directly.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Link href="/guide">
-                📚 Read Guide
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-700 hover:bg-blue-100">
-              <Link href="/contact">
-                💬 Contact Us
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="max-w-2xl mx-auto text-center py-16 border-t border-slate-200">
+        <h2 className="font-merriweather text-xl font-light text-slate-900 mb-4">
+          Still Curious?
+        </h2>
+        <p className="text-slate-600 mb-8 leading-relaxed">
+          Browse our detailed guide or reach out directly for specific questions.
+        </p>
+        <div className="flex justify-center gap-4">
+          <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white">
+            <Link href="/guide" className="font-medium">
+              Read Guide
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+            <Link href="/contact" className="font-medium">
+              Contact Us
+            </Link>
+          </Button>
+        </div>
+      </section>
     </main>
   );
 } 
