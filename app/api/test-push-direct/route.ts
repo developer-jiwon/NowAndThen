@@ -53,14 +53,27 @@ export async function POST(request: NextRequest) {
     let webpushOk = false;
 
     // Enqueue to server-side queue (due_at = now + 10s)
+    let enqueued = false;
     try {
       const dueAt = new Date(Date.now() + 10000).toISOString();
       const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/test-queue`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: pushId, userId, dueAt, payload: { title: '이번엔 작동합니다.', body: '', data: { type: 'server-test', id: pushId } } })
+        body: JSON.stringify({ id: pushId, userId, dueAt, payload: { title: '이번엔 작동합니다.', body: '', url: '/', type: 'server-test', id: pushId, delayMs: 0 } })
       });
+      enqueued = res.ok;
       if (!res.ok) console.error('enqueue failed', await res.text());
     } catch {}
+
+    // Fallback: if enqueue failed, send immediate webpush once so user still gets a notification while queue/cron is down
+    if (!enqueued && subscription.push_subscription && process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-webpush`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, title: '이번엔 작동합니다.', message: '', data: { type: 'server-test', id: pushId } })
+        });
+        webpushOk = true;
+      } catch (_) {}
+    }
 
     // server-side beacon for trace
     try {
