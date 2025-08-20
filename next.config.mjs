@@ -18,6 +18,29 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  // PWA 헤더 최적화
+  async headers() {
+    return [
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/sw-unified.js',
+        headers: [
+          {
+            key: 'Cache-Control', 
+            value: 'no-cache, no-store, must-revalidate'
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default nextConfig;

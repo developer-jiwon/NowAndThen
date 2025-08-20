@@ -1,0 +1,55 @@
+{
+  "name": "Now & Then - Countdown Timer",
+  "short_name": "Now & Then",
+  "description": "Professional countdown timer and deadline tracking tool",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/apple-touch-icon-120.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon-152.png", 
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon-167.png",
+      "sizes": "167x167", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png", 
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Timer",
+      "short_name": "New Timer",
+      "description": "Create a new countdown timer",
+      "url": "/?action=new",
+      "icons": [{ "src": "/apple-touch-icon-120.png", "sizes": "120x120" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

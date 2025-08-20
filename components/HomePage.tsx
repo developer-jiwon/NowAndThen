@@ -11,6 +11,7 @@ import LoginButton from "@/components/login-button";
 import UpdatePopup from "@/components/update-popup";
 import AdSenseComponent from "@/components/AdSenseComponent";
 import NotificationManagerRefactored from "@/components/NotificationManagerRefactored";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 export default function HomePage() {
   const user = useUser();
@@ -42,6 +43,7 @@ export default function HomePage() {
   return (
     <>
       <UpdatePopup isVisible={showUpdatePopup} onClose={handleCloseUpdatePopup} />
+      <PWAInstallPrompt />
       <main className="bg-white flex flex-col items-centersm:p-3 mt-20">
         <div className="container mx-auto max-w-6xl flex flex-col">
         <div className="flex flex-col items-center w-full mb-4">
