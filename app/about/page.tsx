@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import AdSenseComponent from "@/components/AdSenseComponent";
 
 export const metadata: Metadata = {
@@ -16,53 +18,51 @@ export default function About() {
         ← Back
       </Link>
       
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900">About Now & Then</h1>
-        <p className="text-xl text-gray-600 leading-relaxed">
-          Time is precious. Now & Then helps you make the most of it by tracking what matters most - your deadlines, goals, and life's important moments.
+      <div className="mb-12 text-center">
+        <h1 className="text-5xl font-bold mb-6 text-gray-900 tracking-tight">Now & Then</h1>
+        <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          A simple countdown timer that helps you track what matters most.
         </p>
       </div>
 
-      <div className="space-y-8">
-        {/* Simple Intro */}
-        <section className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-3 text-gray-900">What is Now & Then?</h2>
-          <p className="text-gray-600 text-sm leading-relaxed">
-            A simple countdown timer app that helps you track deadlines and important dates. 
-            Visual countdowns that put time in perspective and keep you focused on what matters.
-          </p>
-        </section>
+      <div className="space-y-12">
+        {/* What it does - Simple */}
+        <Card className="border-0 shadow-none bg-gray-50/50">
+          <CardContent className="p-8 text-center">
+            <p className="text-gray-600 leading-relaxed">
+              Visual countdowns that put time in perspective and keep you focused on what matters.
+            </p>
+          </CardContent>
+        </Card>
 
-        {/* Key Features */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">Key Features</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold mb-2 text-gray-900">Smart Organization</h3>
-              <p className="text-gray-600 text-sm">
+        {/* Key Features - Minimal */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="border-gray-200/60 hover:shadow-md transition-all duration-200">
+            <CardContent className="p-6">
+              <h3 className="font-medium mb-2 text-gray-900">Smart Organization</h3>
+              <p className="text-sm text-gray-600">
                 Pin urgent timers, organize by categories, search everything.
               </p>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold mb-2 text-gray-900">Count Up & Down</h3>
-              <p className="text-gray-600 text-sm">
+            </CardContent>
+          </Card>
+          <Card className="border-gray-200/60 hover:shadow-md transition-all duration-200">
+            <CardContent className="p-6">
+              <h3 className="font-medium mb-2 text-gray-900">Count Up & Down</h3>
+              <p className="text-sm text-gray-600">
                 Expired timers become "Days Passed" counters for anniversaries.
               </p>
-            </div>
-          </div>
-        </section>
+            </CardContent>
+          </Card>
+        </div>
 
-
-
-        {/* Simple CTA */}
-        <section className="text-center py-6">
-          <Link
-            href="/#custom"
-            className="inline-block bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-          >
-            Get Started
-          </Link>
-        </section>
+        {/* CTA - Prominent */}
+        <div className="text-center py-8">
+          <Button asChild size="lg" className="bg-gray-900 hover:bg-gray-800 text-white">
+            <Link href="/#custom">
+              Get Started
+            </Link>
+          </Button>
+        </div>
 
         {/* AdSense for content-rich about page */}
         <div className="mt-12">
