@@ -50,11 +50,14 @@ serve(async (req) => {
     });
   }
 
+  // Enabled rule: if prefs explicitly say false -> exclude; otherwise include (default-on when subscribed)
   const rows = (subs || []).filter((s: any) => {
     const p = s.notification_preferences || {};
-    // enable flag: support both camelCase and snake_case
-    const enabled = p.dailySummary === true || p.daily_summary === true || p.enabled === true;
-    return enabled;
+    const hasExplicitFalse = p.dailySummary === false || p.daily_summary === false || p.enabled === false;
+    const hasExplicitTrue = p.dailySummary === true || p.daily_summary === true || p.enabled === true;
+    if (hasExplicitFalse) return false;
+    // include if explicit true or no explicit setting
+    return hasExplicitTrue || true;
   });
 
   // 사용자들의 카운트다운 한 번에 로드
