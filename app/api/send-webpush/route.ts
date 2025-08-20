@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { userId, title, message, data } = body;
+    const id = (data && data.id) || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -61,10 +62,13 @@ export async function POST(request: NextRequest) {
           body: message || '새로운 알림이 있습니다',
           icon: '/favicon.ico',
           badge: '/favicon.ico',
-          data: data || { url: '/' }
+          data: data || { url: '/', id }
         });
-
-        const response = await webpush.sendNotification(pushSubscription, payload);
+        const response = await webpush.sendNotification(
+          pushSubscription,
+          payload,
+          { TTL: 300, headers: { Urgency: 'high', Topic: id } }
+        );
         
         results.push({
           success: true,
@@ -95,6 +99,18 @@ export async function POST(request: NextRequest) {
 
     const successCount = results.filter(r => r.success).length;
     const totalCount = results.length;
+
+    // beacon for traceability
+    try {
+      const site = process.env.NEXT_PUBLIC_SITE_URL || '';
+      if (site) {
+        await fetch(`${site}/api/sw-log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: 'SERVER_WEBPUSH_SENT', id, ts: Date.now(), count: results.length })
+        });
+      }
+    } catch {}
 
     return NextResponse.json({
       success: successCount > 0,

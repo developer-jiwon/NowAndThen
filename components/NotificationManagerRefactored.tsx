@@ -260,19 +260,26 @@ export default function NotificationManagerRefactored() {
         return;
       }
       
-      // 서버에 직접 푸시 요청(FCM + WebPush), SW가 delayMs만큼 대기 후 1회 표시
+      // 서버에 직접 푸시 요청(FCM + WebPush), 동일 id로 로그를 잇기
       try {
+        const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        // 클릭 로그 비컨
+        fetch('/api/sw-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: 'TEST_CLICKED', id, ts: Date.now() })
+        }).catch(()=>{});
         toast.success('📡 서버에 테스트 푸시(10초 지연) 요청');
         const resp = await fetch('/api/test-push-direct', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, delayMs: 10000 })
+          body: JSON.stringify({ userId: user.id, delayMs: 10000, id })
         })
         if (!resp.ok) {
           const t = await resp.text();
           throw new Error(`server ${resp.status}: ${t}`)
         }
-        process.env.NODE_ENV === 'development' && console.log('[Test] ✅ test-push-direct queued with delayMs=10000')
+        process.env.NODE_ENV === 'development' && console.log('[Test] ✅ queued id:', id)
       } catch (e) {
         console.error('[Test] ❌ Direct push failed:', e)
         toast.error('서버 푸시 요청 실패')

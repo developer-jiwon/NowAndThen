@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
     });
     
     const body = await request.json();
-    const { userId, title, message, delayMs } = body;
-    const pushId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const { userId, title, message, delayMs, id: clientId } = body;
+    const pushId = clientId || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
