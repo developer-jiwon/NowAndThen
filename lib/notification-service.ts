@@ -7,6 +7,7 @@ import { supabase } from './supabase';
 import { webPushManager, type PushSubscription as WebPushSubscription } from './webpush';
 
 export interface NotificationSettings {
+  enabled?: boolean;
   oneDay: boolean;
   threeDays: boolean;
   sevenDays: boolean;

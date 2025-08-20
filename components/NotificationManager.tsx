@@ -74,7 +74,8 @@ export default function NotificationManager() {
       process.env.NODE_ENV === 'development' && console.log('Permission result:', result);
       
       setPermission(result);
-      setIsEnabled(result === 'granted');
+      // Do not auto-enable UI based on permission alone
+      setIsEnabled(false);
       
       if (result === 'granted') {
         const ok = await registerForNotifications();
@@ -105,7 +106,8 @@ export default function NotificationManager() {
       if (!ok) return false;
 
       // Save minimal prefs: dailySummary true @ 08:30 (server uses fixed slots)
-      const success = await notificationService.saveSubscription(user.id, settings);
+      const success = await notificationService.saveSubscription(user.id, { ...settings, enabled: true });
+      if (success) setIsEnabled(true);
       return success;
     } catch (error) {
       console.error('Error registering for notifications:', error);

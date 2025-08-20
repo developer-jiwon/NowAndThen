@@ -41,13 +41,20 @@ export default function NotificationManagerRefactored() {
     }
   }, []);
 
-  // Check notification permission on mount
+  // Show enabled only if actual push subscription exists
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      const currentPermission = Notification.permission;
-      setPermission(currentPermission);
-      setIsEnabled(currentPermission === 'granted' && notificationService.isSupported());
-    }
+    (async () => {
+      if (typeof window === 'undefined') return;
+      try {
+        const currentPermission = Notification.permission;
+        setPermission(currentPermission);
+        const reg = await navigator.serviceWorker.getRegistration();
+        const sub = await reg?.pushManager.getSubscription();
+        setIsEnabled(!!sub);
+      } catch {
+        setIsEnabled(false);
+      }
+    })();
   }, []);
 
   // Load settings from localStorage
