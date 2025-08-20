@@ -48,20 +48,26 @@ export default function Contact() {
 
         {/* What to contact us about */}
         <section className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">What Can We Help With?</h2>
-          <div className="grid md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-2">Technical Support</h3>
-              <ul className="text-gray-600 space-y-1">
+          <h2 className="text-xl font-semibold mb-6 text-gray-900">What Can We Help With?</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                <span className="w-2 h-2 bg-gray-600 rounded-full mr-2"></span>
+                Technical Support
+              </h3>
+              <ul className="text-sm text-gray-600 space-y-2">
                 <li>• Login or sync issues</li>
                 <li>• Timer not working properly</li>
                 <li>• Data loss or recovery</li>
                 <li>• Browser compatibility</li>
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-2">General Inquiries</h3>
-              <ul className="text-gray-600 space-y-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                <span className="w-2 h-2 bg-gray-600 rounded-full mr-2"></span>
+                General Inquiries
+              </h3>
+              <ul className="text-sm text-gray-600 space-y-2">
                 <li>• Feature requests</li>
                 <li>• Partnership opportunities</li>
                 <li>• Press and media</li>
@@ -72,33 +78,41 @@ export default function Contact() {
         </section>
 
         {/* Before you contact */}
-        <section>
+        <section className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">Before You Contact Us</h2>
-          <p className="text-gray-600 mb-4">
-            Check if your question is already answered in our frequently asked questions or guide:
+          <p className="text-gray-600 mb-6">
+            Check if your question is already answered in our resources:
           </p>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Link
               href="/faq"
-              className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+              className="bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center"
             >
               View FAQ
             </Link>
             <Link
               href="/guide"
-              className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+              className="bg-white border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center"
             >
               Read Guide
+            </Link>
+            <Link
+              href="/templates"
+              className="bg-white border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center"
+            >
+              Browse Templates
             </Link>
           </div>
         </section>
 
         {/* Privacy note */}
-        <section className="text-center text-sm text-gray-500 border-t pt-6">
-          <p>
+        <section className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+          <p className="text-sm text-gray-600">
             We respect your privacy. Your contact information will only be used to respond to your inquiry.
-            <br />
-            Read our <Link href="/privacy-policy" className="text-blue-600 hover:underline">Privacy Policy</Link> for more details.
+            <br className="hidden sm:block" />
+            <span className="sm:inline block mt-1 sm:mt-0">
+              Read our <Link href="/privacy-policy" className="text-gray-900 hover:underline font-medium">Privacy Policy</Link> for more details.
+            </span>
           </p>
         </section>
       </div>

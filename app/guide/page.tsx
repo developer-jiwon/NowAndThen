@@ -81,19 +81,19 @@ export default function Guide() {
           </div>
           <div className="ml-11 space-y-4">
             <div className="space-y-3">
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-2">The "Buffer Zone" Method</h3>
-                <p className="text-sm text-slate-700">Set your timer 2-3 days before the real deadline. When it hits zero, you still have breathing room to polish and perfect.</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-2">The "Buffer Zone" Method</h3>
+                <p className="text-sm text-gray-600">Set your timer 2-3 days before the real deadline. When it hits zero, you still have breathing room to polish and perfect.</p>
               </div>
               
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-2">Milestone Stacking</h3>
-                <p className="text-sm text-slate-700">For long projects, create multiple timers: "First Draft Due", "Review Complete", "Final Version". Breaks overwhelming deadlines into manageable chunks.</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-2">Milestone Stacking</h3>
+                <p className="text-sm text-gray-600">For long projects, create multiple timers: "First Draft Due", "Review Complete", "Final Version". Breaks overwhelming deadlines into manageable chunks.</p>
               </div>
               
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-2">Title Psychology</h3>
-                <p className="text-sm text-slate-700">Use action words: "Submit proposal", "Call mom", "Book flight". Your brain responds better to verbs than nouns.</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-2">Title Psychology</h3>
+                <p className="text-sm text-gray-600">Use action words: "Submit proposal", "Call mom", "Book flight". Your brain responds better to verbs than nouns.</p>
               </div>
             </div>
           </div>
@@ -130,19 +130,25 @@ export default function Guide() {
           </div>
         </div>
 
-        {/* Productivity Psychology */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">The Psychology Edge</h2>
-          <div className="space-y-3 text-sm text-gray-700">
-            <p>
-              <strong>Countdown Pressure:</strong> Your brain treats approaching deadlines as threats, naturally boosting focus and decision-making speed.
-            </p>
-            <p>
-              <strong>Visual Urgency:</strong> Seeing "3 days" hits different than "due Friday" - numbers create immediate emotional response.
-            </p>
-            <p>
-              <strong>Progress Satisfaction:</strong> Watching countdowns decrease gives micro-dopamine hits that maintain motivation over long projects.
-            </p>
+        {/* Next Steps */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Ready to Start?</h2>
+          <p className="text-gray-600 mb-4 text-sm">
+            Get specific timer ideas or find answers to common questions.
+          </p>
+          <div className="flex justify-center gap-3">
+            <Link
+              href="/templates"
+              className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            >
+              Browse Templates
+            </Link>
+            <Link
+              href="/faq"
+              className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+            >
+              View FAQ
+            </Link>
           </div>
         </div>
 

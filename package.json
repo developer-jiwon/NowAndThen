@@ -18,7 +18,8 @@
     "build": "next build",
     "start": "next start",
     "icons": "node scripts/generate-icons.mjs",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ship": "git add -A && git commit -m 'chore: ship' || echo 'no changes' && git push origin main && (command -v supabase >/dev/null 2>&1 && supabase functions deploy send-scheduled-push && supabase functions deploy schedule-daily-reminders || echo 'supabase cli not found - skipped deploy')"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",

@@ -32,16 +32,12 @@ const faqItems: FAQItem[] = [
     answer: "No. Use 'Hide' instead of 'Delete' to keep timers for reference."
   },
   {
-    question: "How do count-up timers work?",
-    answer: "Past dates automatically switch to count-up mode showing elapsed time."
+    question: "What happens when a timer expires?",
+    answer: "It automatically switches to 'Days Passed' mode and counts upward, perfect for tracking anniversaries or how long since a deadline."
   },
   {
     question: "Can I duplicate timers?",
     answer: "Yes, use the three-dot menu on any timer and select 'Duplicate'."
-  },
-  {
-    question: "What happens when a timer expires?",
-    answer: "It shows 'Days Passed' and counts upward, perfect for tracking anniversaries or how long since a deadline."
   },
   {
     question: "Can I edit a timer after creating it?",
@@ -104,22 +100,33 @@ export default function FAQ() {
         <p className="text-lg text-gray-600">Quick answers to common questions.</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {faqItems.map((item, index) => (
-          <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
-            <h2 className="font-semibold text-gray-900 mb-2">{item.question}</h2>
-            <p className="text-gray-600 text-sm">{item.answer}</p>
+          <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-5 hover:shadow-sm transition-shadow">
+            <h2 className="font-semibold text-gray-900 mb-3">{item.question}</h2>
+            <p className="text-gray-600 text-sm leading-relaxed">{item.answer}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500">
-          Need more help? Check the{" "}
-          <Link href="/guide" className="text-blue-600 hover:underline">
-            Guide
-          </Link>
+      <div className="mt-10 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+        <p className="text-sm text-gray-600 mb-3">
+          Still have questions?
         </p>
+        <div className="flex justify-center gap-3">
+          <Link
+            href="/guide"
+            className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+          >
+            Read Guide
+          </Link>
+          <Link
+            href="/contact"
+            className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+          >
+            Contact Us
+          </Link>
+        </div>
       </div>
     </main>
   );
