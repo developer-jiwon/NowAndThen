@@ -652,7 +652,7 @@ export default function SupabaseCountdownGrid({
           </div>
           
           {/* Only show ads when there's substantial content */}
-          {sortedCountdowns.length >= 8 && (
+          {sortedCountdowns.length >= 6 && (
             <div ref={inViewRef} className="mt-8">
               <AdSenseComponent 
                 className="flex justify-center my-6"

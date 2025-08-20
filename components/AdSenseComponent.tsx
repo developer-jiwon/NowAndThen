@@ -46,8 +46,8 @@ export default function AdSenseComponent({
       const textContent = mainContent?.textContent || '';
       const wordCount = textContent.trim().split(/\s+/).length;
       
-      // Slightly relaxed thresholds to avoid unnecessary suppression
-      const minWords = pageType === 'content' ? 70 : 30;
+      // Balanced thresholds
+      const minWords = pageType === 'content' ? 60 : 25;
       const hasSufficientContent = wordCount >= minWords;
       
       setHasContent(hasSufficientContent);
@@ -110,10 +110,10 @@ export default function AdSenseComponent({
               }
             };
             
-            // Check status multiple times with increasing delays
-            setTimeout(checkAdStatus, 1000);
-            setTimeout(checkAdStatus, 3000);
-            setTimeout(checkAdStatus, 5000);
+            // Check status multiple times with balanced delays
+            setTimeout(checkAdStatus, 800);
+            setTimeout(checkAdStatus, 2500);
+            setTimeout(checkAdStatus, 4500);
           }
         }
       } catch (error) {
@@ -124,7 +124,7 @@ export default function AdSenseComponent({
     };
 
     // Delay ad loading to ensure DOM is ready and content is verified
-    const timer = setTimeout(loadAd, 2000);
+    const timer = setTimeout(loadAd, 1500);
 
     return () => {
       clearTimeout(timer);

@@ -14,6 +14,11 @@ export default function ConsentBanner() {
 
   useEffect(() => {
     try {
+      // If Google's CMP is present (AdSense integrated Funding Choices), hide our custom banner
+      if (typeof window !== 'undefined' && (window as any).googlefc) {
+        setVisible(false)
+        return
+      }
       const stored = localStorage.getItem("consentChoice")
       setVisible(stored === null)
     } catch {}

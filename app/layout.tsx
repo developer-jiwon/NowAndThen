@@ -147,19 +147,7 @@ export default function RootLayout({
           }</Script>
         )}
 
-        {/* Consent Mode v2 default (must run before any gtag/ad scripts) */}
-        <Script id="consent-default" strategy="afterInteractive">{
-          `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-          });
-          `
-        }</Script>
+        {/* Removed global "denied" default; AdSense CMP will manage consent in EEA/UK. */}
 
         {/* Google Analytics 4 (optional via env) */}
         {process.env.NEXT_PUBLIC_GA_ID ? (
