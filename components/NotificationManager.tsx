@@ -69,6 +69,15 @@ export default function NotificationManager() {
     }
 
     try {
+      // Quick device checks for early feedback
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const inPWA = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+      if (isIOS && !inPWA) {
+        toast.error('On iOS, please “Add to Home Screen” and open the app to enable notifications.');
+        return;
+      }
+      toast.info('Requesting notification permission...');
       process.env.NODE_ENV === 'development' && console.log('Requesting notification permission...');
       const result = await Notification.requestPermission();
       process.env.NODE_ENV === 'development' && console.log('Permission result:', result);
@@ -84,7 +93,7 @@ export default function NotificationManager() {
           setSuccessMessage("We will remind you every day at 08:30.");
           setShowSuccessPopup(true);
         } else {
-          toast.error('알림 등록에 실패했습니다.');
+          toast.error('Failed to register push subscription. Please try again.');
         }
       } else if (result === 'denied') {
         toast.error('Notification permission denied. Please allow it in your browser settings.');
