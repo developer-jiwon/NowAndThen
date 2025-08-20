@@ -57,20 +57,72 @@ serve(async (req) => {
     return enabled;
   });
 
-  // 큐에 업서트 (중복 방지: 고정 ID)
-  const inserts = rows.map((s: any) => ({
-    id: `${s.user_id}-${yyyyMMdd}-${hhmm.replace(':','')}`,
-    user_id: s.user_id,
-    due_at: new Date().toISOString(),
-    payload: {
-      title: hhmm === '08:30' ? '아침 리마인더' : '저녁 리마인더',
-      body: hhmm === '08:30' ? '오늘 계획을 시작해볼까요?' : '오늘 마무리할 일들을 확인해보세요.',
-      url: '/',
-      type: 'server-test',
-      id: `${s.user_id}-${yyyyMMdd}-${hhmm.replace(':','')}`,
-      delayMs: 0,
-    },
-  }));
+  // 사용자들의 카운트다운 한 번에 로드
+  const userIds = rows.map((r: any) => r.user_id);
+  let countdownsByUser: Record<string, any[]> = {};
+  if (userIds.length > 0) {
+    const { data: cds } = await supabase
+      .from('countdowns')
+      .select('id,user_id,title,date,hidden,is_count_up')
+      .in('user_id', userIds)
+      .order('date', { ascending: true });
+    for (const c of cds || []) {
+      if (c.hidden) continue;
+      (countdownsByUser[c.user_id] ||= []).push(c);
+    }
+  }
+
+  function daysLeft(dateStr: string): number {
+    try {
+      const now = new Date();
+      const target = new Date(dateStr);
+      const ms = target.getTime() - now.getTime();
+      return Math.ceil(ms / (1000 * 60 * 60 * 24));
+    } catch {
+      return 0;
+    }
+  }
+
+  function pickMessage(userId: string): { title: string; body: string } {
+    const list = countdownsByUser[userId] || [];
+    if (list.length === 0) {
+      return hhmm === '08:30'
+        ? { title: '아침 리마인더', body: '오늘의 순간을 간단히 기록해볼까요?' }
+        : { title: '저녁 리마인더', body: '오늘 남긴 순간이 있나요? 한 줄만 기록해요.' };
+    }
+    const enriched = list.map((c) => ({ ...c, d: daysLeft(c.date) }));
+    const upcoming = enriched.filter((c) => c.d >= 0).sort((a,b) => a.d - b.d);
+    let chosen = upcoming.length > 0
+      ? upcoming[Math.floor(Math.random() * Math.min(5, upcoming.length))]
+      : enriched[Math.floor(Math.random() * enriched.length)];
+
+    const d = chosen.d;
+    const dStr = d === 0 ? '오늘' : d > 0 ? `D-${d}` : `D+${Math.abs(d)}`;
+    const title = `${dStr} · ${chosen.title}`;
+    const body = hhmm === '08:30'
+      ? '오늘의 순간을 기록해볼까요?'
+      : '하루를 간단히 마무리해요.';
+    return { title, body };
+  }
+
+  // 큐에 업서트 (중복 방지: 고정 ID) + 동적 메시지
+  const inserts = rows.map((s: any) => {
+    const id = `${s.user_id}-${yyyyMMdd}-${hhmm.replace(':','')}`;
+    const msg = pickMessage(s.user_id);
+    return {
+      id,
+      user_id: s.user_id,
+      due_at: new Date().toISOString(),
+      payload: {
+        title: msg.title,
+        body: msg.body,
+        url: '/',
+        type: 'reminder',
+        id,
+        delayMs: 0,
+      },
+    };
+  });
 
   let inserted = 0;
   if (inserts.length > 0) {
