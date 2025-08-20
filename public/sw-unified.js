@@ -107,7 +107,7 @@ self.addEventListener('push', (event) => {
       // 서버 테스트 푸시는 즉시 표시 (flaky 방지)
       if (payload.data && (payload.data.type === 'test-direct' || payload.data.type === 'server-test')) {
         const id = payload.data.id || pushId;
-        const tag = 'test-direct';
+        const tag = `test-direct-${id}`; // unique tag so consecutive tests don't replace
         if (self.dedupMap.get(id)) {
           console.log('[SW] 🔁 Duplicate server-test push ignored:', id);
           swBeacon('DISPLAY_SKIPPED', { id, reason: 'duplicate-server-test' });
@@ -192,7 +192,7 @@ self.addEventListener('push', (event) => {
       // 타입 정보가 없으면 즉시 표시 (서버 전송 신뢰성 우선)
       try {
         const id = pushId;
-        const tag = 'server-generic';
+        const tag = `server-generic-${id}`; // unique tag
         if (self.dedupMap.get(id)) return;
         self.dedupMap.set(id, true);
         self.registration.getNotifications({ includeTriggered: true }).then(notis => {
@@ -301,6 +301,9 @@ self.addEventListener('message', (event) => {
       // 지연된 테스트 알림 (PWA 닫혀도 SW가 스케줄링)
       if (payload) {
         const { title, body, delay = 10000, options } = payload;
+        try {
+          swBeacon('TEST_SCHEDULE_REQUEST', { delay: Number(delay) || 10000 });
+        } catch (_) {}
         setTimeout(() => {
           self.registration.showNotification(title || '🧪 테스트 알림', {
             body: body || '지연 테스트 알림입니다',
@@ -315,6 +318,7 @@ self.addEventListener('message', (event) => {
             data: { url: '/' },
             ...(options || {})
           });
+          try { swBeacon('TEST_SCHEDULED_SHOWN', { delay: Number(delay) || 10000 }); } catch (_) {}
         }, Number(delay) || 10000);
       }
       break;
