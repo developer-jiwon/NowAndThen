@@ -16,12 +16,12 @@ webpush.setVapidDetails(
 export async function POST(request: NextRequest) {
 	try {
 		process.env.NODE_ENV === 'development' && console.log('[API] 🚀 Delayed push request received');
-		const { subscription } = await request.json();
+		const { subscription, id: incomingId } = await request.json();
 		if (!subscription) {
 			return NextResponse.json({ error: 'Push subscription is required' }, { status: 400 });
 		}
 
-		const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+		const id = incomingId || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 		process.env.NODE_ENV === 'development' && console.log('[API] ⏱️ Scheduling dual-shot (10s & 25s), id:', id);
 
 		const send = async (label: string) => {
