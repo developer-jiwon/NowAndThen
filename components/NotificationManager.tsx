@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Settings, X, Calendar, Clock, CheckCircle, Heart, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
-import NotificationPreferences from "./NotificationPreferences";
+import { notificationService } from "@/lib/notification-service";
 
 interface NotificationSettings {
   oneDay: boolean;
@@ -21,17 +21,17 @@ export default function NotificationManager() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPWA, setIsPWA] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showSettings, setShowSettings] = useState(false); // deprecated UI (kept false)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showTestResult, setShowTestResult] = useState(false);
   const [testResult, setTestResult] = useState('');
   const [settings, setSettings] = useState<NotificationSettings>({
-    oneDay: true,
-    threeDays: true,
+    oneDay: false,
+    threeDays: false,
     sevenDays: false,
-    dailySummary: false,
-    dailySummaryTime: "09:00"
+    dailySummary: true,
+    dailySummaryTime: "08:30"
   });
 
   // Check if running as PWA
@@ -68,11 +68,14 @@ export default function NotificationManager() {
       setIsEnabled(result === 'granted');
       
       if (result === 'granted') {
-        toast.success('Notifications enabled!');
-        if (isPWA) {
-          toast.info('In PWA mode, you will get a better notification experience');
+        const ok = await registerForNotifications();
+        if (ok) {
+          toast.success('알림이 켜졌어요. 매일 08:30에 리마인드를 보내드릴게요.');
+          setSuccessMessage('매일 08:30에 리마인드를 보내드릴게요.');
+          setShowSuccessPopup(true);
+        } else {
+          toast.error('알림 등록에 실패했습니다.');
         }
-        await registerForNotifications();
       } else if (result === 'denied') {
         toast.error('Notification permission denied. Please allow it in your browser settings.');
       } else {
@@ -85,62 +88,36 @@ export default function NotificationManager() {
   };
 
   // FCM 토큰 등록
-  const registerForNotifications = async () => {
-    if (!user) return;
-
+  const registerForNotifications = async (): Promise<boolean> => {
+    if (!user) return false;
     try {
-      const { requestNotificationPermission } = await import('@/lib/firebase');
-      const fcmToken = await requestNotificationPermission();
-      
-      if (fcmToken) {
-        process.env.NODE_ENV === 'development' && console.log('FCM Token received:', fcmToken);
-        process.env.NODE_ENV === 'development' && console.log('User ID:', user.id);
-        
-        // Supabase에 FCM 토큰 저장 (upsert 사용)
-        const { error } = await supabase
-          .from('push_subscriptions')
-          .upsert({
-            user_id: user.id,
-            fcm_token: fcmToken,
-            notification_preferences: {
-              ...settings,
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            },
-            updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'user_id'
-          });
-          
-        if (error) {
-          console.error('Error saving FCM token:', error);
-          toast.error('Failed to register for notifications');
-        } else {
-          process.env.NODE_ENV === 'development' && console.log('FCM token saved successfully');
-          
-          // 저장된 데이터 확인
-          const { data: checkData, error: checkError } = await supabase
-            .from('push_subscriptions')
-            .select('*')
-            .eq('user_id', user.id);
-            
-          process.env.NODE_ENV === 'development' && console.log('Saved subscription data:', checkData);
-          if (checkError) console.error('Check error:', checkError);
-          
-          toast.success('Successfully registered for notifications!');
-        }
-      } else {
-        process.env.NODE_ENV === 'development' && console.log('No FCM token received');
-        toast.error('Failed to get FCM token');
-      }
+      // Ensure web push subscription exists
+      const ok = await notificationService.requestPermission();
+      if (!ok) return false;
+
+      // Save minimal prefs: dailySummary true @ 08:30 (server uses fixed slots)
+      const success = await notificationService.saveSubscription(user.id, settings);
+      return success;
     } catch (error) {
       console.error('Error registering for notifications:', error);
-      toast.error('Failed to register for notifications');
+      return false;
     }
   };
 
-  const disableNotifications = () => {
-    setIsEnabled(false);
-    toast.success('Notifications disabled');
+  const disableNotifications = async () => {
+    try {
+      await notificationService.unsubscribe();
+      if (user) {
+        await supabase
+          .from('push_subscriptions')
+          .update({ push_subscription: null, notification_preferences: { enabled: false } })
+          .eq('user_id', user.id);
+      }
+      setIsEnabled(false);
+      toast.success('알림을 껐어요');
+    } catch (e) {
+      toast.error('알림 해제 실패');
+    }
   };
 
   const sendTestNotification = async () => {
@@ -305,16 +282,7 @@ export default function NotificationManager() {
           </div>
         ) : isEnabled ? (
           <>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowSettings(true)}
-              className="h-8 text-xs border-[#4E724C] text-[#4E724C] hover:bg-[#4E724C]/10"
-              title="Notification settings"
-            >
-              <Settings className="w-3 h-3 mr-1" />
-              Settings
-            </Button>
+            {/* Settings removed by product decision */}
             <Button
               variant="outline"
               size="sm"
@@ -357,238 +325,7 @@ export default function NotificationManager() {
         )}
       </div>
 
-      {/* Notification Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Notification Settings</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSettings(false)}
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="text-sm font-medium text-gray-900">1 Day Before</span>
-                <button
-                  onClick={() => setSettings(prev => ({ ...prev, oneDay: !prev.oneDay }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4E724C] focus:ring-offset-2 ${
-                    settings.oneDay 
-                      ? 'bg-gradient-to-r from-[#4E724C] to-[#5A7A56]' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200 ease-in-out ${
-                    settings.oneDay ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="text-sm font-medium text-gray-900">3 Days Before</span>
-                <button
-                  onClick={() => setSettings(prev => ({ ...prev, threeDays: !prev.threeDays }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4E724C] focus:ring-offset-2 ${
-                    settings.threeDays 
-                      ? 'bg-gradient-to-r from-[#4E724C] to-[#5A7A56]' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200 ease-in-out ${
-                    settings.threeDays ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="text-sm font-medium text-gray-900">7 Days Before</span>
-                <button
-                  onClick={() => setSettings(prev => ({ ...prev, sevenDays: !prev.sevenDays }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4E724C] focus:ring-offset-2 ${
-                    settings.sevenDays 
-                      ? 'bg-gradient-to-r from-[#4E724C] to-[#5A7A56]' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200 ease-in-out ${
-                    settings.sevenDays ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-
-                      {/* Daily Summary Section */}
-                      <div className="border-t pt-4 mt-4">
-                        <div className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-[#4E724C]" />
-                            <span className="text-sm font-medium text-gray-900">Daily Summary</span>
-                          </div>
-                          <button
-                            onClick={() => setSettings(prev => ({ ...prev, dailySummary: !prev.dailySummary }))}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4E724C] focus:ring-offset-2 ${
-                              settings.dailySummary 
-                                ? 'bg-gradient-to-r from-[#4E724C] to-[#5A7A56]' 
-                                : 'bg-gray-200 hover:bg-gray-300'
-                            }`}
-                          >
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200 ease-in-out ${
-                              settings.dailySummary ? 'translate-x-6' : 'translate-x-1'
-                            }`} />
-                          </button>
-                        </div>
-                        
-                        {settings.dailySummary && (
-                          <div className="ml-4 mt-2 p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-3 h-3 text-gray-500" />
-                              <span className="text-xs text-gray-600">Notification time:</span>
-                              <input
-                                type="time"
-                                value={settings.dailySummaryTime || "09:00"}
-                                onChange={(e) => setSettings(prev => ({ ...prev, dailySummaryTime: e.target.value }))}
-                                className="text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-[#4E724C] focus:border-[#4E724C]"
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              You will receive a daily summary of your countdown status at {settings.dailySummaryTime}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-            
-            <div className="flex gap-3 mt-8">
-              <Button
-                onClick={async (e) => {
-                  process.env.NODE_ENV === 'development' && console.log('=== SAVE BUTTON CLICKED ===');
-                  
-                  try {
-                    // Save to localStorage
-                    localStorage.setItem('nowandthen-notification-settings', JSON.stringify(settings));
-                    
-                    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    
-                    // Update Supabase with new settings
-                    if (user) {
-                      process.env.NODE_ENV === 'development' && console.log('Updating preferences for user:', user.id);
-                      process.env.NODE_ENV === 'development' && console.log('New settings:', settings);
-                      
-                      const { error } = await supabase
-                        .from('push_subscriptions')
-                        .update({
-                          notification_preferences: {
-                            ...settings,
-                            timezone: userTimezone
-                          },
-                          updated_at: new Date().toISOString()
-                        })
-                        .eq('user_id', user.id);
-                        
-                      if (error) {
-                        console.error('Error updating notification preferences:', error);
-                        
-                        // FCM 토큰 다시 등록 시도
-                        process.env.NODE_ENV === 'development' && console.log('Retrying FCM token registration...');
-                        const { requestNotificationPermission } = await import('@/lib/firebase');
-                        const fcmToken = await requestNotificationPermission();
-                        
-                        if (fcmToken) {
-                          const { error: forceError } = await supabase
-                            .from('push_subscriptions')
-                            .upsert({
-                              user_id: user.id,
-                              fcm_token: fcmToken,
-                              notification_preferences: {
-                                ...settings,
-                                timezone: userTimezone
-                              },
-                              updated_at: new Date().toISOString()
-                            }, {
-                              onConflict: 'user_id'
-                            });
-                            
-                          if (!forceError) {
-                            process.env.NODE_ENV === 'development' && console.log('FCM token force registered successfully');
-                          }
-                        }
-                      } else {
-                        process.env.NODE_ENV === 'development' && console.log('Notification preferences updated in database');
-                        
-                        // 업데이트 후 데이터 확인
-                        const { data: updatedData, error: fetchError } = await supabase
-                          .from('push_subscriptions')
-                          .select('*')
-                          .eq('user_id', user.id);
-                          
-                        process.env.NODE_ENV === 'development' && console.log('Updated subscription data:', updatedData);
-                        if (fetchError) console.error('Fetch error:', fetchError);
-                      }
-                    }
-                    
-                    // Send settings to Service Worker
-                    if ('serviceWorker' in navigator) {
-                      navigator.serviceWorker.ready.then((registration) => {
-                        if (registration.active) {
-                          registration.active.postMessage({
-                            type: 'update-settings',
-                            settings: settings,
-                            userTimezone: userTimezone
-                          });
-                        }
-                      });
-                      
-                      if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                          type: 'update-settings',
-                          settings: settings,
-                          userTimezone: userTimezone
-                        });
-                      }
-                    }
-                    
-                    // Show cute success popup
-                    if (settings.dailySummary) {
-                      const currentTime = new Date().toLocaleTimeString('en-US', { 
-                        hour12: false, 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      });
-                      setSuccessMessage(`${settings.dailySummaryTime}에 타이머 요약이 찾아갈게요! (현재 ${currentTime})`);
-                    } else {
-                      setSuccessMessage('알림 설정이 저장되었습니다');
-                    }
-                    setShowSuccessPopup(true);
-                    
-                    setShowSettings(false);
-                    
-                  } catch (error) {
-                    console.error('Save failed:', error);
-                    toast.error('Failed to save settings');
-                  }
-                }}
-                className="flex-1 bg-[#4E724C] hover:bg-[#4E724C]/90 text-white font-medium"
-                type="button"
-              >
-                Save
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowSettings(false)}
-                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-                type="button"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Settings modal removed */}
 
       {/* Success Popup */}
       {showSuccessPopup && (
