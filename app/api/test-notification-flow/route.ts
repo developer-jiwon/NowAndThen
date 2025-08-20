@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       query = query.eq('user_id', userId);
     }
     
-    // 1. FCM 토큰 확인
+    // 1. Subscription check (FCM or WebPush)
     const { data: subscriptions, error: subError } = await query;
 
     process.env.NODE_ENV === 'development' && console.log('🔍 STEP 1: FCM Token Check');
@@ -31,38 +31,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: false,
         step: 1,
-        issue: 'No FCM subscription found',
-        solution: 'User needs to enable notifications first'
+        issue: 'No push subscription found',
+        solution: 'Enable notifications first (create a web push subscription)'
       });
     }
 
     const subscription = subscriptions[0];
-    if (!subscription.fcm_token) {
+    const hasFCM = !!subscription.fcm_token;
+    const hasWebPush = !!subscription.push_subscription;
+    if (!hasFCM && !hasWebPush) {
       return NextResponse.json({
         success: false,
         step: 1,
-        issue: 'FCM token is null',
-        solution: 'User needs to re-register for notifications'
+        issue: 'No valid push channel (FCM/webpush)',
+        solution: 'Re-enable notifications to create a push subscription'
       });
     }
-
-    process.env.NODE_ENV === 'development' && console.log('✅ FCM token exists:', subscription.fcm_token.substring(0, 20) + '...');
+    process.env.NODE_ENV === 'development' && console.log('✅ Channel:', { hasFCM, hasWebPush });
 
     // 2. Daily Summary 설정 확인
-    const prefs = subscription.notification_preferences;
+    const prefs = subscription.notification_preferences || {};
     process.env.NODE_ENV === 'development' && console.log('🔍 STEP 2: Daily Summary Settings Check');
     process.env.NODE_ENV === 'development' && console.log('Notification preferences:', prefs);
     
-    if (!prefs?.dailySummary) {
-      return NextResponse.json({
-        success: false,
-        step: 2,
-        issue: 'Daily summary not enabled',
-        solution: 'User needs to enable Daily Summary in settings'
-      });
-    }
-
-    process.env.NODE_ENV === 'development' && console.log('✅ Daily summary enabled at:', prefs.dailySummaryTime);
+    const dailyEnabled = prefs.dailySummary === true || prefs.daily_summary === true || prefs.enabled === true;
+    const dailyTime = prefs.dailySummaryTime || prefs.daily_summary_time || '08:30';
+    process.env.NODE_ENV === 'development' && console.log('✅ Daily summary:', { dailyEnabled, dailyTime });
 
     // 3. 사용자 타이머 데이터 확인
     const { data: timers, error: timersError } = await supabaseAdmin
@@ -144,7 +138,7 @@ export async function POST(req: NextRequest) {
     // 5. FCM 전송 시뮬레이션 (실제로는 보내지 않음)
     process.env.NODE_ENV === 'development' && console.log('🔍 STEP 5: FCM Send Simulation');
     process.env.NODE_ENV === 'development' && console.log('Would send FCM to token:', subscription.fcm_token.substring(0, 20) + '...');
-    process.env.NODE_ENV === 'development' && console.log('Title: 오늘의 타이머 요약');
+    process.env.NODE_ENV === 'development' && console.log('Title: Daily summary');
     process.env.NODE_ENV === 'development' && console.log('Body:', summaryText);
 
     // 6. 시간 매칭 시뮬레이션
@@ -160,9 +154,9 @@ export async function POST(req: NextRequest) {
     process.env.NODE_ENV === 'development' && console.log('🔍 STEP 6: Time Matching Simulation');
     process.env.NODE_ENV === 'development' && console.log('User timezone:', userTimezone);
     process.env.NODE_ENV === 'development' && console.log('Current time:', currentTime);
-    process.env.NODE_ENV === 'development' && console.log('Daily summary time:', prefs.dailySummaryTime);
+    process.env.NODE_ENV === 'development' && console.log('Daily summary time:', dailyTime);
     
-    const [targetHour, targetMinute] = prefs.dailySummaryTime.split(':').map(Number);
+    const [targetHour, targetMinute] = dailyTime.split(':').map(Number);
     const [currentHour, currentMinute] = currentTime.split(':').map(Number);
     
     const targetMinutes = targetHour * 60 + targetMinute;
@@ -176,14 +170,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       testResults: {
-        step1_fcm_token: {
+        step1_subscription: {
           status: 'PASS',
-          token: subscription.fcm_token.substring(0, 20) + '...'
+          channel: hasFCM ? 'FCM' : 'WebPush'
         },
         step2_daily_summary: {
-          status: 'PASS',
-          enabled: prefs.dailySummary,
-          time: prefs.dailySummaryTime,
+          status: dailyEnabled ? 'PASS' : 'INFO',
+          enabled: dailyEnabled,
+          time: dailyTime,
           timezone: userTimezone
         },
         step3_timer_data: {
@@ -196,7 +190,7 @@ export async function POST(req: NextRequest) {
         },
         step4_notification_content: {
           status: 'PASS',
-          title: '오늘의 타이머 요약',
+          title: 'Daily summary',
           body: summaryText,
           hasContent
         },
