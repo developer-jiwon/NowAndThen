@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // KST 기준 고정 스케줄
 const TIMEZONE = 'Asia/Seoul';
-const SLOTS = ['08:30', '17:20'];
+const SLOTS = ['08:30', '18:30'];
 
 function formatKSTNow(): { hhmm: string; yyyyMMdd: string } {
   const now = new Date();
@@ -90,8 +90,8 @@ serve(async (req) => {
     const list = countdownsByUser[userId] || [];
     if (list.length === 0) {
       return hhmm === '08:30'
-        ? { title: '다음 이벤트', body: '등록된 일정이 없어요. 새로운 이벤트를 추가해보세요.' }
-        : { title: '최근 이벤트', body: '등록된 일정이 없어요. 새로운 이벤트를 추가해보세요.' };
+        ? { title: 'Next event', body: 'No events yet. Add one to get reminders.' }
+        : { title: 'Recent event', body: 'No events yet. Add one to get reminders.' };
     }
     const enriched = list.map((c) => ({ ...c, d: daysLeft(c.date) }));
     const upcoming = enriched.filter((c) => c.d >= 0).sort((a,b) => a.d - b.d);
@@ -103,9 +103,9 @@ serve(async (req) => {
     const dStr = d === 0 ? '오늘' : d > 0 ? `D-${d}` : `D+${Math.abs(d)}`;
     const title = `${dStr} · ${chosen.title}`;
     let body = '';
-    if (d > 0) body = `다음 이벤트까지 ${d}일 남았습니다.`;
-    else if (d === 0) body = '오늘 예정된 이벤트입니다.';
-    else body = `이벤트가 ${Math.abs(d)}일 지났습니다.`;
+    if (d > 0) body = `${d} days remaining until the next event.`;
+    else if (d === 0) body = 'Scheduled for today.';
+    else body = `Happened ${Math.abs(d)} days ago.`;
     return { title, body };
   }
 
