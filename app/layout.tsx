@@ -237,7 +237,7 @@ export default function RootLayout({
                   );
 
                   // 2) 캐시버스트 버전으로 등록하여 강제 업데이트
-                  const swUrl = '/sw-unified.js?v=4';
+                  const swUrl = '/sw-unified.js?v=5';
                   const existing = await navigator.serviceWorker.getRegistration();
                   if (!existing || !(existing.active?.scriptURL || '').includes(swUrl)) {
                     await navigator.serviceWorker.register(swUrl, { scope: '/', updateViaCache: 'none' });

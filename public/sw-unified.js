@@ -104,7 +104,7 @@ self.addEventListener('push', (event) => {
       console.log('[SW] Parsed push payload:', payload);
       swBeacon('PUSH_RECEIVED', { id: pushId, hasData: true, type: payload?.data?.type || 'unknown' });
 
-      // 서버 테스트 푸시는 즉시 표시 (flaky 방지)
+      // 서버 테스트 푸시는 즉시 표시 (flaky 방지) + optional delayMs honoring
       if (payload.data && (payload.data.type === 'test-direct' || payload.data.type === 'server-test')) {
         const id = payload.data.id || pushId;
         const tag = `test-direct-${id}`; // unique tag so consecutive tests don't replace
@@ -114,20 +114,24 @@ self.addEventListener('push', (event) => {
           return;
         }
         self.dedupMap.set(id, true);
-        self.registration.getNotifications({ includeTriggered: true }).then(notis => {
-          notis.forEach(n => { if (n.tag === tag) n.close(); });
-          const opts = {
-            body: notificationData.body,
-            icon: notificationData.icon,
-            badge: notificationData.badge,
-            tag,
-            requireInteraction: true,
-            data: { url: '/', id }
-          };
-          self.registration.showNotification(notificationData.title, opts);
-          console.log('[SW] ✅ Shown server-test notification id:', id);
-          swBeacon('DISPLAY_SHOWN', { id, type: 'server-test' });
-        });
+        const doShow = () => {
+          self.registration.getNotifications({ includeTriggered: true }).then(notis => {
+            notis.forEach(n => { if (n.tag === tag) n.close(); });
+            const opts = {
+              body: notificationData.body,
+              icon: notificationData.icon,
+              badge: notificationData.badge,
+              tag,
+              requireInteraction: true,
+              data: { url: '/', id }
+            };
+            self.registration.showNotification(notificationData.title, opts);
+            console.log('[SW] ✅ Shown server-test notification id:', id);
+            swBeacon('DISPLAY_SHOWN', { id, type: 'server-test' });
+          });
+        };
+        const d = Number(payload.data.delayMs || 0);
+        if (d > 0) setTimeout(doShow, d); else doShow();
         return;
       }
       

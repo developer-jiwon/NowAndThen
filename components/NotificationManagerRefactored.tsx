@@ -260,56 +260,22 @@ export default function NotificationManagerRefactored() {
         return;
       }
       
-      // 즉시 테스트 알림 전송 (서비스 워커를 통해)
+      // 서버에 직접 푸시 요청(FCM + WebPush), SW가 delayMs만큼 대기 후 1회 표시
       try {
-        // 1. 서버에 10초 지연 푸시만 요청 (클라이언트 즉시 알림 제거)
-        toast.success('📱 서버에 10초 후 푸시 알림을 요청했어요');
-        
-        // PWA 종료 상태 확인을 위한 안내
-        if (isPWA) {
-          toast.info('📱 10초 후 알림 예정 (앱을 종료해도 도착)');
-        } else if (isMobile) {
-          toast.info('📱 10초 후 알림 예정 (브라우저를 닫아도 도착)');
-        } else {
-          toast.info('💻 10초 후 알림 예정');
+        toast.success('📡 서버에 테스트 푸시(10초 지연) 요청');
+        const resp = await fetch('/api/test-push-direct', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, delayMs: 10000 })
+        })
+        if (!resp.ok) {
+          const t = await resp.text();
+          throw new Error(`server ${resp.status}: ${t}`)
         }
-        
-        // 서버 푸시 요청 (지연 데이터 포함)
-        try {
-          console.log('[Test] 🔍 Sending immediate server push with delay data...');
-          const currentSubscription = await notificationService.getCurrentSubscription();
-          console.log('[Test] Current subscription:', currentSubscription);
-          
-          if (currentSubscription) {
-            console.log('[Test] ✅ Subscription found, sending to server...');
-            console.log('[Test] Subscription endpoint:', currentSubscription.endpoint.substring(0, 50) + '...');
-            
-            const response = await fetch('/api/test-push-delayed', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                subscription: currentSubscription
-              })
-            });
-            
-            if (response.ok) {
-              const result = await response.json();
-              console.log('[Test] ✅ Server response:', result);
-              console.log('[Test] Server push scheduled for 10s');
-            } else {
-              console.error('[Test] ❌ Server error:', response.status, response.statusText);
-            }
-          } else {
-            console.warn('[Test] ❌ No push subscription available');
-            console.log('[Test] Current method:', notificationService.getCurrentMethod());
-          }
-        } catch (pushError) {
-          console.error('[Test] ❌ Server push failed:', pushError);
-        }
-        
-      } catch (immediateError) {
-        console.error('[Test] ❌ Test scheduling failed:', immediateError);
-        toast.error('테스트 알림 예약 실패');
+        console.log('[Test] ✅ test-push-direct queued with delayMs=10000')
+      } catch (e) {
+        console.error('[Test] ❌ Direct push failed:', e)
+        toast.error('서버 푸시 요청 실패')
       }
       
     } catch (error) {

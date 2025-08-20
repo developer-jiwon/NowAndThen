@@ -13,7 +13,8 @@ export async function POST(request: NextRequest) {
     });
     
     const body = await request.json();
-    const { userId, title, message } = body;
+    const { userId, title, message, delayMs } = body;
+    const pushId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -69,9 +70,11 @@ export async function POST(request: NextRequest) {
             },
             data: {
               url: '/',
-              type: 'test-direct',
+              type: 'server-test',
               timestamp: Date.now().toString(),
-              priority: 'high'
+              priority: 'high',
+              delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0,
+              id: pushId
             },
             // Android 전용 설정
             android: {
@@ -133,7 +136,7 @@ export async function POST(request: NextRequest) {
             userId,
             title: title || '🚀 PWA 종료 테스트 성공!',
             message: message || 'Web Push로 PWA 종료 상태에서도 알림 전달! 🚀',
-            data: { url: '/', type: 'test-direct' }
+            data: { url: '/', type: 'server-test', delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0, id: pushId }
           })
         });
 
