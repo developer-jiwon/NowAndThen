@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
     }
 
     let results = [];
+    let fcmOk = false;
+    let webpushOk = false;
 
     // Firebase FCM 시도
     if (subscription.fcm_token) {
@@ -104,6 +106,7 @@ export async function POST(request: NextRequest) {
         
         if (fcmResponse.ok) {
           process.env.NODE_ENV === 'development' && console.log('✅ [FCM] Notification sent successfully! Should reach device even when PWA is closed.');
+          fcmOk = true;
         } else {
           console.error('❌ [FCM] Notification failed:', fcmResult);
         }
@@ -146,6 +149,7 @@ export async function POST(request: NextRequest) {
         
         if (webPushResponse.ok) {
           process.env.NODE_ENV === 'development' && console.log('✅ [WebPush] Notification sent successfully! Should reach device even when PWA is closed.');
+          webpushOk = true;
         } else {
           console.error('❌ [WebPush] Notification failed:', webPushResult);
         }
@@ -165,6 +169,18 @@ export async function POST(request: NextRequest) {
         });
       }
     }
+
+    // server-side beacon for trace
+    try {
+      const site = process.env.NEXT_PUBLIC_SITE_URL || '';
+      if (site) {
+        fetch(`${site}/api/sw-log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: 'SERVER_PUSH_SENT', id: pushId, fcmOk, webpushOk, delayMs: typeof delayMs === 'number' ? Math.max(0, Math.min(60000, delayMs)) : 0, ts: Date.now() })
+        }).catch(() => {});
+      }
+    } catch {}
 
     return NextResponse.json({
       success: results.some(r => r.success),
