@@ -70,8 +70,8 @@ export default function NotificationManager() {
       if (result === 'granted') {
         const ok = await registerForNotifications();
         if (ok) {
-          toast.success('알림이 켜졌어요. 매일 08:30에 리마인드를 보내드릴게요.');
-          setSuccessMessage('매일 08:30에 리마인드를 보내드릴게요.');
+          toast.success('Notifications enabled. We\'ll remind you every day at 08:30.');
+          setSuccessMessage("We will remind you every day at 08:30.");
           setShowSuccessPopup(true);
         } else {
           toast.error('알림 등록에 실패했습니다.');
@@ -113,8 +113,8 @@ export default function NotificationManager() {
           .update({ push_subscription: null, notification_preferences: { enabled: false } })
           .eq('user_id', user.id);
       }
-      setIsEnabled(false);
-      toast.success('알림을 껐어요');
+    setIsEnabled(false);
+    toast.success('Notifications disabled');
     } catch (e) {
       toast.error('알림 해제 실패');
     }
@@ -123,7 +123,7 @@ export default function NotificationManager() {
   const sendTestNotification = async () => {
     try {
       process.env.NODE_ENV === 'development' && console.log('=== TESTING RELIABLE SERVER PUSH ===');
-
+      
       const response = await fetch('/api/test-push-direct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -133,7 +133,7 @@ export default function NotificationManager() {
           message: '서버에서 전송한 테스트 알림 (PWA 닫혀도 도착해야 함)'
         })
       });
-
+      
       if (response.ok) {
         toast.success('서버 푸시 전송! 기기 알림 도착 여부를 확인하세요.');
       } else {

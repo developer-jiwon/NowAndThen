@@ -315,15 +315,15 @@ self.addEventListener('message', (event) => {
           swBeacon('TEST_SCHEDULE_REQUEST', { delay: Number(delay) || 10000 });
         } catch (_) {}
         setTimeout(() => {
-          self.registration.showNotification(title || '🧪 테스트 알림', {
-            body: body || '지연 테스트 알림입니다',
+          self.registration.showNotification(title || '🧪 Test notification', {
+            body: body || 'This is a delayed test notification.',
             icon: '/favicon.ico',
             badge: '/favicon.ico',
             tag: 'test-delayed',
             requireInteraction: true,
             actions: [
-              { action: 'view', title: '확인' },
-              { action: 'dismiss', title: '닫기' }
+              { action: 'view', title: 'Open' },
+              { action: 'dismiss', title: 'Dismiss' }
             ],
             data: { url: '/' },
             ...(options || {})
@@ -338,29 +338,29 @@ self.addEventListener('message', (event) => {
       console.log('[SW] 🧪 Test notification requested');
       
       const testOptions = {
-        body: '통합 서비스 워커가 정상 작동합니다!',
+        body: 'Unified service worker is working!',
         icon: '/favicon.ico',
         badge: '/favicon.ico',
         tag: 'test',
         requireInteraction: true,
         actions: [
-          { action: 'view', title: '확인' },
-          { action: 'dismiss', title: '닫기' }
+          { action: 'view', title: 'Open' },
+          { action: 'dismiss', title: 'Dismiss' }
         ],
         data: { url: '/' },
         vibrate: [200, 100, 200], // 모바일 진동
         silent: false // 소리 재생
       };
       
-      self.registration.showNotification('🧪 테스트 알림', testOptions);
+      self.registration.showNotification('🧪 Test notification', testOptions);
       console.log('[SW] Test notification displayed successfully');
       break;
 
     case 'test-background':
       // 백그라운드 테스트 알림 (PWA 종료 후 작동 확인)
       console.log('[SW] 🧪 Background test notification requested');
-      self.registration.showNotification('백그라운드 테스트', {
-        body: 'PWA가 종료되어도 이 알림이 온다면 성공!',
+      self.registration.showNotification('Background test', {
+        body: 'If you see this while the PWA is closed, it works!',
         icon: '/favicon.ico',
         tag: 'background-test',
         requireInteraction: true
@@ -466,8 +466,8 @@ function sendDailySummary() {
     return Math.ceil(ms / (1000 * 60 * 60 * 24));
   };
   
-  let title = '데일리 리마인더';
-  let body = '오늘도 목표를 향해 한 걸음!';
+  let title = 'Daily reminder';
+  let body = 'A quick glance at your timelines.';
   
   if (Array.isArray(countdownData) && countdownData.length > 0) {
     const today = countdownData.filter(c => daysLeft(c.targetDate) === 0);
@@ -477,13 +477,13 @@ function sendDailySummary() {
       .sort((a,b) => a.d - b.d);
     
     if (today.length > 0) {
-      title = `오늘 마감 ${today.length}개`;
+      title = `Due today · ${today.length}`;
       const first = today[0];
-      body = `첫 번째: “${first.title}” 오늘 마감됩니다.`;
+      body = `First: “${first.title}” is due today.`;
     } else if (soon.length > 0) {
       const first = soon[0];
-      title = `이번 주 마감 ${soon.length}개`;
-      body = `가장 가까움: “${first.title}” D-${first.d}`;
+      title = `This week · ${soon.length}`;
+      body = `Closest: “${first.title}” D-${first.d}`;
     }
   }
   
@@ -494,8 +494,8 @@ function sendDailySummary() {
     tag: 'daily-summary',
     requireInteraction: true,
     actions: [
-      { action: 'view', title: '확인하기' },
-      { action: 'dismiss', title: '닫기' }
+      { action: 'view', title: 'Open' },
+      { action: 'dismiss', title: 'Dismiss' }
     ],
     data: { url: '/' }
   });
@@ -511,7 +511,7 @@ function sendCountdownReminder(countdown, daysLeft) {
   const dateStr = `${yyyy}-${mm}-${dd}`;
   
   const title = `D-${daysLeft} · ${countdown.title}`;
-  const body = `${dateStr} 마감 예정. 준비되셨죠?`;
+  const body = `Due on ${dateStr}.`;
 
   self.registration.showNotification(title, {
     body,
@@ -520,8 +520,8 @@ function sendCountdownReminder(countdown, daysLeft) {
     tag: `countdown-${countdown.id}-${daysLeft}`,
     requireInteraction: true,
     actions: [
-      { action: 'view', title: '확인하기' },
-      { action: 'dismiss', title: '닫기' }
+      { action: 'view', title: 'Open' },
+      { action: 'dismiss', title: 'Dismiss' }
     ],
     data: { url: '/', countdownId: countdown.id }
   });

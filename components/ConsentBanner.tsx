@@ -48,20 +48,20 @@ export default function ConsentBanner() {
     <div className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <p className="text-xs text-gray-700 leading-snug flex-1 min-w-0">
-          쿠키 사용에 동의하시면 개인화된 광고 및 분석이 활성화됩니다.
+          We use cookies. If you agree, personalized ads and analytics will be enabled.
         </p>
         <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
           <button
             onClick={() => updateConsent(false)}
             className="flex-1 sm:flex-none px-3 py-1.5 text-xs border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 whitespace-nowrap"
           >
-            거부
+            Decline
           </button>
           <button
             onClick={() => updateConsent(true)}
             className="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md bg-[#4E724C] text-white hover:bg-[#3A5A38] whitespace-nowrap"
           >
-            동의
+            Agree
           </button>
         </div>
       </div>
