@@ -186,30 +186,13 @@ export default function NotificationManager() {
 
   // PWA install function
   const installPWA = () => {
-    if (typeof window !== 'undefined') {
-      console.log('Install PWA button clicked');
-      
-      // Always try browser native prompt first, then fallback to guide
-      if ((window as any).deferredPrompt) {
-        console.log('Using browser native install prompt');
-        const prompt = (window as any).deferredPrompt;
-        prompt.prompt();
-        
-        prompt.userChoice.then((choiceResult: any) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-            setCanInstallPWA(false);
-            setIsPWA(true);
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          (window as any).deferredPrompt = null;
-        });
-      } else {
-        // Always show manual guide as fallback
-        console.log('No native install prompt available, showing manual guide');
-        setShowPWAGuide(true);
-      }
+    if (typeof window === 'undefined') return;
+    const dp = (window as any).deferredPrompt;
+    if (dp) {
+      dp.prompt();
+      dp.userChoice.finally(() => { (window as any).deferredPrompt = null; });
+    } else {
+      try { window.dispatchEvent(new Event('show-pwa-guide')); } catch {}
     }
   };
 

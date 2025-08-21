@@ -230,7 +230,7 @@ export default function PWAInstallPrompt() {
         </div>
       )}
 
-      {/* iOS Safari Instructions Modal */}
+      {/* Unified minimal install modal (also used when Enable triggers guide) */}
       {shouldShowIOS && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-300">
@@ -240,7 +240,7 @@ export default function PWAInstallPrompt() {
                   <div className="bg-gray-100 rounded-full p-1.5">
                     <Smartphone className="w-4 h-4 text-gray-700" />
                   </div>
-                  <h3 className="text-base font-bold text-gray-900">Add to Home Screen</h3>
+                  <h3 className="text-base font-bold text-gray-900">Install App</h3>
                 </div>
                 <Button
                   variant="ghost"
@@ -252,8 +252,8 @@ export default function PWAInstallPrompt() {
                 </Button>
               </div>
               
-              <p className="text-xs text-gray-600 mb-4 text-center">
-                Install Now & Then as an app for quick access
+              <p className="text-xs text-gray-700 mb-3 text-center">
+                Quick 3 steps to install. Black & white, simple, fast.
               </p>
               
               <div className="space-y-2.5 mb-5">
@@ -261,10 +261,10 @@ export default function PWAInstallPrompt() {
                   <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">1</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                    <IosShareIcon className="w-3.5 h-3.5 text-[#0A84FF]" />
-                    <span className="text-gray-900 font-medium">Tap Share</span>
-                    <span>then choose “Add to Home Screen”</span>
+                  <div className="flex items-center gap-2 text-xs text-gray-700">
+                    <IosShareIcon className="w-3.5 h-3.5 text-black" />
+                    <span className="text-gray-900">Tap Share</span>
+                    <span className="text-gray-500">→ Add to Home Screen</span>
                   </div>
                 </div>
 
@@ -272,9 +272,9 @@ export default function PWAInstallPrompt() {
                   <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">2</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                    <Plus className="w-3 h-3" />
-                    <span className="text-gray-900 font-medium">Add to Home Screen</span>
+                  <div className="flex items-center gap-2 text-xs text-gray-700">
+                    <Plus className="w-3 h-3 text-black" />
+                    <span className="text-gray-900">Confirm</span>
                   </div>
                 </div>
 
@@ -282,8 +282,8 @@ export default function PWAInstallPrompt() {
                   <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">3</span>
                   </div>
-                  <div className="text-xs text-gray-600">
-                    <span className="text-gray-900 font-medium">All set!</span> The app is now on your Home Screen.
+                  <div className="text-xs text-gray-700">
+                    <span className="text-gray-900">All set.</span> Find the icon on your Home Screen.
                   </div>
                 </div>
               </div>
@@ -292,15 +292,15 @@ export default function PWAInstallPrompt() {
                 <Button 
                   variant="outline" 
                   onClick={handleIOSClose} 
-                  className="flex-1 text-xs h-8 rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50"
+                  className="flex-1 text-xs h-8 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   Later
                 </Button>
                 <Button 
                   onClick={handleIOSClose} 
-                  className="flex-1 text-xs h-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+                  className="flex-1 text-xs h-8 bg-black hover:bg-gray-800 text-white rounded-xl"
                 >
-                  Got it
+                  Done
                 </Button>
               </div>
             </div>
