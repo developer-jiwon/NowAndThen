@@ -113,7 +113,7 @@ export default function NotificationManager() {
         return {
           title: "Add to Home Screen (iPhone/iPad Safari)",
           steps: [
-            "Tap the Share button (↗) at the bottom of Safari",
+            "Tap the Share button (📤︎) at the bottom center of Safari",
             "Scroll down and tap 'Add to Home Screen'", 
             "Edit the name if desired, then tap 'Add'",
             "Open the app from your home screen"
@@ -123,7 +123,7 @@ export default function NotificationManager() {
         return {
           title: "Add to Home Screen (iPhone/iPad Chrome)",
           steps: [
-            "Tap the three dots menu (⋯) at the top right",
+            "Tap the Share button (📤︎) at the right end of the address bar",
             "Select 'Add to Home Screen'",
             "Tap 'Add' to install the app",
             "Open the app from your home screen"
