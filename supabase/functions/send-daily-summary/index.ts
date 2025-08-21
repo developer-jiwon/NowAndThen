@@ -12,7 +12,7 @@ interface NotificationPayload {
   url?: string
 }
 
-// Web Push 알림 전송
+// Send Web Push notification
 const sendWebPushNotification = async (subscription: any, payload: NotificationPayload) => {
   // Web Push는 외부 라이브러리가 필요하므로 일단 HTTP API 호출로 처리
   const webPushUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-webpush-notification`
@@ -64,7 +64,7 @@ const sendWebPushNotification = async (subscription: any, payload: NotificationP
   }
 }
 
-// Firebase FCM 알림 전송
+// Send Firebase FCM notification
 const sendFCMNotification = async (fcmToken: string, payload: NotificationPayload) => {
   const fcmUrl = 'https://fcm.googleapis.com/fcm/send'
   
@@ -175,7 +175,7 @@ serve(async (req) => {
         const userTimezone = subscription.notification_preferences?.timezone || 'UTC'
         const summaryTime = subscription.notification_preferences?.daily_summary_time || '09:00'
         
-        // 사용자 타임존에서 현재 시간 확인
+        // Check current time in user timezone
         const now = new Date()
         const userTime = new Intl.DateTimeFormat('en-CA', {
           timeZone: userTimezone,
@@ -186,7 +186,7 @@ serve(async (req) => {
 
         console.log(`User ${subscription.user_id}: timezone=${userTimezone}, target=${summaryTime}, current=${userTime}`)
 
-        // 설정된 시간과 현재 시간 비교 (±2분 허용)
+        // Compare set time with current time (±2 minutes allowed)
         const [targetHour, targetMinute] = summaryTime.split(':').map(Number)
         const [currentHour, currentMinute] = userTime.split(':').map(Number)
         
@@ -194,7 +194,7 @@ serve(async (req) => {
         const currentMinutes = currentHour * 60 + currentMinute
         const timeDiff = Math.abs(targetMinutes - currentMinutes)
 
-        // 2분 이내가 아니면 스킵
+        // Skip if not within 2 minutes
         if (timeDiff > 2) {
           console.log(`Skipping user ${subscription.user_id}: time diff ${timeDiff} minutes`)
           continue
@@ -202,7 +202,7 @@ serve(async (req) => {
 
         console.log(`Sending daily summary to user ${subscription.user_id}`)
 
-        // 해당 사용자의 타이머들 가져오기
+        // Fetch timers for this user
         const { data: timers, error: timersError } = await supabaseClient
           .from('countdowns')
           .select('*')
@@ -216,7 +216,7 @@ serve(async (req) => {
           continue
         }
 
-        // 오늘, 내일, 이번 주 타이머들 분류
+        // Categorize timers for today, tomorrow, and this week
         const today = new Date()
         const tomorrow = new Date(today)
         tomorrow.setDate(tomorrow.getDate() + 1)
@@ -238,15 +238,15 @@ serve(async (req) => {
           return timerDate > tomorrow && timerDate <= nextWeek
         }) || []
 
-        // 요약 메시지 생성
+        // Generate summary message
         let summaryText = ''
         let hasContent = false
 
         if (todayTimers.length > 0) {
           const todayDisplay = todayTimers.slice(0, 3).map(t => t.title).join(', ')
-          summaryText += `오늘: ${todayDisplay}`
+          summaryText += `Today: ${todayDisplay}`
           if (todayTimers.length > 3) {
-            summaryText += ` 외 ${todayTimers.length - 3}개`
+            summaryText += ` and ${todayTimers.length - 3} more`
           }
           summaryText += '\n'
           hasContent = true
@@ -254,28 +254,28 @@ serve(async (req) => {
 
         if (tomorrowTimers.length > 0) {
           const tomorrowDisplay = tomorrowTimers.slice(0, 3).map(t => t.title).join(', ')
-          summaryText += `내일: ${tomorrowDisplay}`
+          summaryText += `Tomorrow: ${tomorrowDisplay}`
           if (tomorrowTimers.length > 3) {
-            summaryText += ` 외 ${tomorrowTimers.length - 3}개`
+            summaryText += ` and ${tomorrowTimers.length - 3} more`
           }
           summaryText += '\n'
           hasContent = true
         }
 
         if (thisWeekTimers.length > 0) {
-          summaryText += `이번 주: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`
+          summaryText += `This week: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`
           if (thisWeekTimers.length > 3) {
-            summaryText += ` 외 ${thisWeekTimers.length - 3}개`
+            summaryText += ` and ${thisWeekTimers.length - 3} more`
           }
           hasContent = true
         }
 
         if (!hasContent) {
-          summaryText = '일주일 안에 예정된 타이머가 없습니다.'
+          summaryText = 'No timers scheduled within the next week.'
         }
 
         const payload: NotificationPayload = {
-          title: '오늘의 타이머 요약',
+          title: 'Daily Timer Summary',
           body: summaryText,
           url: '/'
         }
@@ -291,7 +291,7 @@ serve(async (req) => {
 
         let sent = false
 
-        // Firebase FCM 우선 시도
+        // Try Firebase FCM first
         if (subscription.fcm_token && (subscription.notification_method === 'firebase' || !subscription.notification_method)) {
           console.log('Attempting FCM notification...')
           const fcmSent = await sendFCMNotification(subscription.fcm_token, payload)
@@ -301,7 +301,7 @@ serve(async (req) => {
           }
         }
 
-        // Web Push 시도 (Firebase 실패시 또는 웹푸시 전용)
+        // Try Web Push (if Firebase fails or web push only)
         if (!sent && subscription.webpush_subscription) {
           console.log('Attempting Web Push notification...')
           const webPushResult = await sendWebPushNotification(subscription.webpush_subscription, payload)

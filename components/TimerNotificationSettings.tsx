@@ -15,24 +15,24 @@ interface TimerNotificationSettingsProps {
 
 export interface TimerNotificationSettings {
   enabled: boolean
-  custom_times: number[] // 이 타이머만의 커스텀 알림 시간
-  use_global: boolean // 전역 설정 사용 여부
+  custom_times: number[] // Custom notification times for this timer
+  use_global: boolean // Whether to use global settings
 }
 
 const TIME_OPTIONS = [
-  { value: 24 * 30, label: '1달 전' },
-  { value: 24 * 14, label: '2주 전' },
-  { value: 24 * 7, label: '1주일 전' },
-  { value: 24 * 3, label: '3일 전' },
-  { value: 24 * 2, label: '2일 전' },
-  { value: 24, label: '1일 전' },
-  { value: 12, label: '12시간 전' },
-  { value: 6, label: '6시간 전' },
-  { value: 3, label: '3시간 전' },
-  { value: 1, label: '1시간 전' },
-  { value: 0.5, label: '30분 전' },
-  { value: 0.25, label: '15분 전' },
-  { value: 0, label: '정확한 시간' }
+  { value: 24 * 30, label: '1 month before' },
+  { value: 24 * 14, label: '2 weeks before' },
+  { value: 24 * 7, label: '1 week before' },
+  { value: 24 * 3, label: '3 days before' },
+  { value: 24 * 2, label: '2 days before' },
+  { value: 24, label: '1 day before' },
+  { value: 12, label: '12 hours before' },
+  { value: 6, label: '6 hours before' },
+  { value: 3, label: '3 hours before' },
+  { value: 1, label: '1 hour before' },
+  { value: 0.5, label: '30 minutes before' },
+  { value: 0.25, label: '15 minutes before' },
+  { value: 0, label: 'Exact time' }
 ]
 
 export default function TimerNotificationSettings({ 
@@ -78,7 +78,7 @@ export default function TimerNotificationSettings({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-[#4E724C]" />
-            <h3 className="font-medium">타이머 알림 설정</h3>
+            <h3 className="font-medium">Timer Notification Settings</h3>
           </div>
           <Button
             variant="ghost"
@@ -91,9 +91,9 @@ export default function TimerNotificationSettings({
         </div>
 
         <div className="space-y-4">
-          {/* 알림 활성화 */}
+          {/* Enable notifications */}
           <div className="flex items-center justify-between">
-            <span className="text-sm">이 타이머 알림</span>
+            <span className="text-sm">Enable notifications</span>
             <Switch
               checked={settings.enabled}
               onCheckedChange={(checked) => 
@@ -104,11 +104,11 @@ export default function TimerNotificationSettings({
 
           {settings.enabled && (
             <>
-              {/* 전역 설정 사용 */}
+              {/* Use global settings */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm">기본 설정 사용</p>
-                  <p className="text-xs text-gray-500">전역 알림 설정 따르기</p>
+                  <p className="text-sm">Use default settings</p>
+                  <p className="text-xs text-gray-500">Follow global notification settings</p>
                 </div>
                 <Switch
                   checked={settings.use_global}
@@ -118,12 +118,12 @@ export default function TimerNotificationSettings({
                 />
               </div>
 
-              {/* 커스텀 시간 설정 */}
+              {/* Custom time settings */}
               {!settings.use_global && (
                 <div className="space-y-3">
-                  <p className="text-sm font-medium">이 타이머만의 알림 시간</p>
+                  <p className="text-sm font-medium">Custom notification times</p>
                   
-                  {/* 현재 설정된 시간들 */}
+                  {/* Currently set times */
                   {settings.custom_times.length > 0 && (
                     <div className="space-y-2">
                       {settings.custom_times.map((hours) => {
@@ -133,7 +133,7 @@ export default function TimerNotificationSettings({
                             key={hours}
                             className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded text-sm"
                           >
-                            <span>{option?.label || `${hours}시간 전`}</span>
+                            <span>{option?.label || `${hours} hours before`}</span>
                             <button
                               onClick={() => removeCustomTime(hours)}
                               className="text-red-500 hover:text-red-700"
@@ -146,10 +146,10 @@ export default function TimerNotificationSettings({
                     </div>
                   )}
 
-                  {/* 새 시간 추가 */}
+                  {/* Add new time */}
                   <Select onValueChange={(value) => addCustomTime(Number(value))}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="알림 시간 추가..." />
+                      <SelectValue placeholder="Add notification time..." />
                     </SelectTrigger>
                     <SelectContent>
                       {TIME_OPTIONS.filter(option => 
@@ -164,7 +164,7 @@ export default function TimerNotificationSettings({
 
                   {settings.custom_times.length === 0 && (
                     <p className="text-xs text-gray-500">
-                      알림 시간을 추가하세요. 추가하지 않으면 알림이 오지 않습니다.
+                      Add notification times. No notifications will be sent if none are added.
                     </p>
                   )}
                 </div>
@@ -173,20 +173,20 @@ export default function TimerNotificationSettings({
           )}
         </div>
 
-        {/* 저장 버튼 */}
+        {/* Save buttons */}
         <div className="flex gap-2 mt-6">
           <Button
             variant="outline"
             onClick={onClose}
             className="flex-1"
           >
-            취소
+            Cancel
           </Button>
           <Button
             onClick={handleSave}
             className="flex-1 bg-[#4E724C] hover:bg-[#3A5A38]"
           >
-            저장
+            Save
           </Button>
         </div>
       </div>

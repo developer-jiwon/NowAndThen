@@ -16,7 +16,7 @@ interface NotificationPayload {
   url?: string
 }
 
-// Firebase FCM 알림 전송
+// Send Firebase FCM notification
 const sendFCMNotification = async (fcmToken: string, payload: NotificationPayload) => {
   const fcmUrl = 'https://fcm.googleapis.com/fcm/send'
   
@@ -142,7 +142,7 @@ serve(async (req) => {
 
         console.log(\`Sending daily summary to user \${subscription.user_id}\`)
 
-        // 해당 사용자의 타이머들 가져오기
+        // Fetch timers for this user
         const { data: timers, error: timersError } = await supabaseClient
           .from('countdowns')
           .select('*')
@@ -155,10 +155,10 @@ serve(async (req) => {
           continue
         }
 
-        // 숨김 타이머 필터링
+        // Filter hidden timers
         const visibleTimers = timers?.filter(timer => !timer.hidden) || []
 
-        // 오늘, 내일, 이번 주 타이머들 분류
+        // Categorize timers for today, tomorrow, and this week
         const today = new Date()
         const tomorrow = new Date(today)
         tomorrow.setDate(tomorrow.getDate() + 1)
@@ -186,7 +186,7 @@ serve(async (req) => {
 
         if (todayTimers.length > 0) {
           const todayDisplay = todayTimers.slice(0, 3).map(t => t.title).join(', ')
-          summaryText += \`오늘: \${todayDisplay}\`
+          summaryText += \`Today: \${todayDisplay}\`
           if (todayTimers.length > 3) {
             summaryText += \` 외 \${todayTimers.length - 3}개\`
           }
@@ -196,7 +196,7 @@ serve(async (req) => {
 
         if (tomorrowTimers.length > 0) {
           const tomorrowDisplay = tomorrowTimers.slice(0, 3).map(t => t.title).join(', ')
-          summaryText += \`내일: \${tomorrowDisplay}\`
+          summaryText += \`Tomorrow: \${tomorrowDisplay}\`
           if (tomorrowTimers.length > 3) {
             summaryText += \` 외 \${tomorrowTimers.length - 3}개\`
           }
@@ -205,7 +205,7 @@ serve(async (req) => {
         }
 
         if (thisWeekTimers.length > 0) {
-          summaryText += \`이번 주: \${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}\`
+          summaryText += \`This week: \${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}\`
           if (thisWeekTimers.length > 3) {
             summaryText += \` 외 \${thisWeekTimers.length - 3}개\`
           }
@@ -213,11 +213,11 @@ serve(async (req) => {
         }
 
         if (!hasContent) {
-          summaryText = '일주일 안에 예정된 타이머가 없습니다.'
+          summaryText = 'No timers scheduled within the next week.'
         }
 
         const payload: NotificationPayload = {
-          title: '오늘의 타이머 요약',
+          title: 'Daily Timer Summary',
           body: summaryText,
           url: '/'
         }

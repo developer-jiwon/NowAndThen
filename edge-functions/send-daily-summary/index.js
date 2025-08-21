@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
 
-// Firebase FCM 알림 전송 (Legacy API 사용)
+// Send Firebase FCM notification (using Legacy API)
 const sendFCMNotification = async (fcmToken, payload) => {
   const fcmUrl = 'https://fcm.googleapis.com/fcm/send';
   const message = {
@@ -103,7 +103,7 @@ serve(async (req) => {
         console.log(`🚀 FORCE SENDING - NO TIME CHECK for user ${subscription.user_id}`);
         console.log(`Sending daily summary to user ${subscription.user_id}`);
         
-        // 해당 사용자의 타이머들 가져오기
+        // Fetch timers for this user
         const { data: timers, error: timersError } = await supabaseClient
           .from('countdowns')
           .select('*')
@@ -117,7 +117,7 @@ serve(async (req) => {
           continue;
         }
         
-        // 오늘, 내일, 이번 주 타이머들 분류
+        // Categorize timers for today, tomorrow, and this week
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -145,7 +145,7 @@ serve(async (req) => {
         
         if (todayTimers.length > 0) {
           const todayDisplay = todayTimers.slice(0, 3).map(t => t.title).join(', ');
-          summaryText += `오늘: ${todayDisplay}`;
+          summaryText += `Today: ${todayDisplay}`;
           if (todayTimers.length > 3) {
             summaryText += ` 외 ${todayTimers.length - 3}개`;
           }
@@ -155,7 +155,7 @@ serve(async (req) => {
         
         if (tomorrowTimers.length > 0) {
           const tomorrowDisplay = tomorrowTimers.slice(0, 3).map(t => t.title).join(', ');
-          summaryText += `내일: ${tomorrowDisplay}`;
+          summaryText += `Tomorrow: ${tomorrowDisplay}`;
           if (tomorrowTimers.length > 3) {
             summaryText += ` 외 ${tomorrowTimers.length - 3}개`;
           }
@@ -164,7 +164,7 @@ serve(async (req) => {
         }
         
         if (thisWeekTimers.length > 0) {
-          summaryText += `이번 주: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`;
+          summaryText += `This week: ${thisWeekTimers.slice(0, 3).map(t => t.title).join(', ')}`;
           if (thisWeekTimers.length > 3) {
             summaryText += ` 외 ${thisWeekTimers.length - 3}개`;
           }
@@ -172,11 +172,11 @@ serve(async (req) => {
         }
         
         if (!hasContent) {
-          summaryText = '일주일 안에 예정된 타이머가 없습니다.';
+          summaryText = 'No timers scheduled within the next week.';
         }
         
         const payload = {
-          title: '📅 오늘의 타이머 요약',
+          title: '📅 Daily Timer Summary',
           body: summaryText,
           url: '/'
         };
