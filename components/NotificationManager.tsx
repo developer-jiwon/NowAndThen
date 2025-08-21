@@ -220,33 +220,25 @@ export default function NotificationManager() {
     }
 
     try {
-      // Check if running as PWA with more comprehensive detection
+      // Robust PWA detection
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isIOSStandalone = (navigator as any).standalone === true;
       const isInWebApk = document.referrer.includes('android-app://');
       const inPWA = isStandalone || isIOSStandalone || isInWebApk;
-      
-      console.log('PWA Detection:', {
-        isStandalone,
-        isIOSStandalone, 
-        isInWebApk,
-        inPWA,
-        userAgent: navigator.userAgent
-      });
-      
-      // Always show PWA installation guide for notifications
-      console.log('Showing PWA installation guide for notifications');
-      setShowPWAGuide(true);
-      return;
-      
-      console.log('In PWA mode, requesting notification permission');
+
+      if (!inPWA) {
+        // Mobile browser: show guide (no permission request here)
+        setShowPWAGuide(true);
+        return;
+      }
+
+      // In PWA mode: actually request permission and subscribe
       toast.info('Requesting notification permission...');
-      // One unified flow: request + subscribe + save
       const ok = await registerForNotifications();
       if (ok) {
         setPermission('granted');
-        toast.success('Notifications enabled. We\'ll remind you every day at 08:30.');
-        setSuccessMessage("We will remind you every day at 08:30.");
+        toast.success("Notifications enabled. We'll remind you every day at 08:30.");
+        setSuccessMessage('We will remind you every day at 08:30.');
         setShowSuccessPopup(true);
       } else {
         toast.error('Failed to enable notifications. Please check browser settings and try again.');

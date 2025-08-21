@@ -255,9 +255,9 @@ export default function PWAInstallPrompt() {
                 Install Now & Then as an app for quick access
               </p>
               
-              <div className="space-y-3 mb-5">
-                <div className="flex items-start gap-2.5">
-                  <div className="bg-gray-100 rounded-full p-1.5 flex-shrink-0 mt-0.5">
+              <div className="space-y-2.5 mb-5">
+                <div className="flex items-start gap-2">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
                     <span className="text-gray-700 font-bold text-xs">1</span>
                   </div>
                   <div>
@@ -269,8 +269,8 @@ export default function PWAInstallPrompt() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
-                  <div className="bg-gray-100 rounded-full p-1.5 flex-shrink-0 mt-0.5">
+                <div className="flex items-start gap-2">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
                     <span className="text-gray-700 font-bold text-xs">2</span>
                   </div>
                   <div>
@@ -282,8 +282,8 @@ export default function PWAInstallPrompt() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
-                  <div className="bg-gray-100 rounded-full p-1.5 flex-shrink-0 mt-0.5">
+                <div className="flex items-start gap-2">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
                     <span className="text-gray-700 font-bold text-xs">3</span>
                   </div>
                   <div>
