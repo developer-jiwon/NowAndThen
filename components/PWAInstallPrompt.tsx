@@ -56,6 +56,9 @@ export default function PWAInstallPrompt() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
+    // Unified guide trigger (from Enable button)
+    const handleShowGuide = () => setShowSimpleGuide(true)
+    window.addEventListener('show-pwa-guide', handleShowGuide)
 
     // Check if iOS Safari and not installed
     const isIOSChrome = /CriOS/.test(navigator.userAgent)
@@ -90,6 +93,7 @@ export default function PWAInstallPrompt() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
+      window.removeEventListener('show-pwa-guide', handleShowGuide)
     }
   }, [isInstalled])
 
@@ -157,7 +161,7 @@ export default function PWAInstallPrompt() {
   return (
     <>
       {/* Persistent bottom bar (mobile browsers, non-PWA) */}
-      {!isInstalled && showBottomBar && (
+      {!isInstalled && isMobile && showBottomBar && (
         <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 pointer-events-none">
           <div className="mx-auto max-w-sm w-full bg-white border border-gray-200 shadow-lg rounded-2xl p-3 flex items-center gap-3 pointer-events-auto">
             <div className="bg-gray-100 rounded-full p-1">
@@ -231,7 +235,7 @@ export default function PWAInstallPrompt() {
       )}
 
       {/* Unified minimal install modal (also used when Enable triggers guide) */}
-      {shouldShowIOS && (
+      {(shouldShowIOS || showSimpleGuide) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-300">
             <div className="p-5">
@@ -252,39 +256,26 @@ export default function PWAInstallPrompt() {
                 </Button>
               </div>
               
-              <p className="text-xs text-gray-700 mb-3 text-center">
-                Quick 3 steps to install. Black & white, simple, fast.
-              </p>
+              <p className="text-xs text-gray-700 mb-3 text-center">Quick 3 steps to install.</p>
               
               <div className="space-y-2.5 mb-5">
-                <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
-                    <span className="text-gray-700 font-bold text-xs">1</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-700">
-                    <IosShareIcon className="w-3.5 h-3.5 text-black" />
-                    <span className="text-gray-900">Tap Share</span>
-                    <span className="text-gray-500">→ Add to Home Screen</span>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-gray-700">
+                  <span className="text-gray-700 font-bold text-[11px]">1.</span>
+                  <IosShareIcon className="w-3.5 h-3.5 text-black" />
+                  <span className="text-gray-900">Tap Share</span>
+                  <span className="text-gray-500">→ Add to Home Screen</span>
                 </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
-                    <span className="text-gray-700 font-bold text-xs">2</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-700">
-                    <Plus className="w-3 h-3 text-black" />
-                    <span className="text-gray-900">Confirm</span>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-gray-700">
+                  <span className="text-gray-700 font-bold text-[11px]">2.</span>
+                  <Plus className="w-3 h-3 text-black" />
+                  <span className="text-gray-900">Confirm</span>
                 </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
-                    <span className="text-gray-700 font-bold text-xs">3</span>
-                  </div>
-                  <div className="text-xs text-gray-700">
-                    <span className="text-gray-900">All set.</span> Find the icon on your Home Screen.
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-gray-700">
+                  <span className="text-gray-700 font-bold text-[11px]">3.</span>
+                  <span className="text-gray-900">All set.</span>
+                  <span className="text-gray-500">Find it on your Home Screen</span>
                 </div>
               </div>
 
