@@ -162,7 +162,7 @@ export default function NotificationManager() {
       }
     } catch (error) {
       console.error('Failed to send server push:', error);
-      toast.error('서버 푸시 실패');
+      toast.error('Server push failed');
     } finally {
       setIsSending(false);
     }
@@ -247,7 +247,7 @@ export default function NotificationManager() {
       }
     } catch (error) {
       console.error('Failed to run automated test:', error);
-      toast.error('자동화 테스트 실패');
+      toast.error('Automated test failed');
     }
   };
 
