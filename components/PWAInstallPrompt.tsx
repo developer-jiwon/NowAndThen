@@ -15,6 +15,7 @@ export default function PWAInstallPrompt() {
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const [isInstallable, setIsInstallable] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
+  const [showBottomBar, setShowBottomBar] = useState(true)
 
   useEffect(() => {
     // Check if already installed
@@ -57,6 +58,16 @@ export default function PWAInstallPrompt() {
       setTimeout(() => setShowIOSInstructions(true), 3000)
     }
 
+    // Restore bottom bar dismissal state (hide for 7 days after dismiss)
+    const dismissedAt = typeof window !== 'undefined' ? localStorage.getItem('pwa-bottom-dismissed') : null
+    if (dismissedAt && Date.now() - parseInt(dismissedAt) < 7 * 24 * 60 * 60 * 1000) {
+      setShowBottomBar(false)
+    } else {
+      // Only show if not installed and not running as standalone
+      const inStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true
+      setShowBottomBar(!inStandalone)
+    }
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
@@ -91,6 +102,13 @@ export default function PWAInstallPrompt() {
     }
   }
 
+  const handleBottomDismiss = () => {
+    setShowBottomBar(false)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pwa-bottom-dismissed', Date.now().toString())
+    }
+  }
+
   // Don't show if already installed
   if (isInstalled) return null
 
@@ -100,6 +118,44 @@ export default function PWAInstallPrompt() {
 
   return (
     <>
+      {/* Persistent bottom bar (mobile browsers, non-PWA) */}
+      {!isInstalled && showBottomBar && (
+        <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 pointer-events-none">
+          <div className="mx-auto max-w-sm w-full bg-white border border-gray-200 shadow-lg rounded-2xl p-3 flex items-center gap-3 pointer-events-auto">
+            <div className="bg-gray-100 rounded-full p-1">
+              <Download className="w-3.5 h-3.5 text-gray-700" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs font-semibold text-gray-900">Install App</div>
+              <div className="text-[11px] text-gray-600">Add to home screen for quick access</div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBottomDismiss}
+                className="h-7 px-2 text-[11px] rounded-xl"
+              >
+                Later
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (deferredPrompt) {
+                    handleInstallClick()
+                  } else {
+                    // Fallback: show iOS instructions modal
+                    setShowIOSInstructions(true)
+                  }
+                }}
+                className="h-7 px-3 text-[11px] bg-gray-900 hover:bg-gray-800 rounded-xl"
+              >
+                Install
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Android/Chrome Install Button */}
       {isInstallable && deferredPrompt && (
         <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom duration-500">
