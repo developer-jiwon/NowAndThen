@@ -78,6 +78,10 @@
     background-color: #ffffff;
     color: rgb(15 23 42 / 0.95);
   }
+  /* Prevent iOS Safari auto-zoom on form fields by ensuring 16px text */
+  input, select, textarea, button {
+    font-size: 16px;
+  }
 }
 
 .font-merriweather {
