@@ -746,19 +746,19 @@ export default function SupabaseCountdownGrid({
         </div>
       ) : (
         <div className="space-y-6">
-          {groupedCountdowns.map(([groupKey, countdowns]) => (
-            <div key={groupKey}>
+          {groupedCountdowns.map(([groupKey, countdowns], index) => (
+            <div key={`${groupKey}-${index}`}>
               {/* Group Header */}
               {groupMode === 'time' && groupKey !== 'all' && (
                 <div className="px-4 mb-3">
                   <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     {(() => {
-                      const IconComponent = getGroupIcon(groupKey);
+                      const IconComponent = getGroupIcon(groupKey as string);
                       return <IconComponent className={`w-4 h-4 ${groupKey === 'overdue' ? 'text-red-500' : 'text-[#4E724C]'}`} />;
                     })()}
-                    {getGroupLabel(groupKey)}
+                    {getGroupLabel(groupKey as string)}
                     <span className="text-xs text-gray-500 font-normal">
-                      ({countdowns.length} timer{countdowns.length !== 1 ? 's' : ''})
+                      ({(countdowns as Countdown[]).length} timer{(countdowns as Countdown[]).length !== 1 ? 's' : ''})
                     </span>
                   </h3>
                 </div>
@@ -768,7 +768,7 @@ export default function SupabaseCountdownGrid({
               <div className="grid gap-3 md:gap-4">
                 {viewMode === 'card' ? (
                   <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
-                    {countdowns.map((countdown) => (
+                    {(countdowns as Countdown[]).map((countdown) => (
                       <CountdownCard
                         key={countdown.id}
                         countdown={countdown}
@@ -784,7 +784,7 @@ export default function SupabaseCountdownGrid({
                   </div>
                 ) : (
                   <div className="space-y-2 px-4">
-                    {countdowns.map((countdown) => (
+                    {(countdowns as Countdown[]).map((countdown) => (
                       <CountdownCompact
                         key={countdown.id}
                         countdown={countdown}

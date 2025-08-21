@@ -208,6 +208,12 @@ export default function CountdownCompact({
               </button>
             )}
             <button
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${memoText ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
+              onClick={() => setShowMemo(!showMemo)}
+            >
+              <MessageSquare className="w-3 h-3" />
+            </button>
+            <button
               className="w-6 h-6 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center text-xs transition-colors"
               onClick={handleDeleteClick}
             >
