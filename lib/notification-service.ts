@@ -149,6 +149,30 @@ export class NotificationService {
       }
 
       process.env.NODE_ENV === 'development' && console.log('[Notifications] Subscription saved');
+
+      // Immediately ensure preferences for daily summary are present and normalized
+      try {
+        const dailyPrefs = {
+          enabled: true,
+          dailySummary: true,
+          dailySummaryTime: settings.dailySummaryTime || '08:30',
+          daily_summary: true,
+          daily_summary_time: (settings.dailySummaryTime || '08:30'),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        } as any;
+
+        await supabase
+          .from('push_subscriptions')
+          .update({ notification_preferences: { ...settings, ...dailyPrefs } })
+          .eq('user_id', userId);
+      } catch (e) {
+        console.warn('[Notifications] Normalization update failed (non-fatal):', e);
+      }
+
+      // Optionally ping backend to (re)schedule daily reminders for this user
+      try {
+        fetch('/api/force-daily-summary', { method: 'POST' }).catch(() => {});
+      } catch {}
       return true;
 
     } catch (error) {

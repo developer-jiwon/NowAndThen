@@ -21,6 +21,7 @@ export default function PWAInstallPrompt() {
   const [showBottomBar, setShowBottomBar] = useState(true)
   const [showDesktopHint, setShowDesktopHint] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false)
 
   useEffect(() => {
     // Detect mobile devices
@@ -28,6 +29,9 @@ export default function PWAInstallPrompt() {
     const isIOS = /iPad|iPhone|iPod/.test(ua);
     const isAndroid = /Android/.test(ua);
     setIsMobile(isIOS || isAndroid);
+    // common in-app browsers (KakaoTalk, Instagram, Facebook, Line, Naver, Daum)
+    const inApp = /(KAKAOTALK|Instagram|FBAN|FBAV|Line\/|NAVER|DaumApps|Whale)/i.test(ua);
+    setIsInAppBrowser(inApp);
     
     // Check if already installed
     const checkInstalled = () => {
@@ -261,6 +265,40 @@ export default function PWAInstallPrompt() {
                 </Button>
               </div>
               <p className="text-[12px] text-gray-700 mb-3 text-center">Add the app for fast access and timely reminders.</p>
+
+              {isInAppBrowser && (
+                <div className="mb-3 rounded-lg border border-gray-200 bg-gray-50 text-[11px] text-gray-700 p-3 text-center">
+                  This app is opened inside another app. For installation, open in your browser.
+                  <div className="mt-1 text-gray-600">
+                    {(() => {
+                      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                      return isIOS ? 'Open in Safari for best results.' : 'Open in Chrome for best results.';
+                    })()}
+                  </div>
+                  <div className="mt-2 flex justify-center">
+                    <Button
+                      size="sm"
+                      className="h-7 px-3 text-[11px] bg-black hover:bg-gray-900 text-white rounded-lg"
+                      onClick={() => {
+                        try {
+                          const url = window.location.href.replace(/^https:\/\//, '');
+                          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                          if (isIOS) {
+                            // Try to open in Safari by using window.open with _blank (in-app browsers often allow)
+                            window.open('https://' + url, '_blank');
+                          } else {
+                            // Android: suggest Chrome intent if available
+                            const intent = 'intent://' + url + '#Intent;scheme=https;package=com.android.chrome;end';
+                            window.location.href = intent;
+                          }
+                        } catch {}
+                      }}
+                    >
+                      Open in Browser
+                    </Button>
+                  </div>
+                </div>
+              )}
               
               <div className="space-y-2.5 mb-5">
                 {(() => {
