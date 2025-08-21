@@ -13,6 +13,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  // Legacy iOS-specific modal removed; use unified modal only
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const [showSimpleGuide, setShowSimpleGuide] = useState(false)
   const [isInstallable, setIsInstallable] = useState(false)
@@ -56,19 +57,17 @@ export default function PWAInstallPrompt() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
-    // Unified guide trigger (from Enable button)
-    const handleShowGuide = () => setShowSimpleGuide(true)
-    window.addEventListener('show-pwa-guide', handleShowGuide)
-
-    // Check if iOS Safari and not installed
-    const isIOSChrome = /CriOS/.test(navigator.userAgent)
-    const isIOSFirefox = /FxiOS/.test(navigator.userAgent)
-    const isIOSSafari = isIOS && !isIOSChrome && !isIOSFirefox
-    
-    if (isIOSSafari && !isInstalled) {
-      // Show iOS install instructions after a delay
-      setTimeout(() => setShowIOSInstructions(true), 3000)
+    // Unified guide trigger (from Enable/Install buttons)
+    const openGuide = () => {
+      setShowSimpleGuide(true)
+      setShowBottomBar(false)
+      setIsInstallable(false)
     }
+    // Expose also as a global function for direct calls
+    ;(window as any).NT_showInstallGuide = openGuide
+    window.addEventListener('show-pwa-guide', openGuide)
+
+    // Do not auto-show any legacy iOS modal
 
     // Restore bottom bar dismissal state (hide for 7 days after dismiss)
     const dismissedAt = typeof window !== 'undefined' ? localStorage.getItem('pwa-bottom-dismissed') : null
@@ -93,7 +92,8 @@ export default function PWAInstallPrompt() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
-      window.removeEventListener('show-pwa-guide', handleShowGuide)
+      window.removeEventListener('show-pwa-guide', openGuide)
+      try { delete (window as any).NT_showInstallGuide } catch {}
     }
   }, [isInstalled])
 
@@ -102,6 +102,8 @@ export default function PWAInstallPrompt() {
     
     if (!deferredPrompt) {
       console.log('No deferredPrompt, showing simple guide');
+      setShowBottomBar(false);
+      setIsInstallable(false);
       setShowSimpleGuide(true);
       return;
     }
@@ -129,11 +131,8 @@ export default function PWAInstallPrompt() {
   }
 
   const handleIOSClose = () => {
-    setShowIOSInstructions(false)
-    // Don't show again for 7 days
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('ios-install-dismissed', Date.now().toString())
-    }
+    setShowSimpleGuide(false)
+    setShowBottomBar(false)
   }
 
   const handleBottomDismiss = () => {
@@ -151,32 +150,31 @@ export default function PWAInstallPrompt() {
   }
 
 
-  // Don't show if already installed or not on mobile
-  if (isInstalled || !isMobile) return null
+  // Don't show if already installed. On desktop, render only when explicitly triggered (showSimpleGuide)
+  if (isInstalled) return null
+  if (!isMobile && !showSimpleGuide) return null
 
-  // Check if iOS instructions were recently dismissed
-  const iosDismissed = typeof window !== 'undefined' ? localStorage.getItem('ios-install-dismissed') : null
-  const shouldShowIOS = showIOSInstructions && (!iosDismissed || Date.now() - parseInt(iosDismissed) > 7 * 24 * 60 * 60 * 1000)
+  const shouldShowIOS = false
 
   return (
     <>
       {/* Persistent bottom bar (mobile browsers, non-PWA) */}
-      {!isInstalled && isMobile && showBottomBar && (
+      {!isInstalled && isMobile && showBottomBar && !showSimpleGuide && (
         <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 pointer-events-none">
-          <div className="mx-auto max-w-sm w-full bg-white border border-gray-200 shadow-lg rounded-2xl p-3 flex items-center gap-3 pointer-events-auto">
+          <div className="mx-auto max-w-sm w-full bg-white border border-gray-200 shadow-md rounded-xl p-2.5 flex items-center gap-3 pointer-events-auto">
             <div className="bg-gray-100 rounded-full p-1">
               <Download className="w-3.5 h-3.5 text-gray-700" />
             </div>
             <div className="flex-1">
-              <div className="text-xs font-semibold text-gray-900">Add to Home Screen</div>
-              <div className="text-[11px] text-gray-600">Install app for quick access</div>
+              <div className="text-[12px] font-medium text-gray-900">Add to Home Screen</div>
+              <div className="text-[11px] text-gray-600">Install for quick access</div>
             </div>
             <div className="flex items-center gap-1">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleBottomDismiss}
-                className="h-7 px-2 text-[11px] rounded-xl"
+                className="h-7 px-2 text-[11px] rounded-lg"
               >
                 Later
               </Button>
@@ -187,10 +185,12 @@ export default function PWAInstallPrompt() {
                     handleInstallClick()
                   } else {
                     // Fallback: show simple guide
+                    setShowBottomBar(false);
+                    setIsInstallable(false);
                     setShowSimpleGuide(true);
                   }
                 }}
-                className="h-7 px-3 text-[11px] bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl"
+                className="h-7 px-3 text-[11px] bg-black hover:bg-gray-900 text-white font-medium rounded-lg"
               >
                 Install
               </Button>
@@ -236,15 +236,15 @@ export default function PWAInstallPrompt() {
 
       {/* Unified minimal install modal (also used when Enable triggers guide) */}
       {(shouldShowIOS || showSimpleGuide) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-300">
-            <div className="p-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-md max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-300">
+            <div className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="bg-gray-100 rounded-full p-1.5">
                     <Smartphone className="w-4 h-4 text-gray-700" />
                   </div>
-                  <h3 className="text-base font-bold text-gray-900">Install App</h3>
+                  <h3 className="text-[15px] font-semibold text-gray-900">Add to Home Screen</h3>
                 </div>
                 <Button
                   variant="ghost"
@@ -255,43 +255,44 @@ export default function PWAInstallPrompt() {
                   <X className="w-3.5 h-3.5 text-gray-500" />
                 </Button>
               </div>
-              
-              <p className="text-xs text-gray-700 mb-3 text-center">Quick 3 steps to install.</p>
+              <p className="text-[12px] text-gray-700 mb-3 text-center">Add the app for fast access and timely reminders.</p>
               
               <div className="space-y-2.5 mb-5">
-                <div className="flex items-center gap-2 text-xs text-gray-700">
-                  <span className="text-gray-700 font-bold text-[11px]">1.</span>
+                <div className="flex items-center gap-2 text-[12px] text-gray-700">
+                  <span className="text-gray-700 font-semibold">1.</span>
                   <IosShareIcon className="w-3.5 h-3.5 text-black" />
                   <span className="text-gray-900">Tap Share</span>
-                  <span className="text-gray-500">→ Add to Home Screen</span>
+                  <span className="text-gray-500">then choose “Add to Home Screen”</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-700">
-                  <span className="text-gray-700 font-bold text-[11px]">2.</span>
+                <div className="flex items-center gap-2 text-[12px] text-gray-700">
+                  <span className="text-gray-700 font-semibold">2.</span>
                   <Plus className="w-3 h-3 text-black" />
                   <span className="text-gray-900">Confirm</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-700">
-                  <span className="text-gray-700 font-bold text-[11px]">3.</span>
+                <div className="flex items-center gap-2 text-[12px] text-gray-700">
+                  <span className="text-gray-700 font-semibold">3.</span>
                   <span className="text-gray-900">All set.</span>
-                  <span className="text-gray-500">Find it on your Home Screen</span>
+                  <span className="text-gray-500">Open it from your Home Screen</span>
                 </div>
               </div>
+
+              <div className="text-[11px] text-gray-500 text-center mb-3">You can remove it anytime.</div>
 
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   onClick={handleIOSClose} 
-                  className="flex-1 text-xs h-8 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="flex-1 text-[12px] h-8 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   Later
                 </Button>
                 <Button 
                   onClick={handleIOSClose} 
-                  className="flex-1 text-xs h-8 bg-black hover:bg-gray-800 text-white rounded-xl"
+                  className="flex-1 text-[12px] h-8 bg-black hover:bg-gray-900 text-white rounded-lg"
                 >
-                  Done
+                  Add now
                 </Button>
               </div>
             </div>
@@ -299,82 +300,7 @@ export default function PWAInstallPrompt() {
         </div>
       )}
 
-      {/* Detailed Install Guide */}
-      {showSimpleGuide && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl max-h-[80vh] overflow-y-auto">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Add to Home Screen
-              </h3>
-              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                Add this app to your home screen to use it like a regular app.
-              </p>
-              <div className="flex flex-col gap-2">
-                {(() => {
-                  const ua = navigator.userAgent;
-                  const isIOS = /iPad|iPhone|iPod/.test(ua);
-                  const isAndroid = /Android/.test(ua);
-                  const isChrome = /Chrome/.test(ua);
-                  const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
-                  
-                  if (isIOS) {
-                    if (isSafari) {
-                      return [
-                        "Tap the Share button (📤︎) at the bottom center of Safari",
-                        "Scroll down and tap 'Add to Home Screen'",
-                        "Edit the name if desired, then tap 'Add'",
-                        "Open the app from your home screen"
-                      ];
-                    } else {
-                      return [
-                        "Tap the Share button (📤︎) at the right end of the address bar",
-                        "Select 'Add to Home Screen'",
-                        "Tap 'Add' to install the app",
-                        "Open the app from your home screen"
-                      ];
-                    }
-                  } else if (isAndroid) {
-                    if (isChrome) {
-                      return [
-                        "Tap the three dots menu (⋯) at the top right",
-                        "Select 'Add to Home Screen' or 'Install App'",
-                        "Tap 'Install' to add the app",
-                        "Open the app from your home screen or app drawer"
-                      ];
-                    } else {
-                      return [
-                        "Tap the menu button in your browser",
-                        "Look for 'Add to Home Screen' or 'Install App'",
-                        "Tap 'Install' to add the app",
-                        "Open the app from your home screen or app drawer"
-                      ];
-                    }
-                  } else {
-                    return [
-                      "Click the menu (⋯) in your browser",
-                      "Look for 'Install' or 'Add to Desktop'",
-                      "Click 'Install' to add the app",
-                      "If no install option, bookmark this page for easy access"
-                    ];
-                  }
-                })().map((step, index) => (
-                  <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                    <span className="text-gray-500">{index + 1}.</span>
-                    <span>{step}</span>
-                  </div>
-                ))}
-              </div>
-              <Button
-                onClick={() => setShowSimpleGuide(false)}
-                className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200 mt-4"
-              >
-                Got It!
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Legacy detailed guide removed */}
 
     </>
   )

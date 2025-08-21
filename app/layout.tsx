@@ -222,6 +222,18 @@ export default function RootLayout({
             if ('serviceWorker' in navigator) {
               (async () => {
                 try {
+                  const params = new URLSearchParams(location.search);
+                  const disableSW = params.get('nosw') === '1';
+                  if (disableSW) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(r => r.unregister()));
+                    if ('caches' in window) {
+                      const keys = await caches.keys();
+                      await Promise.all(keys.map(k => caches.delete(k)));
+                    }
+                    console.log('[SW] Disabled for session via ?nosw=1');
+                    return;
+                  }
                   // 1) 기존에 unified가 아닌 SW 정리
                   const regs = await navigator.serviceWorker.getRegistrations();
                   await Promise.all(
@@ -235,7 +247,7 @@ export default function RootLayout({
                   );
 
                   // 2) 버전 캐시버스트로 강제 업데이트
-                  const swUrl = '/sw-unified.js?v=7';
+                  const swUrl = '/sw-unified.js?v=8';
                   const existing = await navigator.serviceWorker.getRegistration();
                   if (!existing || !(existing.active?.scriptURL || '').includes(swUrl)) {
                     await navigator.serviceWorker.register(swUrl, { scope: '/', updateViaCache: 'none' });
