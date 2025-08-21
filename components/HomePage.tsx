@@ -28,8 +28,8 @@ export default function HomePage() {
     const lastShown = localStorage.getItem('nowandthen-v1.2-last-shown');
     const now = Date.now();
     
-    // 한 번도 본 적이 없거나, 마지막으로 본 지 7일이 지났으면 표시
-    if (!hasSeen || (lastShown && now - parseInt(lastShown) > 7 * 24 * 60 * 60 * 1000)) {
+    // 한 번도 본 적이 없으면 표시 (7일 후 재표시 제거)
+    if (!hasSeen) {
       setTimeout(() => setShowUpdatePopup(true), 2000); // 2초 후 표시로 변경
     }
   }, []);

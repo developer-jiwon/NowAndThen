@@ -106,10 +106,15 @@ export default function CountdownCompact({
 
   return (
     <motion.div 
-      className="w-full border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-all duration-200 relative"
+      className="w-full border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-all duration-200 relative cursor-pointer"
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ x: 2 }}
+      onClick={() => {
+        if (onEdit) {
+          onEdit(countdown.id);
+        }
+      }}
     >
       {/* Delete confirmation overlay */}
       <AnimatePresence>
@@ -177,7 +182,8 @@ export default function CountdownCompact({
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${category === 'hidden' ? 'opacity-50 cursor-not-allowed' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (category === 'hidden') return;
                 if (onTogglePin) {
                   onTogglePin(countdown.id);
@@ -189,27 +195,28 @@ export default function CountdownCompact({
             </button>
             <button
               className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center transition-colors"
-              onClick={() => onToggleVisibility(countdown.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleVisibility(countdown.id);
+              }}
             >
               {category === "hidden" ? <Eye className="w-3.5 h-3.5" /> : (countdown.hidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />)}
             </button>
-            {onEdit && (
-              <button
-                className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center transition-colors"
-                onClick={() => onEdit(countdown.id)}
-              >
-                <Edit className="w-3.5 h-3.5" />
-              </button>
-            )}
             <button
               className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${memoText ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
-              onClick={() => setShowMemo(!showMemo)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMemo(!showMemo);
+              }}
             >
               <MessageSquare className="w-3.5 h-3.5" />
             </button>
             <button
               className="w-7 h-7 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
-              onClick={handleDeleteClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(e);
+              }}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
