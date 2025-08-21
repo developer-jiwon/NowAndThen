@@ -27,6 +27,7 @@ export default function NotificationManager() {
   const [showTestResult, setShowTestResult] = useState(false);
   const [testResult, setTestResult] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [showPWAGuide, setShowPWAGuide] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: false,
     threeDays: false,
@@ -43,6 +44,72 @@ export default function NotificationManager() {
       setIsPWA(isStandalone || isInApp);
     }
   }, []);
+
+  // Get device-specific PWA installation guide
+  const getPWAGuide = () => {
+    if (typeof window === 'undefined') return { title: '', steps: [] };
+    
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+    const isChrome = /Chrome/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+    
+    if (isIOS) {
+      if (isSafari) {
+        return {
+          title: "Add to Home Screen (iOS Safari)",
+          steps: [
+            "Tap the Share button (📤) at the bottom of your browser",
+            "Scroll down and tap 'Add to Home Screen'",
+            "Tap 'Add' to confirm",
+            "Open the app from your home screen"
+          ]
+        };
+      } else {
+        return {
+          title: "Add to Home Screen (iOS Chrome)",
+          steps: [
+            "Tap the three dots menu (⋯) at the top right",
+            "Tap 'Add to Home Screen'",
+            "Tap 'Add' to confirm",
+            "Open the app from your home screen"
+          ]
+        };
+      }
+    } else if (isAndroid) {
+      if (isChrome) {
+        return {
+          title: "Add to Home Screen (Android Chrome)",
+          steps: [
+            "Tap the three dots menu (⋯) at the top right",
+            "Tap 'Add to Home Screen'",
+            "Tap 'Add' to confirm",
+            "Open the app from your home screen"
+          ]
+        };
+      } else {
+        return {
+          title: "Add to Home Screen (Android Browser)",
+          steps: [
+            "Tap the menu button (⋮) at the top right",
+            "Tap 'Add to Home Screen' or 'Install App'",
+            "Tap 'Add' to confirm",
+            "Open the app from your home screen"
+          ]
+        };
+      }
+    } else {
+      return {
+        title: "Add to Home Screen (Desktop)",
+        steps: [
+          "Click the install icon (📱) in your browser's address bar",
+          "Click 'Install' in the popup",
+          "The app will open in a new window like a native app"
+        ]
+      };
+    }
+  };
 
   // Check notification permission on mount
   useEffect(() => {
@@ -74,10 +141,12 @@ export default function NotificationManager() {
       const ua = navigator.userAgent;
       const isIOS = /iPad|iPhone|iPod/.test(ua);
       const inPWA = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+      
       if (isIOS && !inPWA) {
-        toast.error('On iOS, please “Add to Home Screen” and open the app to enable notifications.');
+        setShowPWAGuide(true);
         return;
       }
+      
       toast.info('Requesting notification permission...');
       // One unified flow: request + subscribe + save
       const ok = await registerForNotifications();
@@ -168,89 +237,6 @@ export default function NotificationManager() {
     }
   };
 
-  const runAutomatedTest = async () => {
-    try {
-      process.env.NODE_ENV === 'development' && console.log('=== RUNNING AUTOMATED NOTIFICATION FLOW TEST ===');
-      
-      const response = await fetch('/api/test-notification-flow', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user?.id
-        })
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        process.env.NODE_ENV === 'development' && console.log('=== AUTOMATED TEST RESULTS ===');
-        process.env.NODE_ENV === 'development' && console.log(result);
-        
-        if (result.success) {
-          let resultText = '🚀 Automated Test Results:\n\n';
-          
-          // 각 단계별 결과 표시
-          const tests = result.testResults;
-          resultText += `✅ 1. FCM Token: ${tests.step1_fcm_token.status}\n`;
-          resultText += `   Token: ${tests.step1_fcm_token.token}\n\n`;
-          
-          resultText += `✅ 2. Daily Summary Settings: ${tests.step2_daily_summary.status}\n`;
-          resultText += `   Enabled: ${tests.step2_daily_summary.enabled}\n`;
-          resultText += `   Time: ${tests.step2_daily_summary.time}\n`;
-          resultText += `   Timezone: ${tests.step2_daily_summary.timezone}\n\n`;
-          
-          resultText += `✅ 3. Timer Data: ${tests.step3_timer_data.status}\n`;
-          resultText += `   Total: ${tests.step3_timer_data.totalTimers} timers\n`;
-          resultText += `   Visible: ${tests.step3_timer_data.visibleTimers} timers\n`;
-          resultText += `   Today: ${tests.step3_timer_data.todayCount} timers\n`;
-          resultText += `   Tomorrow: ${tests.step3_timer_data.tomorrowCount} timers\n`;
-          resultText += `   This week: ${tests.step3_timer_data.thisWeekCount} timers\n\n`;
-          
-          resultText += `✅ 4. Notification Content: ${tests.step4_notification_content.status}\n`;
-          resultText += `   Title: ${tests.step4_notification_content.title}\n`;
-          resultText += `   Body: ${tests.step4_notification_content.body}\n\n`;
-          
-          resultText += `✅ 5. FCM Send: ${tests.step5_fcm_simulation.status}\n\n`;
-          
-          resultText += `🕐 6. Time Matching: ${tests.step6_time_matching.status}\n`;
-          resultText += `   Current: ${tests.step6_time_matching.currentTime}\n`;
-          resultText += `   Target: ${tests.step6_time_matching.targetTime}\n`;
-          resultText += `   Difference: ${tests.step6_time_matching.timeDifference} minutes\n`;
-          resultText += `   Send now?: ${tests.step6_time_matching.wouldSendNow ? 'Yes' : 'No'}\n\n`;
-          
-          if (tests.step6_time_matching.wouldSendNow) {
-            resultText += '🎉 All conditions met! You will receive notifications even when PWA is closed!';
-          } else {
-            resultText += '⏰ Time doesn\'t match, no notifications will be sent now.\n';
-            resultText += `Please test again at ${tests.step6_time_matching.targetTime}.`;
-          }
-          
-          setTestResult(resultText);
-          setShowTestResult(true);
-          
-          toast.success('Automated test completed!');
-        } else {
-          // 실패한 경우
-          let errorText = `❌ Test Failed (Step ${result.step}):\n\n`;
-          errorText += `Issue: ${result.issue}\n`;
-          errorText += `Solution: ${result.solution}`;
-          
-          setTestResult(errorText);
-          setShowTestResult(true);
-          
-          toast.error('There is an issue with notification settings');
-        }
-      } else {
-        console.error('Automated test failed:', response.status);
-        toast.error('Automated test failed');
-      }
-    } catch (error) {
-      console.error('Failed to run automated test:', error);
-      toast.error('Automated test failed');
-    }
-  };
-
   const saveSettings = () => {
     process.env.NODE_ENV === 'development' && console.log('Saving notification settings:', settings);
     
@@ -315,15 +301,6 @@ export default function NotificationManager() {
                 {isSending ? 'Sending...' : 'Test'}
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={runAutomatedTest}
-              className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-500"
-              title="Run automated flow test"
-            >
-              Auto Test
-            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -393,6 +370,37 @@ export default function NotificationManager() {
                 className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200"
               >
                 OK
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PWA Guide Popup */}
+      {showPWAGuide && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Add to Home Screen
+              </h3>
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                To receive notifications, please add the app to your home screen.
+                This will make it easier to access and ensure you don't miss any important updates.
+              </p>
+              <div className="flex flex-col gap-2">
+                {getPWAGuide().steps.map((step, index) => (
+                  <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
+                    <span className="text-gray-500">{index + 1}.</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+              <Button
+                onClick={() => setShowPWAGuide(false)}
+                className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200 mt-4"
+              >
+                Got It!
               </Button>
             </div>
           </div>
