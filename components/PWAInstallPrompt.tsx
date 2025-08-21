@@ -16,6 +16,7 @@ export default function PWAInstallPrompt() {
   const [isInstallable, setIsInstallable] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const [showBottomBar, setShowBottomBar] = useState(true)
+  const [showDesktopHint, setShowDesktopHint] = useState(true)
 
   useEffect(() => {
     // Check if already installed
@@ -68,6 +69,16 @@ export default function PWAInstallPrompt() {
       setShowBottomBar(!inStandalone)
     }
 
+    // Desktop hint visibility (hide for 7 days after dismiss)
+    const desktopDismissedAt = typeof window !== 'undefined' ? localStorage.getItem('pwa-desktop-dismissed') : null
+    if (desktopDismissedAt && Date.now() - parseInt(desktopDismissedAt) < 7 * 24 * 60 * 60 * 1000) {
+      setShowDesktopHint(false)
+    } else {
+      const isDesktop = !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+      const inStandalone2 = window.matchMedia('(display-mode: standalone)').matches
+      setShowDesktopHint(isDesktop && !inStandalone2)
+    }
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
@@ -106,6 +117,13 @@ export default function PWAInstallPrompt() {
     setShowBottomBar(false)
     if (typeof window !== 'undefined') {
       localStorage.setItem('pwa-bottom-dismissed', Date.now().toString())
+    }
+  }
+
+  const handleDesktopDismiss = () => {
+    setShowDesktopHint(false)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pwa-desktop-dismissed', Date.now().toString())
     }
   }
 
@@ -153,6 +171,28 @@ export default function PWAInstallPrompt() {
                 Install
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop install hint (non-PWA) */}
+      {!isInstalled && showDesktopHint && (
+        <div className="fixed bottom-4 left-4 z-40 hidden md:block">
+          <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-3 flex items-center gap-3">
+            <div className="bg-gray-100 rounded-full p-1">
+              <Download className="w-3.5 h-3.5 text-gray-700" />
+            </div>
+            <div className="text-[12px] text-gray-700">
+              Click the install icon in the address bar to install the app
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDesktopDismiss}
+              className="h-6 w-6 p-0 hover:bg-gray-100 rounded-full"
+            >
+              <X className="w-3.5 h-3.5 text-gray-500" />
+            </Button>
           </div>
         </div>
       )}

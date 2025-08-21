@@ -153,6 +153,9 @@ export default function NotificationManager() {
   const installPWA = () => {
     if (typeof window !== 'undefined' && (window as any).installPWA) {
       (window as any).installPWA();
+    } else {
+      // Fallback: show guide
+      setShowPWAGuide(true);
     }
   };
 
@@ -348,7 +351,7 @@ export default function NotificationManager() {
               <Bell className="w-3 h-3 mr-1" />
               Enable Notifications
             </Button>
-            {canInstallPWA && (
+            {(!isPWA || canInstallPWA) && (
               <Button
                 variant="outline"
                 size="sm"
