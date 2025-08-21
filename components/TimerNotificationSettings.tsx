@@ -123,7 +123,7 @@ export default function TimerNotificationSettings({
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Custom notification times</p>
                   
-                  {/* Currently set times */
+                  {/* Currently set times */}
                   {settings.custom_times.length > 0 && (
                     <div className="space-y-2">
                       {settings.custom_times.map((hours) => {
