@@ -163,12 +163,11 @@ export default function NotificationManager() {
     }
 
     try {
-      // Quick device checks for early feedback
-      const ua = navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      // Check if running as PWA
       const inPWA = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
       
-      if (isIOS && !inPWA) {
+      // If not in PWA mode, show installation guide instead of requesting permission
+      if (!inPWA) {
         setShowPWAGuide(true);
         return;
       }
