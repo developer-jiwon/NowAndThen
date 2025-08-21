@@ -233,7 +233,7 @@ export default function CountdownCompact({
                     onChange={(e) => setMemoText(e.target.value)}
                     placeholder="Enter your memo..."
                     maxLength={300}
-                    className="w-full text-xs p-2 border border-[#4E724C]/30 rounded resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
+                    className="w-full text-base p-2 border border-[#4E724C]/30 rounded resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
                     rows={2}
                   />
                   <div className="flex gap-1">

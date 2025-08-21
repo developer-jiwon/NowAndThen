@@ -176,7 +176,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                     placeholder="Enter timer title" 
                     {...field} 
                     maxLength={20} 
-                    className="w-full h-9 text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200" 
+                    className="w-full h-9 text-base border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200" 
                   />
                 </FormControl>
               </div>
@@ -232,7 +232,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                         type="text"
                         value={field.value}
                         onChange={(e) => handleDateChange(e, field.onChange)}
-                        className="h-9 flex-1 text-center text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200"
+                        className="h-9 flex-1 text-center text-base border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200"
                         placeholder="YYYYMMDD"
                       />
                     </FormControl>
@@ -293,7 +293,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-9 w-full text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200">
+                    <SelectTrigger className="h-9 w-full text-base border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200">
                       <SelectValue placeholder="Choose category" />
                     </SelectTrigger>
                   </FormControl>
@@ -320,7 +320,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
                     placeholder="Add a personal note about this timer..." 
                     {...field} 
                     maxLength={300}
-                    className="w-full min-h-[64px] text-sm border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200 resize-none"
+                    className="w-full min-h-[64px] text-base border-[#4E724C]/30 focus:border-[#4E724C] focus:ring-[#4E724C]/20 rounded-md transition-all duration-200 resize-none"
                   />
                 </FormControl>
               </div>
