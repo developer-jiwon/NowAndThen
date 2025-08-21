@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     images: [
       {
         // Use dynamic OG with version to avoid stale caches on Discord/Twitter
-        url: `${siteUrl}/api/og?v=3`,
+        url: `${siteUrl}/api/og?v=4`,
         width: 1200,
         height: 630,
         alt: 'Now & Then - Countdown Timer App',
@@ -60,7 +60,6 @@ export const metadata: Metadata = {
     title: 'Now & Then - Countdown Timer & Deadline Tracker',
     description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
     creator: '@nowandthenapp',
-    images: [`${siteUrl}/api/og?v=3`],
   },
   icons: {
     icon: [
@@ -108,12 +107,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="application-name" content="Now & Then" />
         <meta name="description" content="Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies." />
-        {/* Explicit OG/Twitter image to avoid any framework-level merge issues */}
-        <meta property="og:image" content={`${siteUrl}/api/og?v=4`} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Now & Then - Countdown Timer App" />
-        <meta name="twitter:image" content={`${siteUrl}/api/og?v=4`} />
+        
         
         {/* Google Search Console Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="ELL-x5tIpqAhOb58cy_wsdVCh6csVzbl_VJt1pgOotM" />
