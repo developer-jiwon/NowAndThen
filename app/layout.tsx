@@ -101,6 +101,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="application-name" content="Now & Then" />
         <meta name="description" content="Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies." />
+        {/* Help LinkedIn pick the correct OG image */}
+        <meta property="og:image:secure_url" content={`${siteUrl}/api/og`} />
+        <meta property="og:image:type" content="image/png" />
         
         
         {/* Google Search Console Verification - Replace with your actual verification code */}
