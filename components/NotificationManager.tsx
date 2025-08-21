@@ -343,15 +343,7 @@ export default function NotificationManager() {
                 📱 Install App
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={showInstallGuide}
-              className="h-8 text-xs border-gray-300 text-gray-600 hover:bg-gray-50"
-              title="Test: Open install guide"
-            >
-              Test Guide
-            </Button>
+            {/* Test Guide removed for production */}
           </div>
         )}
       </div>

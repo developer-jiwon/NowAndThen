@@ -160,8 +160,8 @@ export default function PWAInstallPrompt() {
     <>
       {/* Persistent bottom bar (mobile browsers, non-PWA) */}
       {!isInstalled && isMobile && showBottomBar && !showSimpleGuide && (
-        <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 pointer-events-none">
-          <div className="mx-auto max-w-sm w-full bg-white border border-gray-200 shadow-md rounded-xl p-2.5 flex items-center gap-3 pointer-events-auto">
+        <div className="fixed inset-x-0 bottom-0 z-40 px-2.5 pb-2.5 pointer-events-none">
+          <div className="mx-auto w-full max-w-[520px] bg-white border border-gray-200 shadow-md rounded-xl p-2.5 flex items-center gap-3 pointer-events-auto sm:max-w-sm">
             <div className="bg-gray-100 rounded-full p-1">
               <Download className="w-3.5 h-3.5 text-gray-700" />
             </div>
@@ -237,7 +237,7 @@ export default function PWAInstallPrompt() {
       {/* Unified minimal install modal (also used when Enable triggers guide) */}
       {(shouldShowIOS || showSimpleGuide) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-md max-w-sm w-full mx-4 transform animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-md w-full mx-4 transform animate-in zoom-in-95 duration-300 max-w-[520px] sm:max-w-sm">
             <div className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -258,24 +258,104 @@ export default function PWAInstallPrompt() {
               <p className="text-[12px] text-gray-700 mb-3 text-center">Add the app for fast access and timely reminders.</p>
               
               <div className="space-y-2.5 mb-5">
-                <div className="flex items-center gap-2 text-[12px] text-gray-700">
-                  <span className="text-gray-700 font-semibold">1.</span>
-                  <IosShareIcon className="w-3.5 h-3.5 text-black" />
-                  <span className="text-gray-900">Tap Share</span>
-                  <span className="text-gray-500">then choose “Add to Home Screen”</span>
-                </div>
+                {(() => {
+                  const ua = navigator.userAgent;
+                  const isIOS = /iPad|iPhone|iPod/.test(ua);
+                  const isAndroid = /Android/.test(ua);
+                  const isChrome = /Chrome\//.test(ua);
+                  const isSafari = /Safari\//.test(ua) && !isChrome;
 
-                <div className="flex items-center gap-2 text-[12px] text-gray-700">
-                  <span className="text-gray-700 font-semibold">2.</span>
-                  <Plus className="w-3 h-3 text-black" />
-                  <span className="text-gray-900">Confirm</span>
-                </div>
+                  if (isIOS) {
+                    // iOS Safari/Chrome/Firefox: share sheet then Add to Home Screen
+                    return (
+                      <>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">1.</span>
+                          <IosShareIcon className="w-3.5 h-3.5 text-black" />
+                          <span className="text-gray-900">Tap Share</span>
+                          <span className="text-gray-500">then choose “Add to Home Screen”</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">2.</span>
+                          <Plus className="w-3 h-3 text-black" />
+                          <span className="text-gray-900">Confirm</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">3.</span>
+                          <span className="text-gray-900">All set.</span>
+                          <span className="text-gray-500">Open it from your Home Screen</span>
+                        </div>
+                      </>
+                    );
+                  }
 
-                <div className="flex items-center gap-2 text-[12px] text-gray-700">
-                  <span className="text-gray-700 font-semibold">3.</span>
-                  <span className="text-gray-900">All set.</span>
-                  <span className="text-gray-500">Open it from your Home Screen</span>
-                </div>
+                  if (isAndroid && isChrome) {
+                    // Android Chrome: menu then Install app
+                    return (
+                      <>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">1.</span>
+                          <MoreVertical className="w-3.5 h-3.5 text-black" />
+                          <span className="text-gray-900">Open menu (⋮)</span>
+                          <span className="text-gray-500">top right</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">2.</span>
+                          <Download className="w-3.5 h-3.5 text-black" />
+                          <span className="text-gray-900">Tap “Install app”</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">3.</span>
+                          <span className="text-gray-900">All set.</span>
+                          <span className="text-gray-500">Open it from your Home Screen</span>
+                        </div>
+                      </>
+                    );
+                  }
+
+                  if (isAndroid) {
+                    // Android other browsers
+                    return (
+                      <>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">1.</span>
+                          <Menu className="w-3.5 h-3.5 text-black" />
+                          <span className="text-gray-900">Open menu</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">2.</span>
+                          <Plus className="w-3 h-3 text-black" />
+                          <span className="text-gray-900">Tap “Add to Home screen”</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                          <span className="text-gray-700 font-semibold">3.</span>
+                          <span className="text-gray-900">All set.</span>
+                          <span className="text-gray-500">Open it from your Home Screen</span>
+                        </div>
+                      </>
+                    );
+                  }
+
+                  // Fallback
+                  return (
+                    <>
+                      <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                        <span className="text-gray-700 font-semibold">1.</span>
+                        <Download className="w-3.5 h-3.5 text-black" />
+                        <span className="text-gray-900">Click Install</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                        <span className="text-gray-700 font-semibold">2.</span>
+                        <span className="text-gray-900">Confirm</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
+                        <span className="text-gray-700 font-semibold">3.</span>
+                        <span className="text-gray-900">All set.</span>
+                        <span className="text-gray-500">Open it from your Home Screen</span>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <div className="text-[11px] text-gray-500 text-center mb-3">You can remove it anytime.</div>
