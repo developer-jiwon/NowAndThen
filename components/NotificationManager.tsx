@@ -122,19 +122,17 @@ export default function NotificationManager() {
   };
 
   const requestPermission = async () => {
-    if (!('Notification' in window)) {
-      toast.error('This browser does not support notifications');
-      return;
-    }
-
     try {
+      if (typeof window === 'undefined') return;
       // Robust PWA detection
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isIOSStandalone = (navigator as any).standalone === true;
       const isInWebApk = document.referrer.includes('android-app://');
       const inPWA = isStandalone || isIOSStandalone || isInWebApk;
+      const supportsNotification = 'Notification' in window;
 
-      if (!inPWA) {
+      // If not in PWA OR Notifications API not available (iOS mobile browsers), show install guide
+      if (!inPWA || !supportsNotification) {
         // Mobile browser: trigger unified guide reliably
         try {
           (window as any).NT_pendingGuide = true; // mark intent in case listener not mounted yet
