@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { X, Download, Plus, Smartphone, MoreVertical, Menu, Chrome } from 'lucide-react'
+import { X, Download, Plus, Smartphone, MoreVertical, Menu, Chrome, Copy } from 'lucide-react'
 import IosShareIcon from '@/components/icons/IosShareIcon'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -22,6 +22,7 @@ export default function PWAInstallPrompt() {
   const [showDesktopHint, setShowDesktopHint] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const [isInAppBrowser, setIsInAppBrowser] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     // Detect mobile devices
@@ -275,27 +276,33 @@ export default function PWAInstallPrompt() {
                       return isIOS ? 'Open in Safari for best results.' : 'Open in Chrome for best results.';
                     })()}
                   </div>
-                  <div className="mt-2 flex justify-center">
+                  <div className="mt-2 flex flex-col items-center gap-1">
                     <Button
                       size="sm"
-                      className="h-7 px-3 text-[11px] bg-black hover:bg-gray-900 text-white rounded-lg"
-                      onClick={() => {
+                      className="h-7 px-3 text-[11px] bg-black hover:bg-gray-900 text-white rounded-lg inline-flex items-center gap-1"
+                      onClick={async () => {
                         try {
-                          const url = window.location.href.replace(/^https:\/\//, '');
-                          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                          if (isIOS) {
-                            // Try to open in Safari by using window.open with _blank (in-app browsers often allow)
-                            window.open('https://' + url, '_blank');
+                          const href = window.location.href;
+                          if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(href);
+                            setCopied(true);
+                            setTimeout(()=>setCopied(false), 2000);
                           } else {
-                            // Android: suggest Chrome intent if available
-                            const intent = 'intent://' + url + '#Intent;scheme=https;package=com.android.chrome;end';
-                            window.location.href = intent;
+                            const t = document.createElement('textarea');
+                            t.value = href;
+                            document.body.appendChild(t);
+                            t.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(t);
+                            setCopied(true);
+                            setTimeout(()=>setCopied(false), 2000);
                           }
                         } catch {}
                       }}
                     >
-                      Open in Browser
+                      <Copy className="w-3 h-3" /> Copy link
                     </Button>
+                    {copied && <div className="text-[11px] text-gray-600">Link copied</div>}
                   </div>
                 </div>
               )}
@@ -401,19 +408,12 @@ export default function PWAInstallPrompt() {
 
               <div className="text-[11px] text-gray-500 text-center mb-3">You can remove it anytime.</div>
 
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={handleIOSClose} 
-                  className="flex-1 text-[12px] h-8 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50"
-                >
-                  Later
-                </Button>
+              <div className="flex justify-center">
                 <Button 
                   onClick={handleIOSClose} 
-                  className="flex-1 text-[12px] h-8 bg-black hover:bg-gray-900 text-white rounded-lg"
+                  className="text-[12px] h-8 px-4 bg-black hover:bg-gray-900 text-white rounded-lg"
                 >
-                  Add now
+                  Got it
                 </Button>
               </div>
             </div>
