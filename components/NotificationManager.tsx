@@ -26,6 +26,7 @@ export default function NotificationManager() {
   const [successMessage, setSuccessMessage] = useState('');
   const [showTestResult, setShowTestResult] = useState(false);
   const [testResult, setTestResult] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: false,
     threeDays: false,
@@ -140,6 +141,7 @@ export default function NotificationManager() {
 
   const sendTestNotification = async () => {
     try {
+      setIsSending(true);
       process.env.NODE_ENV === 'development' && console.log('=== TESTING RELIABLE SERVER PUSH ===');
       
       const response = await fetch('/api/test-push-direct', {
@@ -161,6 +163,8 @@ export default function NotificationManager() {
     } catch (error) {
       console.error('Failed to send server push:', error);
       toast.error('서버 푸시 실패');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -299,20 +303,23 @@ export default function NotificationManager() {
         ) : isEnabled ? (
           <>
             {/* Settings removed by product decision */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={sendTestNotification}
-              className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
-              title="Test notification content"
-            >
-              Test
-            </Button>
+            {user?.email === 'ji04wonton30@gmail.com' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={sendTestNotification}
+                disabled={isSending}
+                className="h-8 text-xs border-orange-500 text-orange-500 hover:bg-orange-50"
+                title="Test notification content"
+              >
+                {isSending ? 'Sending...' : 'Test'}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
               onClick={runAutomatedTest}
-              className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-50"
+              className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-500"
               title="Run automated flow test"
             >
               Auto Test
