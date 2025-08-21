@@ -45,22 +45,40 @@ export default function NotificationManager() {
       setIsPWA(isStandalone || isInApp);
       
       // Check if PWA can be installed
-      if (!isStandalone && !isInApp) {
-        // Listen for beforeinstallprompt event
-        const handleBeforeInstallPrompt = () => {
-          setCanInstallPWA(true);
-        };
-        
+      const checkInstallability = () => {
+        // Check if the install prompt is available
         if ((window as any).deferredPrompt) {
           setCanInstallPWA(true);
-        } else {
-          window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         }
         
-        return () => {
-          window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-        };
-      }
+        // Also show install button if not in PWA mode (manual install guide)
+        if (!isStandalone && !isInApp) {
+          setCanInstallPWA(true);
+        }
+      };
+      
+      // Initial check
+      checkInstallability();
+      
+      // Listen for custom events from layout.tsx
+      const handlePWAInstallable = () => {
+        console.log('PWA install prompt became available');
+        setCanInstallPWA(true);
+      };
+      
+      const handlePWAInstalled = () => {
+        console.log('PWA was installed successfully');
+        setCanInstallPWA(false);
+        setIsPWA(true);
+      };
+      
+      window.addEventListener('pwa-installable', handlePWAInstallable);
+      window.addEventListener('pwa-installed', handlePWAInstalled);
+      
+      return () => {
+        window.removeEventListener('pwa-installable', handlePWAInstallable);
+        window.removeEventListener('pwa-installed', handlePWAInstalled);
+      };
     }
   }, []);
 
@@ -151,11 +169,23 @@ export default function NotificationManager() {
 
   // PWA install function
   const installPWA = () => {
-    if (typeof window !== 'undefined' && (window as any).installPWA) {
-      (window as any).installPWA();
-    } else {
-      // Fallback: show guide
-      setShowPWAGuide(true);
+    if (typeof window !== 'undefined') {
+      console.log('Install PWA button clicked');
+      
+      // First try the global install function
+      if ((window as any).installPWA && typeof (window as any).installPWA === 'function') {
+        console.log('Using global installPWA function');
+        const success = (window as any).installPWA();
+        if (!success) {
+          // If global function returns false, show manual guide
+          console.log('Global install function returned false, showing manual guide');
+          setShowPWAGuide(true);
+        }
+      } else {
+        // Fallback: show manual guide
+        console.log('No global install function available, showing manual guide');
+        setShowPWAGuide(true);
+      }
     }
   };
 

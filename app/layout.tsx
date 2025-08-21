@@ -256,38 +256,49 @@ export default function RootLayout({
             }
 
             // PWA Install Prompt Handler
-            let deferredPrompt;
+            window.deferredPrompt = null;
+            
             window.addEventListener('beforeinstallprompt', (e) => {
               // Prevent Chrome 67 and earlier from automatically showing the prompt
               e.preventDefault();
               // Stash the event so it can be triggered later
-              deferredPrompt = e;
+              window.deferredPrompt = e;
               
               // Store the prompt for later use (don't auto-show)
               console.log('PWA install prompt available');
+              
+              // Dispatch custom event to notify components
+              window.dispatchEvent(new CustomEvent('pwa-installable'));
             });
 
             // Handle successful installation
             window.addEventListener('appinstalled', (evt) => {
               console.log('PWA was installed');
-              deferredPrompt = null;
+              window.deferredPrompt = null;
+              
+              // Dispatch custom event to notify components
+              window.dispatchEvent(new CustomEvent('pwa-installed'));
             });
 
             // Make install function globally available
             window.installPWA = () => {
-              if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
+              if (window.deferredPrompt) {
+                const prompt = window.deferredPrompt;
+                prompt.prompt();
+                
+                prompt.userChoice.then((choiceResult) => {
                   if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted the install prompt');
                   } else {
                     console.log('User dismissed the install prompt');
                   }
-                  deferredPrompt = null;
+                  window.deferredPrompt = null;
                 });
               } else {
                 console.log('PWA install prompt not available');
+                return false;
               }
+              return true;
             };
           `}</Script>
           <div className="relative flex flex-col">
