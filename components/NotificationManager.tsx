@@ -229,6 +229,8 @@ export default function NotificationManager() {
       if (!inPWA) {
         // Mobile browser: show guide (no permission request here)
         setShowPWAGuide(true);
+        // Also notify global install prompt to show its guide
+        try { window.dispatchEvent(new Event('show-pwa-guide')); } catch {}
         return;
       }
 

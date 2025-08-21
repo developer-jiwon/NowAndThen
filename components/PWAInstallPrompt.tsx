@@ -258,40 +258,32 @@ export default function PWAInstallPrompt() {
               
               <div className="space-y-2.5 mb-5">
                 <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">1</span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-xs text-gray-900 mb-0.5">Tap Share Button</p>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                      <IosShareIcon className="w-3 h-3 text-[#0A84FF]" />
-                      <span>Bottom center of your browser</span>
-                    </div>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                    <IosShareIcon className="w-3.5 h-3.5 text-[#0A84FF]" />
+                    <span className="text-gray-900 font-medium">Tap Share</span>
+                    <span>then choose “Add to Home Screen”</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">2</span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-xs text-gray-900 mb-0.5">Add to Home Screen</p>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                      <Plus className="w-3 h-3" />
-                      <span>Select this option from the menu</span>
-                    </div>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                    <Plus className="w-3 h-3" />
+                    <span className="text-gray-900 font-medium">Add to Home Screen</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0 mt-0">
+                  <div className="bg-gray-100 rounded-full p-1 flex-shrink-0">
                     <span className="text-gray-700 font-bold text-xs">3</span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-xs text-gray-900 mb-0.5">Done!</p>
-                    <p className="text-xs text-gray-600">
-                      Find the app icon on your home screen
-                    </p>
+                  <div className="text-xs text-gray-600">
+                    <span className="text-gray-900 font-medium">All set!</span> The app is now on your Home Screen.
                   </div>
                 </div>
               </div>
