@@ -47,8 +47,7 @@ export const metadata: Metadata = {
     siteName: 'Now & Then',
     images: [
       {
-        // Use dynamic OG with version to avoid stale caches on Discord/Twitter
-        url: `${siteUrl}/api/og?v=4`,
+        url: `${siteUrl}/api/og`,
         width: 1200,
         height: 630,
         alt: 'Now & Then - Countdown Timer App',
