@@ -54,12 +54,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Now & Then - Countdown Timer & Deadline Tracker',
-    description: 'Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines.',
-    creator: '@nowandthenapp',
-  },
+  // Remove Twitter metadata to avoid duplicate previews on platforms that parse both
   icons: {
     icon: [
       { url: '/icons/nowandthen-icon.svg', type: 'image/svg+xml' },
