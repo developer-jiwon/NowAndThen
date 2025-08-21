@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageSquare, Palette, Globe } from 'lucide-react';
+import { X, MessageSquare, Globe } from 'lucide-react';
 
 interface UpdatePopupProps {
   isVisible: boolean;
@@ -32,24 +32,28 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
 
   const content = {
     en: {
-      title: 'Now & Then v1.3',
-      subtitle: 'Better mobile experience with improved accessibility.',
-      mobileTitle: 'Mobile Experience',
-      mobileDesc: 'Fixed input zoom issues and improved responsive design for seamless mobile usage.',
-      languageTitle: 'Enhanced Localization',
-      languageDesc: 'Better Korean language support with clearer labels and improved accessibility.',
-      confirm: 'Got it',
-      version: 'Version 1.3 • August 2025'
+      title: 'Now & Then v1.2',
+      subtitle: 'New features for better organization.',
+      listViewTitle: 'Compact List View',
+      listViewDesc: 'Toggle between card and list layouts for your preference.',
+      groupingTitle: 'Smart Grouping',
+      groupingDesc: 'Auto-organize timers by Today, Tomorrow, This Week.',
+      memoTitle: 'Enhanced Memos',
+      memoDesc: 'Full memo support in both card and list views.',
+      confirm: 'Explore Now',
+      version: 'Version 1.2 • August 2025'
     },
     ko: {
-      title: 'Now & Then v1.3',
-      subtitle: '향상된 접근성과 모바일 경험 개선.',
-      mobileTitle: '모바일 경험 개선',
-      mobileDesc: '입력 시 확대 문제 해결 및 원활한 모바일 사용을 위한 반응형 디자인 개선.',
-      languageTitle: '언어 지원 강화',
-      languageDesc: '더 명확한 한국어 라벨과 향상된 접근성으로 언어 지원 개선.',
-      confirm: '확인',
-      version: '버전 1.3 • 2025년 8월'
+      title: 'Now & Then v1.2',
+      subtitle: '더 나은 정리를 위한 새로운 기능.',
+      listViewTitle: '컴팩트 리스트 뷰',
+      listViewDesc: '카드와 리스트 레이아웃을 선호에 맞게 전환하세요.',
+      groupingTitle: '스마트 그룹핑',
+      groupingDesc: '오늘, 내일, 이번 주로 타이머를 자동 정리합니다.',
+      memoTitle: '메모 기능 강화',
+      memoDesc: '카드와 리스트 뷰 모두에서 완전한 메모 지원.',
+      confirm: '살펴보기',
+      version: '버전 1.2 • 2025년 8월'
     }
   };
 
@@ -100,27 +104,41 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
             {/* Update features */}
             <div className="space-y-4 mb-6">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.mobileTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.listViewTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.mobileDesc}
+                    {currentContent.listViewDesc}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Globe className="w-4 h-4 text-white" />
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.languageTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.groupingTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.languageDesc}
+                    {currentContent.groupingDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.memoTitle}</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentContent.memoDesc}
                   </p>
                 </div>
               </div>

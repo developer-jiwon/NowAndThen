@@ -24,8 +24,8 @@ export default function HomePage() {
     if (hash && ['pinned', 'general', 'personal', 'custom', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
-    const hasSeen = localStorage.getItem('nowandthen-v2.0');
-    const lastShown = localStorage.getItem('nowandthen-v2.0-last-shown');
+    const hasSeen = localStorage.getItem('nowandthen-v1.2');
+    const lastShown = localStorage.getItem('nowandthen-v1.2-last-shown');
     const now = Date.now();
     
     // 한 번도 본 적이 없거나, 마지막으로 본 지 7일이 지났으면 표시
@@ -36,8 +36,8 @@ export default function HomePage() {
   
   const handleCloseUpdatePopup = () => {
     setShowUpdatePopup(false);
-    localStorage.setItem('nowandthen-v2.0', 'true');
-    localStorage.setItem('nowandthen-v2.0-last-shown', Date.now().toString());
+    localStorage.setItem('nowandthen-v1.2', 'true');
+    localStorage.setItem('nowandthen-v1.2-last-shown', Date.now().toString());
   };
 
   return (

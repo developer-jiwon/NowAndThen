@@ -145,7 +145,7 @@ export default function CountdownCompact({
       <div className="p-3">
         <div className="flex items-center justify-between">
           {/* Left: Title and Date */}
-          <div className="flex-1 min-w-0 mr-4">
+          <div className="flex-1 min-w-0 mr-2">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-sm font-semibold text-gray-800 truncate">
                 {countdown.title}
@@ -157,17 +157,11 @@ export default function CountdownCompact({
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <Calendar className="w-3 h-3" />
               <span>{formatDateString(exactDate)}</span>
-              {countdown.memo && (
-                <>
-                  <MessageSquare className="w-3 h-3 ml-2" />
-                  <span className="truncate max-w-24">{countdown.memo}</span>
-                </>
-              )}
             </div>
           </div>
 
           {/* Center: Countdown Display */}
-          <div className="text-center mr-4">
+          <div className="text-center mr-2">
             <div className={`text-lg font-bold font-serif ${isCountUp ? 'text-red-500' : 'text-green-600'}`}>
               <span className="text-xs mr-1">
                 {timeRemaining.isCountUp ? "+" : "−"}
@@ -182,7 +176,7 @@ export default function CountdownCompact({
           {/* Right: Action Buttons */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${category === 'hidden' ? 'opacity-50 cursor-not-allowed' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
+              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${category === 'hidden' ? 'opacity-50 cursor-not-allowed' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
               onClick={() => {
                 if (category === 'hidden') return;
                 if (onTogglePin) {
@@ -191,33 +185,33 @@ export default function CountdownCompact({
               }}
               disabled={category === 'hidden'}
             >
-              <Pin className="w-3 h-3" />
+              <Pin className="w-3.5 h-3.5" />
             </button>
             <button
-              className="w-6 h-6 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center text-xs transition-colors"
+              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center transition-colors"
               onClick={() => onToggleVisibility(countdown.id)}
             >
-              {category === "hidden" ? <Eye className="w-3 h-3" /> : (countdown.hidden ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />)}
+              {category === "hidden" ? <Eye className="w-3.5 h-3.5" /> : (countdown.hidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />)}
             </button>
             {onEdit && (
               <button
-                className="w-6 h-6 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center text-xs transition-colors"
+                className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#4E724C] hover:text-white flex items-center justify-center transition-colors"
                 onClick={() => onEdit(countdown.id)}
               >
-                <Edit className="w-3 h-3" />
+                <Edit className="w-3.5 h-3.5" />
               </button>
             )}
             <button
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${memoText ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
+              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${memoText ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-gray-100 hover:bg-[#4E724C] hover:text-white'}`}
               onClick={() => setShowMemo(!showMemo)}
             >
-              <MessageSquare className="w-3 h-3" />
+              <MessageSquare className="w-3.5 h-3.5" />
             </button>
             <button
-              className="w-6 h-6 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center text-xs transition-colors"
+              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
               onClick={handleDeleteClick}
             >
-              <Trash2 className="w-3 h-3" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

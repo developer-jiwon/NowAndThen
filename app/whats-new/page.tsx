@@ -16,10 +16,12 @@ export default function WhatsNew() {
 
       <div className="space-y-6">
         <section className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900">v1.3 • August 2025</h2>
+          <h2 className="text-xl font-semibold text-gray-900">v1.2 • August 2025</h2>
           <ul className="list-disc pl-6 text-gray-700 text-sm mt-3 space-y-1">
-            <li>Fixed mobile input zoom issue when creating/editing timers</li>
-            <li>Enhanced Korean language support with clearer labels</li>
+            <li>New compact list view with toggle option</li>
+            <li>Smart grouping: Today, Tomorrow, This Week</li>
+            <li>Enhanced memo support in all views</li>
+            <li>Fixed mobile input zoom issues</li>
           </ul>
         </section>
         <section className="bg-white border border-gray-200 rounded-lg p-6">
