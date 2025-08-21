@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { X, Download, Share, Plus, Smartphone } from 'lucide-react'
+import { X, Download, Share, Plus, Smartphone, MoreVertical, Menu, Chrome } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -13,12 +13,20 @@ interface BeforeInstallPromptEvent extends Event {
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
+  const [showSimpleGuide, setShowSimpleGuide] = useState(false)
   const [isInstallable, setIsInstallable] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const [showBottomBar, setShowBottomBar] = useState(true)
   const [showDesktopHint, setShowDesktopHint] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    // Detect mobile devices
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+    setIsMobile(isIOS || isAndroid);
+    
     // Check if already installed
     const checkInstalled = () => {
       // PWA is installed if display-mode is standalone
@@ -49,7 +57,6 @@ export default function PWAInstallPrompt() {
     window.addEventListener('appinstalled', handleAppInstalled)
 
     // Check if iOS Safari and not installed
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
     const isIOSChrome = /CriOS/.test(navigator.userAgent)
     const isIOSFirefox = /FxiOS/.test(navigator.userAgent)
     const isIOSSafari = isIOS && !isIOSChrome && !isIOSFirefox
@@ -86,14 +93,23 @@ export default function PWAInstallPrompt() {
   }, [isInstalled])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return
+    console.log('PWA Install clicked, deferredPrompt available:', !!deferredPrompt);
+    
+    if (!deferredPrompt) {
+      console.log('No deferredPrompt, showing simple guide');
+      setShowSimpleGuide(true);
+      return;
+    }
 
     try {
+      console.log('Showing install prompt...');
       await deferredPrompt.prompt()
       const { outcome } = await deferredPrompt.userChoice
       
+      console.log('Install prompt result:', outcome);
       if (outcome === 'accepted') {
         console.log('PWA install accepted')
+        setIsInstalled(true);
       } else {
         console.log('PWA install dismissed')
       }
@@ -102,6 +118,8 @@ export default function PWAInstallPrompt() {
       setIsInstallable(false)
     } catch (error) {
       console.error('Error showing install prompt:', error)
+      // Fallback to simple guide
+      setShowSimpleGuide(true);
     }
   }
 
@@ -127,8 +145,9 @@ export default function PWAInstallPrompt() {
     }
   }
 
-  // Don't show if already installed
-  if (isInstalled) return null
+
+  // Don't show if already installed or not on mobile
+  if (isInstalled || !isMobile) return null
 
   // Check if iOS instructions were recently dismissed
   const iosDismissed = typeof window !== 'undefined' ? localStorage.getItem('ios-install-dismissed') : null
@@ -144,8 +163,8 @@ export default function PWAInstallPrompt() {
               <Download className="w-3.5 h-3.5 text-gray-700" />
             </div>
             <div className="flex-1">
-              <div className="text-xs font-semibold text-gray-900">Install App</div>
-              <div className="text-[11px] text-gray-600">Add to home screen for quick access</div>
+              <div className="text-xs font-semibold text-gray-900">Add to Home Screen</div>
+              <div className="text-[11px] text-gray-600">Install app for quick access</div>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -162,11 +181,11 @@ export default function PWAInstallPrompt() {
                   if (deferredPrompt) {
                     handleInstallClick()
                   } else {
-                    // Fallback: show iOS instructions modal
-                    setShowIOSInstructions(true)
+                    // Fallback: show simple guide
+                    setShowSimpleGuide(true);
                   }
                 }}
-                className="h-7 px-3 text-[11px] bg-gray-900 hover:bg-gray-800 rounded-xl"
+                className="h-7 px-3 text-[11px] bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl"
               >
                 Install
               </Button>
@@ -175,27 +194,7 @@ export default function PWAInstallPrompt() {
         </div>
       )}
 
-      {/* Desktop install hint (non-PWA) */}
-      {!isInstalled && showDesktopHint && (
-        <div className="fixed bottom-4 left-4 z-40 hidden md:block">
-          <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-3 flex items-center gap-3">
-            <div className="bg-gray-100 rounded-full p-1">
-              <Download className="w-3.5 h-3.5 text-gray-700" />
-            </div>
-            <div className="text-[12px] text-gray-700">
-              Click the install icon in the address bar to install the app
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDesktopDismiss}
-              className="h-6 w-6 p-0 hover:bg-gray-100 rounded-full"
-            >
-              <X className="w-3.5 h-3.5 text-gray-500" />
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* Desktop install hint - REMOVED */}
       {/* Android/Chrome Install Button */}
       {isInstallable && deferredPrompt && (
         <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom duration-500">
@@ -205,7 +204,7 @@ export default function PWAInstallPrompt() {
                 <div className="bg-gray-100 rounded-full p-1">
                   <Download className="w-3.5 h-3.5 text-gray-700" />
                 </div>
-                <span className="font-semibold text-xs text-gray-900">Install App</span>
+                <span className="font-semibold text-xs text-gray-900">Add to Home Screen</span>
               </div>
               <Button 
                 variant="ghost" 
@@ -217,7 +216,7 @@ export default function PWAInstallPrompt() {
               </Button>
             </div>
             <p className="text-xs text-gray-600 mb-3 leading-relaxed">
-              Add to home screen for quick access
+              Install app for quick access
             </p>
             <Button 
               onClick={handleInstallClick}
@@ -315,6 +314,84 @@ export default function PWAInstallPrompt() {
           </div>
         </div>
       )}
+
+      {/* Detailed Install Guide */}
+      {showSimpleGuide && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Add to Home Screen
+              </h3>
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                Add this app to your home screen to use it like a regular app.
+              </p>
+              <div className="flex flex-col gap-2">
+                {(() => {
+                  const ua = navigator.userAgent;
+                  const isIOS = /iPad|iPhone|iPod/.test(ua);
+                  const isAndroid = /Android/.test(ua);
+                  const isChrome = /Chrome/.test(ua);
+                  const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+                  
+                  if (isIOS) {
+                    if (isSafari) {
+                      return [
+                        "Tap the Share button (↗) at the bottom of Safari",
+                        "Scroll down and tap 'Add to Home Screen'",
+                        "Edit the name if desired, then tap 'Add'",
+                        "Open the app from your home screen"
+                      ];
+                    } else {
+                      return [
+                        "Tap the three dots menu (⋯) at the top right",
+                        "Select 'Add to Home Screen'",
+                        "Tap 'Add' to install the app",
+                        "Open the app from your home screen"
+                      ];
+                    }
+                  } else if (isAndroid) {
+                    if (isChrome) {
+                      return [
+                        "Tap the three dots menu (⋯) at the top right",
+                        "Select 'Add to Home Screen' or 'Install App'",
+                        "Tap 'Install' to add the app",
+                        "Open the app from your home screen or app drawer"
+                      ];
+                    } else {
+                      return [
+                        "Tap the menu button in your browser",
+                        "Look for 'Add to Home Screen' or 'Install App'",
+                        "Tap 'Install' to add the app",
+                        "Open the app from your home screen or app drawer"
+                      ];
+                    }
+                  } else {
+                    return [
+                      "Click the menu (⋯) in your browser",
+                      "Look for 'Install' or 'Add to Desktop'",
+                      "Click 'Install' to add the app",
+                      "If no install option, bookmark this page for easy access"
+                    ];
+                  }
+                })().map((step, index) => (
+                  <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
+                    <span className="text-gray-500">{index + 1}.</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+              <Button
+                onClick={() => setShowSimpleGuide(false)}
+                className="bg-[#4E724C] hover:bg-[#3A5A38] text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200 mt-4"
+              >
+                Got It!
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   )
 }

@@ -282,23 +282,26 @@ export default function RootLayout({
 
             // Make install function globally available
             window.installPWA = () => {
+              console.log('Global installPWA called, deferredPrompt:', !!window.deferredPrompt);
               if (window.deferredPrompt) {
                 const prompt = window.deferredPrompt;
                 prompt.prompt();
                 
                 prompt.userChoice.then((choiceResult) => {
+                  console.log('Install prompt result:', choiceResult.outcome);
                   if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted the install prompt');
+                    window.dispatchEvent(new CustomEvent('pwa-installed'));
                   } else {
                     console.log('User dismissed the install prompt');
                   }
                   window.deferredPrompt = null;
                 });
+                return true;
               } else {
                 console.log('PWA install prompt not available');
                 return false;
               }
-              return true;
             };
           `}</Script>
           <div className="relative flex flex-col">

@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#4E724C",
   "orientation": "portrait-primary",
   "categories": ["productivity", "utilities"],
   "lang": "en-US",

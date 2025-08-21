@@ -29,6 +29,7 @@ export default function NotificationManager() {
   const [isSending, setIsSending] = useState(false);
   const [showPWAGuide, setShowPWAGuide] = useState(false);
   const [canInstallPWA, setCanInstallPWA] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: false,
     threeDays: false,
@@ -37,9 +38,15 @@ export default function NotificationManager() {
     dailySummaryTime: "08:30"
   });
 
-  // Check if running as PWA
+  // Check if running as PWA and detect mobile
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Detect mobile devices
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const isAndroid = /Android/.test(ua);
+      setIsMobile(isIOS || isAndroid);
+      
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isInApp = (window.navigator as any).standalone === true;
       setIsPWA(isStandalone || isInApp);
@@ -75,9 +82,18 @@ export default function NotificationManager() {
       window.addEventListener('pwa-installable', handlePWAInstallable);
       window.addEventListener('pwa-installed', handlePWAInstalled);
       
+      // Listen for PWA guide request from PWAInstallPrompt
+      const handleShowPWAGuide = () => {
+        console.log('PWA guide requested from PWAInstallPrompt');
+        setShowPWAGuide(true);
+      };
+      
+      window.addEventListener('show-pwa-guide', handleShowPWAGuide);
+      
       return () => {
         window.removeEventListener('pwa-installable', handlePWAInstallable);
         window.removeEventListener('pwa-installed', handlePWAInstalled);
+        window.removeEventListener('show-pwa-guide', handleShowPWAGuide);
       };
     }
   }, []);
@@ -95,21 +111,21 @@ export default function NotificationManager() {
     if (isIOS) {
       if (isSafari) {
         return {
-          title: "Add to Home Screen (iOS Safari)",
+          title: "Add to Home Screen (iPhone/iPad Safari)",
           steps: [
-            "Tap the Share button (📤) at the bottom of your browser",
-            "Scroll down and tap 'Add to Home Screen'",
-            "Tap 'Add' to confirm",
+            "Tap the Share button (↗) at the bottom of Safari",
+            "Scroll down and tap 'Add to Home Screen'", 
+            "Edit the name if desired, then tap 'Add'",
             "Open the app from your home screen"
           ]
         };
       } else {
         return {
-          title: "Add to Home Screen (iOS Chrome)",
+          title: "Add to Home Screen (iPhone/iPad Chrome)",
           steps: [
             "Tap the three dots menu (⋯) at the top right",
-            "Tap 'Add to Home Screen'",
-            "Tap 'Add' to confirm",
+            "Select 'Add to Home Screen'",
+            "Tap 'Add' to install the app",
             "Open the app from your home screen"
           ]
         };
@@ -120,29 +136,30 @@ export default function NotificationManager() {
           title: "Add to Home Screen (Android Chrome)",
           steps: [
             "Tap the three dots menu (⋯) at the top right",
-            "Tap 'Add to Home Screen'",
-            "Tap 'Add' to confirm",
-            "Open the app from your home screen"
+            "Select 'Add to Home Screen' or 'Install App'",
+            "Tap 'Install' to add the app",
+            "Open the app from your home screen or app drawer"
           ]
         };
       } else {
         return {
           title: "Add to Home Screen (Android Browser)",
           steps: [
-            "Tap the menu button (⋮) at the top right",
-            "Tap 'Add to Home Screen' or 'Install App'",
-            "Tap 'Add' to confirm",
-            "Open the app from your home screen"
+            "Tap the menu button in your browser",
+            "Look for 'Add to Home Screen' or 'Install App'",
+            "Tap 'Install' to add the app",
+            "Open the app from your home screen or app drawer"
           ]
         };
       }
     } else {
       return {
-        title: "Add to Home Screen (Desktop)",
+        title: "Add to Desktop (Computer)",
         steps: [
-          "Click the install icon (📱) in your browser's address bar",
-          "Click 'Install' in the popup",
-          "The app will open in a new window like a native app"
+          "Click the menu (⋯) in your browser",
+          "Look for 'Install' or 'Add to Desktop'",
+          "Click 'Install' to add the app",
+          "If no install option, bookmark this page for easy access"
         ]
       };
     }
@@ -172,18 +189,25 @@ export default function NotificationManager() {
     if (typeof window !== 'undefined') {
       console.log('Install PWA button clicked');
       
-      // First try the global install function
-      if ((window as any).installPWA && typeof (window as any).installPWA === 'function') {
-        console.log('Using global installPWA function');
-        const success = (window as any).installPWA();
-        if (!success) {
-          // If global function returns false, show manual guide
-          console.log('Global install function returned false, showing manual guide');
-          setShowPWAGuide(true);
-        }
+      // Always try browser native prompt first, then fallback to guide
+      if ((window as any).deferredPrompt) {
+        console.log('Using browser native install prompt');
+        const prompt = (window as any).deferredPrompt;
+        prompt.prompt();
+        
+        prompt.userChoice.then((choiceResult: any) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            setCanInstallPWA(false);
+            setIsPWA(true);
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          (window as any).deferredPrompt = null;
+        });
       } else {
-        // Fallback: show manual guide
-        console.log('No global install function available, showing manual guide');
+        // Always show manual guide as fallback
+        console.log('No native install prompt available, showing manual guide');
         setShowPWAGuide(true);
       }
     }
@@ -196,15 +220,26 @@ export default function NotificationManager() {
     }
 
     try {
-      // Check if running as PWA
-      const inPWA = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+      // Check if running as PWA with more comprehensive detection
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isIOSStandalone = (navigator as any).standalone === true;
+      const isInWebApk = document.referrer.includes('android-app://');
+      const inPWA = isStandalone || isIOSStandalone || isInWebApk;
       
-      // If not in PWA mode, show installation guide instead of requesting permission
-      if (!inPWA) {
-        setShowPWAGuide(true);
-        return;
-      }
+      console.log('PWA Detection:', {
+        isStandalone,
+        isIOSStandalone, 
+        isInWebApk,
+        inPWA,
+        userAgent: navigator.userAgent
+      });
       
+      // Always show PWA installation guide for notifications
+      console.log('Showing PWA installation guide for notifications');
+      setShowPWAGuide(true);
+      return;
+      
+      console.log('In PWA mode, requesting notification permission');
       toast.info('Requesting notification permission...');
       // One unified flow: request + subscribe + save
       const ok = await registerForNotifications();
@@ -333,6 +368,11 @@ export default function NotificationManager() {
     loadSettings();
   }, []);
 
+  // Don't render on desktop/non-mobile devices
+  if (!isMobile) {
+    return null;
+  }
+
   // Render even if not logged in (we create anonymous on enable)
 
   return (
@@ -386,8 +426,8 @@ export default function NotificationManager() {
                 variant="outline"
                 size="sm"
                 onClick={installPWA}
-                className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-50"
-                title="Install app to home screen"
+                className="h-8 text-xs border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                title="Add app to home screen"
               >
                 📱 Install App
               </Button>
@@ -456,8 +496,7 @@ export default function NotificationManager() {
                 Add to Home Screen
               </h3>
               <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                To receive notifications, please add the app to your home screen.
-                This will make it easier to access and ensure you don't miss any important updates.
+                Add this app to your home screen to enable notifications and use it like a regular app.
               </p>
               <div className="flex flex-col gap-2">
                 {getPWAGuide().steps.map((step, index) => (
