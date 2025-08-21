@@ -135,9 +135,9 @@ export default function NotificationManager() {
       const inPWA = isStandalone || isIOSStandalone || isInWebApk;
 
       if (!inPWA) {
-        // Mobile browser: trigger unified guide only
+        // Mobile browser: trigger unified guide reliably
         try {
-          // Prefer direct call if available to avoid event issues
+          (window as any).NT_pendingGuide = true; // mark intent in case listener not mounted yet
           if ((window as any).NT_showInstallGuide) {
             (window as any).NT_showInstallGuide();
           } else {

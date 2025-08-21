@@ -65,6 +65,11 @@ export default function PWAInstallPrompt() {
     }
     // Expose also as a global function for direct calls
     ;(window as any).NT_showInstallGuide = openGuide
+    // If a pending intent was set before this mounted, open now
+    if ((window as any).NT_pendingGuide) {
+      delete (window as any).NT_pendingGuide
+      openGuide()
+    }
     window.addEventListener('show-pwa-guide', openGuide)
 
     // Do not auto-show any legacy iOS modal
@@ -277,13 +282,12 @@ export default function PWAInstallPrompt() {
                         </div>
                         <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
                           <span className="text-gray-700 font-semibold">2.</span>
-                          <Plus className="w-3 h-3 text-black" />
-                          <span className="text-gray-900">Confirm</span>
+                          <span className="text-gray-900">Tap “Add”</span>
                         </div>
                         <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
                           <span className="text-gray-700 font-semibold">3.</span>
                           <span className="text-gray-900">All set.</span>
-                          <span className="text-gray-500">Open it from your Home Screen</span>
+                          <span className="text-gray-500">Find it on your Home Screen</span>
                         </div>
                       </>
                     );
@@ -307,7 +311,7 @@ export default function PWAInstallPrompt() {
                         <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
                           <span className="text-gray-700 font-semibold">3.</span>
                           <span className="text-gray-900">All set.</span>
-                          <span className="text-gray-500">Open it from your Home Screen</span>
+                          <span className="text-gray-500">Find it on your Home Screen</span>
                         </div>
                       </>
                     );
@@ -324,13 +328,12 @@ export default function PWAInstallPrompt() {
                         </div>
                         <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
                           <span className="text-gray-700 font-semibold">2.</span>
-                          <Plus className="w-3 h-3 text-black" />
                           <span className="text-gray-900">Tap “Add to Home screen”</span>
                         </div>
                         <div className="flex items-center gap-2 text-[12px] text-gray-700 flex-wrap">
                           <span className="text-gray-700 font-semibold">3.</span>
                           <span className="text-gray-900">All set.</span>
-                          <span className="text-gray-500">Open it from your Home Screen</span>
+                          <span className="text-gray-500">Find it on your Home Screen</span>
                         </div>
                       </>
                     );
