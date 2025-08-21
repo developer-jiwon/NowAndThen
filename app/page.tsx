@@ -11,13 +11,11 @@ export const metadata: Metadata = {
     description: "Set countdowns, track deadlines and milestones.",
     url: "/",
     type: "website",
-    images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Now & Then — Smart Countdown & Deadline Tracker",
     description: "Set countdowns, track deadlines and milestones.",
-    images: ["/og-image.png"],
   },
 }
 

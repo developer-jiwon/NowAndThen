@@ -65,15 +65,14 @@ export default function SupabaseCountdownGrid({
   // No additional view filter; keep all visible items
   const modeFilteredCountdowns = filteredCountdowns;
 
-  // Helper: absolute days distance from today (for sorting)
+  // Helper: days distance from today (for sorting)
   const dayMs = 24 * 60 * 60 * 1000;
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
-  const getAbsDays = (c: Countdown) => {
+  const getDays = (c: Countdown) => {
     const d = new Date(c.date);
     d.setHours(0, 0, 0, 0);
-    const diff = Math.round((d.getTime() - todayStart.getTime()) / dayMs);
-    return Math.abs(diff);
+    return Math.round((d.getTime() - todayStart.getTime()) / dayMs);
   };
 
   // Helper functions for grouping
@@ -139,10 +138,18 @@ export default function SupabaseCountdownGrid({
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     
-    // Then sort by value within each group
-    const av = getAbsDays(a);
-    const bv = getAbsDays(b);
-    return sortMode === 'lowest' ? av - bv : bv - av;
+    // Then sort by days from today (not absolute - preserve +/- difference)
+    const aDays = getDays(a);
+    const bDays = getDays(b);
+    
+    if (sortMode === 'lowest') {
+      // Lowest: sort by actual days difference (negative = past, positive = future)
+      // This will put past dates first (most negative), then future dates (most positive)
+      return aDays - bDays;
+    } else {
+      // Highest: reverse the order
+      return bDays - aDays;
+    }
   };
   const sortedCountdowns = baseArr.sort(compareByValue);
 
