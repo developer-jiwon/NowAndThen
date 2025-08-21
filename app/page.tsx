@@ -6,17 +6,6 @@ export const metadata: Metadata = {
   title: "Now & Then — Smart Countdown & Deadline Tracker",
   description: "Set countdowns, track deadlines and milestones. Beautiful UI, sync across devices, and flexible templates.",
   alternates: { canonical: "/" },
-  openGraph: {
-    title: "Now & Then — Smart Countdown & Deadline Tracker",
-    description: "Set countdowns, track deadlines and milestones.",
-    url: "/",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Now & Then — Smart Countdown & Deadline Tracker",
-    description: "Set countdowns, track deadlines and milestones.",
-  },
 }
 
 export default function Page() {
