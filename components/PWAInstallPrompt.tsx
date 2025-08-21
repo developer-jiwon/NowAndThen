@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { X, Download, Share, Plus, Smartphone, MoreVertical, Menu, Chrome } from 'lucide-react'
+import { X, Download, Plus, Smartphone, MoreVertical, Menu, Chrome } from 'lucide-react'
+import IosShareIcon from '@/components/icons/IosShareIcon'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -263,7 +264,7 @@ export default function PWAInstallPrompt() {
                   <div>
                     <p className="font-semibold text-xs text-gray-900 mb-0.5">Tap Share Button</p>
                     <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                      <Share className="w-3 h-3" />
+                      <IosShareIcon className="w-3 h-3 text-[#0A84FF]" />
                       <span>Bottom center of your browser</span>
                     </div>
                   </div>
