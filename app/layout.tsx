@@ -107,6 +107,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="application-name" content="Now & Then" />
         <meta name="description" content="Professional countdown timer and deadline tracking tool. Create beautiful timers for goals, events, and deadlines. Boost productivity with proven time management strategies." />
+        {/* Explicit OG/Twitter image tags to force scrapers to pick the dynamic card */}
+        <meta property="og:image" content={`${siteUrl}/api/og`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={`${siteUrl}/api/og`} />
         
         {/* Google Search Console Verification - Replace with your actual verification code */}
         <meta name="google-site-verification" content="ELL-x5tIpqAhOb58cy_wsdVCh6csVzbl_VJt1pgOotM" />
