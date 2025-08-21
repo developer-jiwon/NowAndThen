@@ -4,8 +4,9 @@ import { useEffect, useRef, useLayoutEffect, useState } from "react"
 import { useAnonymousAuth } from "@/hooks/useAnonymousAuth"
 import { useCountdowns } from "@/hooks/useCountdowns"
 import CountdownCard from "@/components/countdown-card"
+import CountdownCompact from "@/components/countdown-compact"
 import { Button } from "@/components/ui/button"
-import { Plus, Loader2, Trash2 } from "lucide-react"
+import { Plus, Loader2, Trash2, Grid3X3, List, Layers3, AlertTriangle, Calendar, Clock, CalendarDays, CalendarRange, FileText } from "lucide-react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form"
@@ -37,8 +38,10 @@ export default function SupabaseCountdownGrid({
   } = useCountdowns(category);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
-  // Sort controls only
+  // Sort controls, view mode, and grouping
   const [sortMode, setSortMode] = useState<'lowest' | 'highest'>('lowest');
+  const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
+  const [groupMode, setGroupMode] = useState<'none' | 'time'>('none');
 
   const gridRef = useRef<HTMLDivElement>(null);
   const { ref: inViewRef, inView } = useInView({
@@ -73,6 +76,62 @@ export default function SupabaseCountdownGrid({
     return Math.abs(diff);
   };
 
+  // Helper functions for grouping
+  const getTimeGroup = (countdown: Countdown) => {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    
+    const targetDate = new Date(countdown.date);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const diffMs = targetDate.getTime() - todayStart.getTime();
+    const diffDays = Math.ceil(diffMs / dayMs);
+    
+    if (diffDays < 0) return 'overdue';
+    if (diffDays === 0) return 'today';
+    if (diffDays === 1) return 'tomorrow';
+    if (diffDays <= 7) return 'thisWeek';
+    if (diffDays <= 30) return 'thisMonth';
+    return 'later';
+  };
+
+  const getGroupLabel = (group: string) => {
+    switch (group) {
+      case 'overdue': return 'Overdue';
+      case 'today': return 'Today';
+      case 'tomorrow': return 'Tomorrow';
+      case 'thisWeek': return 'This Week';
+      case 'thisMonth': return 'This Month';
+      case 'later': return 'Later';
+      default: return '';
+    }
+  };
+
+  const getGroupIcon = (group: string) => {
+    switch (group) {
+      case 'overdue': return AlertTriangle;
+      case 'today': return Calendar;
+      case 'tomorrow': return Clock;
+      case 'thisWeek': return CalendarDays;
+      case 'thisMonth': return CalendarRange;
+      case 'later': return FileText;
+      default: return Calendar;
+    }
+  };
+
+  const getGroupOrder = (group: string) => {
+    switch (group) {
+      case 'overdue': return 0;
+      case 'today': return 1;
+      case 'tomorrow': return 2;
+      case 'thisWeek': return 3;
+      case 'thisMonth': return 4;
+      case 'later': return 5;
+      default: return 6;
+    }
+  };
+
   // Sort all countdowns by value (lowest/highest), with pinned items getting priority
   const baseArr = [...modeFilteredCountdowns];
   const compareByValue = (a: Countdown, b: Countdown) => {
@@ -86,6 +145,18 @@ export default function SupabaseCountdownGrid({
     return sortMode === 'lowest' ? av - bv : bv - av;
   };
   const sortedCountdowns = baseArr.sort(compareByValue);
+
+  // Group countdowns if grouping is enabled
+  const groupedCountdowns = groupMode === 'time' ? 
+    Object.entries(
+      sortedCountdowns.reduce((groups, countdown) => {
+        const group = getTimeGroup(countdown);
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(countdown);
+        return groups;
+      }, {} as Record<string, Countdown[]>)
+    ).sort(([a], [b]) => getGroupOrder(a) - getGroupOrder(b))
+    : [['all', sortedCountdowns]];
 
   useLayoutEffect(() => {
     if (!gridRef.current) return;
@@ -587,17 +658,57 @@ export default function SupabaseCountdownGrid({
 
   return (
     <div className="w-full">
-      {/* Sort controls */}
-      <div className="flex items-center justify-start px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="flex gap-1">
+      {/* View Mode, Group, and Sort controls */}
+      <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="text-xs text-gray-500">
+          {sortedCountdowns.length} timer{sortedCountdowns.length !== 1 ? 's' : ''}
+          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'lowest' ? 'Closest first' : 'Farthest first'}`}
+          {groupMode === 'time' && ` • Grouped by time`}
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Grouping Toggle */}
           <button
-            className={`px-2 py-1 text-[11px] rounded-md border ${sortMode==='lowest'?'bg-[#4E724C] text-white border-[#4E724C]':'bg-white text-[#4E724C] border-[#4E724C]/30'} transition`}
-            onClick={() => setSortMode('lowest')}
-          >Lowest</button>
-          <button
-            className={`px-2 py-1 text-[11px] rounded-md border ${sortMode==='highest'?'bg-[#4E724C] text-white border-[#4E724C]':'bg-white text-[#4E724C] border-[#4E724C]/30'} transition`}
-            onClick={() => setSortMode('highest')}
-          >Highest</button>
+            className={`px-2 py-1 text-[10px] flex items-center gap-1 border border-[#4E724C]/30 rounded-md ${groupMode==='time'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+            onClick={() => setGroupMode(groupMode === 'time' ? 'none' : 'time')}
+            title="Group by Time"
+          >
+            <Layers3 className="w-3 h-3" />
+            <span className="hidden sm:inline">Group</span>
+          </button>
+          
+          {/* View Mode Toggle */}
+          <div className="flex border border-[#4E724C]/30 rounded-md overflow-hidden">
+            <button
+              className={`px-2 py-1 text-[10px] flex items-center gap-1 ${viewMode==='card'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+              onClick={() => setViewMode('card')}
+              title="Card View"
+            >
+              <Grid3X3 className="w-3 h-3" />
+              <span className="hidden sm:inline">Cards</span>
+            </button>
+            <button
+              className={`px-2 py-1 text-[10px] flex items-center gap-1 ${viewMode==='compact'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+              onClick={() => setViewMode('compact')}
+              title="Compact View"
+            >
+              <List className="w-3 h-3" />
+              <span className="hidden sm:inline">List</span>
+            </button>
+          </div>
+          
+          {/* Sort Controls */}
+          {groupMode === 'none' && (
+            <div className="flex border border-[#4E724C]/30 rounded-md overflow-hidden">
+              <button
+                className={`px-2 py-1 text-[10px] ${sortMode==='lowest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('lowest')}
+              >Lowest</button>
+              <button
+                className={`px-2 py-1 text-[10px] ${sortMode==='highest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('highest')}
+              >Highest</button>
+            </div>
+          )}
         </div>
       </div>
       
@@ -634,22 +745,63 @@ export default function SupabaseCountdownGrid({
           {/* 빈 상태 - 아무것도 표시하지 않음 */}
         </div>
       ) : (
-        <div className="grid gap-3 md:gap-4">
-          <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
-            {sortedCountdowns.map((countdown) => (
-              <CountdownCard
-                key={countdown.id}
-                countdown={countdown}
-                onRemove={handleRemove}
-                onToggleVisibility={handleToggleVisibility}
-                onTogglePin={handleTogglePin}
-                onEdit={handleEdit}
-                onDuplicate={handleDuplicate}
-                onUpdateMemo={handleUpdateMemo}
-                category={category}
-              />
-            ))}
-          </div>
+        <div className="space-y-6">
+          {groupedCountdowns.map(([groupKey, countdowns]) => (
+            <div key={groupKey}>
+              {/* Group Header */}
+              {groupMode === 'time' && groupKey !== 'all' && (
+                <div className="px-4 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    {(() => {
+                      const IconComponent = getGroupIcon(groupKey);
+                      return <IconComponent className={`w-4 h-4 ${groupKey === 'overdue' ? 'text-red-500' : 'text-[#4E724C]'}`} />;
+                    })()}
+                    {getGroupLabel(groupKey)}
+                    <span className="text-xs text-gray-500 font-normal">
+                      ({countdowns.length} timer{countdowns.length !== 1 ? 's' : ''})
+                    </span>
+                  </h3>
+                </div>
+              )}
+              
+              {/* Group Content */}
+              <div className="grid gap-3 md:gap-4">
+                {viewMode === 'card' ? (
+                  <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
+                    {countdowns.map((countdown) => (
+                      <CountdownCard
+                        key={countdown.id}
+                        countdown={countdown}
+                        onRemove={handleRemove}
+                        onToggleVisibility={handleToggleVisibility}
+                        onTogglePin={handleTogglePin}
+                        onEdit={handleEdit}
+                        onDuplicate={handleDuplicate}
+                        onUpdateMemo={handleUpdateMemo}
+                        category={category}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-2 px-4">
+                    {countdowns.map((countdown) => (
+                      <CountdownCompact
+                        key={countdown.id}
+                        countdown={countdown}
+                        onRemove={handleRemove}
+                        onToggleVisibility={handleToggleVisibility}
+                        onTogglePin={handleTogglePin}
+                        onEdit={handleEdit}
+                        onDuplicate={handleDuplicate}
+                        onUpdateMemo={handleUpdateMemo}
+                        category={category}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
           
           {/* Only show ads when there's substantial content */}
           {sortedCountdowns.length >= 6 && (
