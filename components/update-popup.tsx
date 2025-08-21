@@ -32,32 +32,24 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
 
   const content = {
     en: {
-      title: 'Now & Then v2.0',
-      subtitle: 'Major update with PWA support and smart notifications.',
-      pwaTitle: 'PWA Support',
-      pwaDesc: 'Install on home screen and use like a native app with offline support.',
-      notificationTitle: 'Smart Notifications',
-      notificationDesc: 'Get notified 1, 3, or 7 days before important events with modern UI.',
-      uiTitle: 'Modern UI/UX',
-      uiDesc: 'Elegant toggle switches, optimized spacing, and mobile-friendly design.',
-      performanceTitle: 'Performance Boost',
-      performanceDesc: 'Faster, smoother experience with improved animations and responsiveness.',
-      confirm: 'Awesome',
-      version: 'Version 2.0 • January 2025'
+      title: 'Now & Then v1.3',
+      subtitle: 'Better mobile experience with improved accessibility.',
+      mobileTitle: 'Mobile Experience',
+      mobileDesc: 'Fixed input zoom issues and improved responsive design for seamless mobile usage.',
+      languageTitle: 'Enhanced Localization',
+      languageDesc: 'Better Korean language support with clearer labels and improved accessibility.',
+      confirm: 'Got it',
+      version: 'Version 1.3 • August 2025'
     },
     ko: {
-      title: 'Now & Then v2.0',
-      subtitle: 'PWA 지원과 스마트 알림이 추가된 대규모 업데이트.',
-      pwaTitle: 'PWA 지원',
-      pwaDesc: '홈 화면에 설치하고 네이티브 앱처럼 사용, 오프라인에서도 동작.',
-      notificationTitle: '스마트 알림',
-      notificationDesc: '1일/3일/7일 전에 자동 알림, 모던한 설정 UI로 편리하게.',
-      uiTitle: '모던한 UI/UX',
-      uiDesc: '세련된 토글 스위치, 최적화된 간격, 모바일 친화적 디자인.',
-      performanceTitle: '성능 향상',
-      performanceDesc: '더 빠르고 부드러운 애니메이션과 반응성.',
-      confirm: '훌륭해요',
-      version: '버전 2.0 • 2025년 1월'
+      title: 'Now & Then v1.3',
+      subtitle: '향상된 접근성과 모바일 경험 개선.',
+      mobileTitle: '모바일 경험 개선',
+      mobileDesc: '입력 시 확대 문제 해결 및 원활한 모바일 사용을 위한 반응형 디자인 개선.',
+      languageTitle: '언어 지원 강화',
+      languageDesc: '더 명확한 한국어 라벨과 향상된 접근성으로 언어 지원 개선.',
+      confirm: '확인',
+      version: '버전 1.3 • 2025년 8월'
     }
   };
 
@@ -109,50 +101,26 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
             <div className="space-y-4 mb-6">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Globe className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.pwaTitle}</h3>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.pwaDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <MessageSquare className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.notificationTitle}</h3>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.notificationDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Palette className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.uiTitle}</h3>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.uiDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.performanceTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.mobileTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.performanceDesc}
+                    {currentContent.mobileDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Globe className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.languageTitle}</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentContent.languageDesc}
                   </p>
                 </div>
               </div>

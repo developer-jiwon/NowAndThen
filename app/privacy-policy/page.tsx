@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
       
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4 text-gray-900">Privacy Policy</h1>
-        <p className="text-gray-600">Last updated: January 2024</p>
+        <p className="text-gray-600">Last updated: August 21, 2025</p>
       </div>
 
       <div className="prose max-w-none">
@@ -40,12 +40,14 @@ export default function PrivacyPolicy() {
             <div>
               <h3 className="text-lg font-semibold mb-3 text-gray-800">Personal Information</h3>
               <p className="text-gray-700 leading-relaxed mb-3">
-                When you create an account, we may collect:
+                When you create an account or use our Service, we may collect:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700">
                 <li>Email address (when signing in with Google)</li>
                 <li>Display name and profile picture (from your Google account)</li>
                 <li>Account preferences and settings</li>
+                <li>Anonymous user identifiers (for users without accounts)</li>
+                <li>Push notification subscription data (when notifications are enabled)</li>
               </ul>
             </div>
             
@@ -83,6 +85,7 @@ export default function PrivacyPolicy() {
               <li><strong>Account Management:</strong> To manage your account and provide customer support</li>
               <li><strong>Security:</strong> To detect and prevent fraud, abuse, and security threats</li>
               <li><strong>Analytics:</strong> To understand how users interact with our Service and improve functionality</li>
+              <li><strong>Push Notifications:</strong> To send timer reminders and important updates (only with your consent)</li>
               <li><strong>Communications:</strong> To send important updates about our Service (when necessary)</li>
               <li><strong>Legal Compliance:</strong> To comply with applicable laws and regulations</li>
             </ul>
@@ -124,21 +127,38 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">6. Your Rights and Choices</h2>
           <div className="space-y-4 text-gray-700 leading-relaxed">
-            <p>You have the following rights regarding your personal information:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
-              <li><strong>Correction:</strong> Update or correct inaccurate personal information</li>
-              <li><strong>Deletion:</strong> Request deletion of your personal information and account</li>
-              <li><strong>Portability:</strong> Request a copy of your data in a portable format</li>
-              <li><strong>Restriction:</strong> Request limitation of processing of your personal information</li>
-              <li><strong>Objection:</strong> Object to certain types of processing</li>
-              <li><strong>Withdraw Consent:</strong> Withdraw consent for data processing where applicable</li>
-            </ul>
-            <p className="mt-4">
-              To exercise these rights, please contact us at{" "}
+            <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">GDPR Rights (EU/EEA/UK residents):</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
+                  <li><strong>Rectification:</strong> Update or correct inaccurate personal information</li>
+                  <li><strong>Erasure:</strong> Request deletion of your personal information ("right to be forgotten")</li>
+                  <li><strong>Data Portability:</strong> Request a copy of your data in a portable format</li>
+                  <li><strong>Restriction:</strong> Request limitation of processing of your personal information</li>
+                  <li><strong>Objection:</strong> Object to certain types of processing, including direct marketing</li>
+                  <li><strong>Withdraw Consent:</strong> Withdraw consent for data processing where applicable</li>
+                  <li><strong>Complaint:</strong> Lodge a complaint with your local data protection authority</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">CCPA Rights (California residents):</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li><strong>Know:</strong> Right to know what personal information we collect, use, disclose, or sell</li>
+                  <li><strong>Delete:</strong> Right to request deletion of personal information</li>
+                  <li><strong>Opt-Out:</strong> Right to opt out of the sale of personal information (we do not sell data)</li>
+                  <li><strong>Non-Discrimination:</strong> Right to non-discriminatory treatment for exercising privacy rights</li>
+                </ul>
+              </div>
+            </div>
+            <p className="mt-4 font-medium">
+              <strong>How to Exercise Your Rights:</strong> Contact us at{" "}
               <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">
                 dev.jiwonnie@gmail.com
-              </a>
+              </a>. 
+              We will respond within 5 business days. 
+              We may require verification of your identity before processing your request.
             </p>
           </div>
         </section>
@@ -154,7 +174,7 @@ export default function PrivacyPolicy() {
               <li>Improve our Service and user experience</li>
             </ul>
             <p className="mt-4">
-              When you delete your account, we will delete your personal information within 30 days, 
+              When you delete your account, we will delete your personal information within 5 business days, 
               except where we are required to retain it for legal or security purposes.
             </p>
           </div>
@@ -186,6 +206,8 @@ export default function PrivacyPolicy() {
               <li><strong>Google Authentication:</strong> For sign-in functionality</li>
               <li><strong>Google Analytics:</strong> For usage analytics and insights</li>
               <li><strong>Google AdSense:</strong> For displaying relevant advertisements</li>
+              <li><strong>Supabase:</strong> For database hosting and authentication services</li>
+              <li><strong>Push Notification Services:</strong> For delivering timer reminders</li>
             </ul>
             <p className="mt-4">
               These third parties have their own privacy policies. We recommend reviewing their 
@@ -207,11 +229,20 @@ export default function PrivacyPolicy() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">12. Contact Us</h2>
           <div className="text-gray-700 leading-relaxed">
             <p className="mb-4">
-              If you have any questions about this Privacy Policy or our data practices, please contact us:
+              If you have any questions about this Privacy Policy, data practices, or wish to exercise your privacy rights, please contact us:
             </p>
-            <ul className="space-y-2">
-              <li>Email: <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">dev.jiwonnie@gmail.com</a></li>
-            </ul>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="font-semibold mb-2">Data Controller:</p>
+              <ul className="space-y-1">
+                <li><strong>Service:</strong> Now & Then</li>
+                <li><strong>Email:</strong> <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">dev.jiwonnie@gmail.com</a></li>
+                <li><strong>Response Time:</strong> We will respond to your inquiry within 5 business days</li>
+              </ul>
+            </div>
+            <p className="mt-4 text-sm text-gray-600">
+              <strong>For EU/EEA residents:</strong> If you are not satisfied with our response, you have the right to 
+              lodge a complaint with your local data protection authority.
+            </p>
           </div>
         </section>
       </div>

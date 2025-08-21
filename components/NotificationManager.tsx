@@ -284,6 +284,11 @@ export default function NotificationManager() {
 
   // Render even if not logged in (we create anonymous on enable)
 
+  // Hide on desktop/PC browsers - only show on mobile
+  if (!isMobile) {
+    return null;
+  }
+
   return (
     <>
       <div className="flex items-center gap-2">

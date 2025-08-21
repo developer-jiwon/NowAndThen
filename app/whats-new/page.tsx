@@ -16,6 +16,13 @@ export default function WhatsNew() {
 
       <div className="space-y-6">
         <section className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-900">v1.3 • August 2025</h2>
+          <ul className="list-disc pl-6 text-gray-700 text-sm mt-3 space-y-1">
+            <li>Fixed mobile input zoom issue when creating/editing timers</li>
+            <li>Enhanced Korean language support with clearer labels</li>
+          </ul>
+        </section>
+        <section className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900">v1.1 • August 2025</h2>
           <ul className="list-disc pl-6 text-gray-700 text-sm mt-3 space-y-1">
             <li>PWA ready: installable app, service worker, offline page, iOS icon</li>

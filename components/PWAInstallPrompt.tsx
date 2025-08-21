@@ -272,9 +272,9 @@ export default function PWAInstallPrompt() {
                 <p className="text-[12px] text-gray-700 text-center w-full">{L('Install for quick access and reminders.','빠른 접속과 리마인더를 위해 설치하세요.')}</p>
               </div>
               <div className="flex justify-center mb-3">
-                <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden text-[11px]">
+                <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden text-[10px]">
                   <button className={`px-2 py-1 ${lang==='en'?'bg-black text-white':'bg-white text-gray-700'}`} onClick={()=>setLang('en')}>EN</button>
-                  <button className={`px-2 py-1 ${lang==='ko'?'bg-black text-white':'bg-white text-gray-700'}`} onClick={()=>setLang('ko')}>KR</button>
+                  <button className={`px-2 py-1 ${lang==='ko'?'bg-black text-white':'bg-white text-gray-700'}`} onClick={()=>setLang('ko')}>한국어</button>
                 </div>
               </div>
 

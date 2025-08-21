@@ -17,7 +17,7 @@ export default function CookiePolicy() {
       
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4 text-gray-900">Cookie Policy</h1>
-        <p className="text-gray-600">Last updated: January 2024</p>
+        <p className="text-gray-600">Last updated: August 21, 2025</p>
       </div>
 
       <div className="prose max-w-none">
@@ -47,6 +47,7 @@ export default function CookiePolicy() {
                 <li>Session cookies to maintain your preferences</li>
                 <li>Security cookies to protect against malicious attacks</li>
                 <li>Load balancing cookies to ensure site stability</li>
+                <li>Anonymous user identification cookies for users without accounts</li>
               </ul>
             </div>
 
@@ -60,6 +61,8 @@ export default function CookiePolicy() {
                 <li>Language and region preferences</li>
                 <li>Timer display options and categories</li>
                 <li>Recently accessed features</li>
+                <li>Push notification preferences</li>
+                <li>PWA installation status</li>
               </ul>
             </div>
 
@@ -106,6 +109,7 @@ export default function CookiePolicy() {
                 <li><strong>Google AdSense:</strong> Advertising platform for displaying relevant ads</li>
                 <li><strong>Google Fonts:</strong> Web font delivery service</li>
                 <li><strong>Google OAuth:</strong> Authentication and sign-in services</li>
+                <li><strong>Supabase:</strong> Database hosting and authentication services</li>
               </ul>
               <p className="text-gray-700 leading-relaxed mt-3">
                 For more information about Google's use of cookies, please visit{" "}
@@ -155,6 +159,12 @@ export default function CookiePolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">5. Managing Your Cookie Preferences</h2>
           <div className="space-y-6">
+            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              <p className="text-sm text-yellow-800">
+                <strong>Important:</strong> Essential cookies cannot be disabled as they are necessary for basic website functionality. 
+                Disabling other cookies may affect your user experience but will not prevent you from using our core services.
+              </p>
+            </div>
             <div>
               <h3 className="text-lg font-semibold mb-3 text-gray-800">Browser Settings</h3>
               <p className="text-gray-700 leading-relaxed mb-3">

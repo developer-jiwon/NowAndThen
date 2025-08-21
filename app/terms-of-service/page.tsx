@@ -17,7 +17,7 @@ export default function TermsOfService() {
       
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4 text-gray-900">Terms of Service</h1>
-        <p className="text-gray-600">Last updated: January 2024</p>
+        <p className="text-gray-600">Last updated: August 21, 2025</p>
       </div>
 
       <div className="prose max-w-none">
@@ -35,9 +35,9 @@ export default function TermsOfService() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">2. Description of Service</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Now & Then is a web-based countdown timer platform that allows users to create, manage, and sync countdown timers 
+            Now & Then is a free web-based countdown timer platform that allows users to create, manage, and sync countdown timers 
             across multiple devices. Our Service includes features such as timer categorization, data synchronization, 
-            and cross-platform access.
+            cross-platform access, push notifications, and Progressive Web App (PWA) installation. The Service is supported by advertising revenue.
           </p>
           <p className="text-gray-700 leading-relaxed">
             We reserve the right to modify, suspend, or discontinue any aspect of the Service at any time, 
@@ -49,7 +49,7 @@ export default function TermsOfService() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">3. User Accounts and Registration</h2>
           <div className="space-y-4 text-gray-700 leading-relaxed">
             <p>
-              You may use our Service without creating an account, but certain features require registration. 
+              You may use our Service without creating an account (anonymous usage), but certain features like cross-device synchronization require registration. 
               When you create an account, you agree to:
             </p>
             <ul className="list-disc pl-6 space-y-2">
@@ -67,11 +67,14 @@ export default function TermsOfService() {
             <p>You agree to use the Service only for lawful purposes and in accordance with these Terms. You agree not to:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Use the Service for any illegal or unauthorized purpose</li>
+              <li>Use the Service for mission-critical, safety-critical, or time-critical applications</li>
+              <li>Rely on timer accuracy for medical, aviation, emergency, or other high-stakes purposes</li>
               <li>Violate any applicable laws or regulations</li>
               <li>Transmit viruses, malware, or other harmful code</li>
               <li>Attempt to gain unauthorized access to our systems</li>
               <li>Interfere with or disrupt the Service or servers</li>
               <li>Use automated tools to access the Service without permission</li>
+              <li>Create excessive load on our servers through automated requests</li>
             </ul>
           </div>
         </section>
@@ -137,8 +140,8 @@ export default function TermsOfService() {
               loss of profits, data, or other intangible losses.
             </p>
             <p>
-              Our total liability to you for any claims related to the Service shall not exceed 
-              the amount you paid us in the twelve months preceding the claim.
+              Since our Service is provided free of charge, our total liability to you for any claims 
+              related to the Service shall not exceed $100 USD.
             </p>
           </div>
         </section>
@@ -167,15 +170,61 @@ export default function TermsOfService() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-900">12. Governing Law</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">12. Advertising and Third-Party Services</h2>
+          <div className="space-y-4 text-gray-700 leading-relaxed">
+            <p>
+              Our Service displays advertisements through Google AdSense to support our free platform. 
+              These ads may be personalized based on your interests and browsing behavior.
+            </p>
+            <p>
+              We integrate with third-party services including Google Analytics for usage insights, 
+              Google Authentication for sign-in functionality, and push notification services. 
+              Your use of these features is subject to the respective third-party terms and privacy policies.
+            </p>
+          </div>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">13. Disclaimers and Warranties</h2>
+          <div className="space-y-4 text-gray-700 leading-relaxed">
+            <p className="font-semibold">DISCLAIMER OF WARRANTIES</p>
+            <p>
+              THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, 
+              EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF 
+              MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+            </p>
+            <p>
+              We do not warrant that the Service will be uninterrupted, error-free, or completely secure. 
+              We disclaim all warranties regarding the accuracy, reliability, or completeness of any content or information.
+            </p>
+            <p>
+              <strong>TIMER ACCURACY:</strong> While we strive for accuracy, we do not guarantee precise timing. 
+              Do not rely on our Service for critical time-sensitive applications where inaccuracy could cause harm.
+            </p>
+          </div>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">14. Indemnification</h2>
           <p className="text-gray-700 leading-relaxed">
-            These Terms shall be governed by and construed in accordance with applicable laws. 
-            Any disputes arising from these Terms or the Service shall be resolved through binding arbitration.
+            You agree to indemnify, defend, and hold harmless Now & Then, its officers, directors, employees, 
+            and agents from and against any claims, liabilities, damages, losses, and expenses arising out of 
+            or in any way connected with your use of the Service or violation of these Terms.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">15. Governing Law and Jurisdiction</h2>
+          <p className="text-gray-700 leading-relaxed">
+            These Terms shall be governed by and construed in accordance with the laws of the Republic of Korea, 
+            without regard to its conflict of law principles. Any legal action or proceeding arising under these Terms 
+            will be brought exclusively in the courts of Seoul, Republic of Korea, and you hereby consent to personal 
+            jurisdiction and venue therein.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-4 text-gray-900">13. Contact Information</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">16. Contact Information</h2>
           <p className="text-gray-700 leading-relaxed">
             If you have any questions about these Terms, please contact us at{" "}
             <a href="mailto:dev.jiwonnie@gmail.com" className="text-blue-600 hover:underline">
