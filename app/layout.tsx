@@ -254,6 +254,41 @@ export default function RootLayout({
                 }
               })();
             }
+
+            // PWA Install Prompt Handler
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+              // Prevent Chrome 67 and earlier from automatically showing the prompt
+              e.preventDefault();
+              // Stash the event so it can be triggered later
+              deferredPrompt = e;
+              
+              // Store the prompt for later use (don't auto-show)
+              console.log('PWA install prompt available');
+            });
+
+            // Handle successful installation
+            window.addEventListener('appinstalled', (evt) => {
+              console.log('PWA was installed');
+              deferredPrompt = null;
+            });
+
+            // Make install function globally available
+            window.installPWA = () => {
+              if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                  if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                  } else {
+                    console.log('User dismissed the install prompt');
+                  }
+                  deferredPrompt = null;
+                });
+              } else {
+                console.log('PWA install prompt not available');
+              }
+            };
           `}</Script>
           <div className="relative flex flex-col">
             {children}

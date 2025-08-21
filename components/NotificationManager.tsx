@@ -28,6 +28,7 @@ export default function NotificationManager() {
   const [testResult, setTestResult] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [showPWAGuide, setShowPWAGuide] = useState(false);
+  const [canInstallPWA, setCanInstallPWA] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     oneDay: false,
     threeDays: false,
@@ -42,6 +43,24 @@ export default function NotificationManager() {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isInApp = (window.navigator as any).standalone === true;
       setIsPWA(isStandalone || isInApp);
+      
+      // Check if PWA can be installed
+      if (!isStandalone && !isInApp) {
+        // Listen for beforeinstallprompt event
+        const handleBeforeInstallPrompt = () => {
+          setCanInstallPWA(true);
+        };
+        
+        if ((window as any).deferredPrompt) {
+          setCanInstallPWA(true);
+        } else {
+          window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        }
+        
+        return () => {
+          window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+      }
     }
   }, []);
 
@@ -129,6 +148,13 @@ export default function NotificationManager() {
       })();
     }
   }, []);
+
+  // PWA install function
+  const installPWA = () => {
+    if (typeof window !== 'undefined' && (window as any).installPWA) {
+      (window as any).installPWA();
+    }
+  };
 
   const requestPermission = async () => {
     if (!('Notification' in window)) {
@@ -313,15 +339,28 @@ export default function NotificationManager() {
             </Button>
           </>
         ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={requestPermission}
-            className="h-8 text-xs border-[#4E724C] text-[#4E724C] hover:bg-[#4E724C]/10"
-          >
-            <Bell className="w-3 h-3 mr-1" />
-            Enable Notifications
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={requestPermission}
+              className="h-8 text-xs border-[#4E724C] text-[#4E724C] hover:bg-[#4E724C]/10"
+            >
+              <Bell className="w-3 h-3 mr-1" />
+              Enable Notifications
+            </Button>
+            {canInstallPWA && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={installPWA}
+                className="h-8 text-xs border-blue-500 text-blue-500 hover:bg-blue-50"
+                title="Install app to home screen"
+              >
+                📱 Install App
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
