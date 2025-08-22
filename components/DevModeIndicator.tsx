@@ -73,18 +73,20 @@ export default function DevModeIndicator() {
       <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
           <div className="text-center mb-6">
-            <div className="text-2xl mb-2">🔒</div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Admin Access Required</h3>
+            <div className="text-2xl mb-2">🚫</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Access Restricted</h3>
             <p className="text-sm text-gray-600">
-              Test mode requires administrator login.
+              Test mode requires administrator authentication.
             </p>
           </div>
           
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <div className="text-sm font-semibold text-gray-700 mb-2">Test Account:</div>
-            <div className="text-xs text-gray-600 space-y-1">
-              <div><span className="font-medium">Username:</span> Test</div>
-              <div><span className="font-medium">Password:</span> Tes_19tIs_94Impo_30rtan_04t</div>
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+            <div className="text-sm text-blue-700">
+              <div className="font-semibold mb-1">⚠️ Security Notice:</div>
+              <div className="text-xs">
+                Test mode is restricted to authorized administrators only. 
+                Please contact the system administrator for access credentials.
+              </div>
             </div>
           </div>
           
