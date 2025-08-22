@@ -11,6 +11,9 @@ export default function DevModeIndicator() {
   const [isExiting, setIsExiting] = useState(false)
   const [showTestCredentials, setShowTestCredentials] = useState(false)
   const [showAdminLoginPrompt, setShowAdminLoginPrompt] = useState(false)
+  const [showLoginForm, setShowLoginForm] = useState(false)
+  const [loginCredentials, setLoginCredentials] = useState({ username: '', password: '' })
+  const [loginError, setLoginError] = useState('')
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -102,10 +105,87 @@ export default function DevModeIndicator() {
               Exit Test Mode
             </button>
             <button
-              onClick={() => setShowAdminLoginPrompt(false)}
+              onClick={() => {
+                setShowAdminLoginPrompt(false)
+                setShowLoginForm(true)
+              }}
               className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-700 transition-colors"
             >
               I'll Login
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 로그인 폼 표시
+  if (showLoginForm) {
+    const handleLogin = () => {
+      if (loginCredentials.username === 'Test' && loginCredentials.password === 'Tes_19tIs_94Impo_30rtan_04t') {
+        // 로그인 성공 - 개발 모드 활성화
+        setShowLoginForm(false)
+        setLoginError('')
+        // 개발 모드로 전환
+        window.location.reload()
+      } else {
+        setLoginError('Invalid credentials. Please try again.')
+      }
+    }
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+          <div className="text-center mb-6">
+            <div className="text-2xl mb-2">🔐</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Test Mode Login</h3>
+            <p className="text-sm text-gray-600">
+              Enter test account credentials to access development mode.
+            </p>
+          </div>
+          
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <input
+                type="text"
+                value={loginCredentials.username}
+                onChange={(e) => setLoginCredentials(prev => ({ ...prev, username: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input
+                type="password"
+                value={loginCredentials.password}
+                onChange={(e) => setLoginCredentials(prev => ({ ...prev, password: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter password"
+              />
+            </div>
+            {loginError && (
+              <div className="text-red-600 text-sm text-center">{loginError}</div>
+            )}
+          </div>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                setShowLoginForm(false)
+                setLoginCredentials({ username: '', password: '' })
+                setLoginError('')
+              }}
+              className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleLogin}
+              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+            >
+              Login
             </button>
           </div>
         </div>
