@@ -82,6 +82,17 @@ export default function DevModeIndicator() {
             <span className="font-semibold">Password:</span> Tes_19tIs_94Impo_30rtan_04t
           </div>
           <button
+            onClick={() => {
+              const testUrl = `${window.location.origin}?dev=1`;
+              navigator.clipboard.writeText(testUrl);
+              alert('✅ Test server URL copied to clipboard!');
+            }}
+            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+            title="Copy test server URL with ?dev=1 parameter"
+          >
+            Test Server Copy
+          </button>
+          <button
             onClick={() => setShowTestCredentials(false)}
             className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
             title="Hide test account info"
