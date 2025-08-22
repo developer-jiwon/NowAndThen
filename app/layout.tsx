@@ -5,6 +5,7 @@ import { Merriweather } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
 import ConsentBanner from "@/components/ConsentBanner"
+import DevModeIndicator from "@/components/DevModeIndicator"
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -215,6 +216,7 @@ export default function RootLayout({
       </head>
       <body className={`${merriweather.variable} flex flex-col`}> 
         <SupabaseProvider>
+          <DevModeIndicator />
           <ConsentBanner />
           <Script id="sw-register" strategy="afterInteractive">{`
             if ('serviceWorker' in navigator) {

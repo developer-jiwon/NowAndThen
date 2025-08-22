@@ -13,7 +13,47 @@ export function useAnonymousAuth() {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          // Try to restore previous guest_id from localStorage
+          // Development environment: Use a consistent fake user to avoid recreating sessions
+          // Check for dev mode via URL parameter or NODE_ENV
+          const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+          const devParam = urlParams?.get('dev');
+          const isDev = process.env.NODE_ENV === 'development' || 
+            devParam === '1' || devParam === 'true';
+            
+          if (isDev) {
+            console.log('🔧 Development mode active - using mock user to avoid creating Supabase users');
+            const devUserId = 'dev-user-local';
+            const existingDevUser = localStorage.getItem('dev_user_data');
+            
+            if (existingDevUser) {
+              // Use existing dev user data
+              const userData = JSON.parse(existingDevUser);
+              process.env.NODE_ENV === 'development' && console.log('Using existing dev user:', devUserId);
+              setUser(userData);
+              setLoading(false);
+              return;
+            } else {
+              // Create a mock user object for development
+              const mockUser = {
+                id: devUserId,
+                email: null,
+                user_metadata: { provider: 'anonymous' },
+                app_metadata: {},
+                aud: 'authenticated',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              } as User;
+              
+              localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
+              localStorage.setItem('guest_id', devUserId);
+              process.env.NODE_ENV === 'development' && console.log('Created dev user:', devUserId);
+              setUser(mockUser);
+              setLoading(false);
+              return;
+            }
+          }
+          
+          // Production: Try to restore previous guest_id from localStorage
           const previousGuestId = localStorage.getItem('guest_id');
           process.env.NODE_ENV === 'development' && console.log('No session found, signing in anonymously...');
           const { data, error } = await supabase.auth.signInAnonymously();

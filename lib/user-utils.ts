@@ -9,6 +9,26 @@ const URL_DATA_PROCESSED_KEY = "now_then_url_data_processed";
 const DATA_IMPORTED_KEY = "now_then_data_imported";
 
 /**
+ * Checks if we're in development mode (either NODE_ENV or URL parameter)
+ */
+function isDevelopmentMode(): boolean {
+  if (typeof window === "undefined") return process.env.NODE_ENV === 'development';
+  
+  // Check URL parameter for forcing dev mode (works in production too)
+  const urlParams = new URLSearchParams(window.location.search);
+  const devMode = urlParams.get('dev');
+  
+  const isDevMode = process.env.NODE_ENV === 'development' || devMode === '1' || devMode === 'true';
+  
+  // Log dev mode status for debugging
+  if (isDevMode && devMode === '1') {
+    console.log('🔧 Development mode forced via ?dev=1 parameter');
+  }
+  
+  return isDevMode;
+}
+
+/**
  * Generates a shorter unique ID (8 characters) from a UUID
  */
 export function generateShortId(): string {
@@ -26,7 +46,23 @@ export function generateShortId(): string {
 function getOrCreateUserId(): string {
   if (typeof window === "undefined") return "";
   
-  // Try to get from localStorage
+  // Development environment: Use a consistent user ID
+  if (isDevelopmentMode()) {
+    const devUserId = 'dev-user-local';
+    const existingUserId = localStorage.getItem(USER_ID_KEY);
+    
+    // If we already have the dev user ID, use it
+    if (existingUserId === devUserId) {
+      return devUserId;
+    }
+    
+    // Set the dev user ID
+    localStorage.setItem(USER_ID_KEY, devUserId);
+    isDevelopmentMode() && console.log("Using dev userId:", devUserId);
+    return devUserId;
+  }
+  
+  // Production: Try to get from localStorage
   let userId = localStorage.getItem(USER_ID_KEY);
   
   // If no user ID exists, create a new one and store it
@@ -325,4 +361,103 @@ function checkForLocalData(userId: string): boolean {
   }
   
   return false;
+}
+
+/**
+ * Development utilities - only available in development mode
+ */
+export const devUtils = {
+  /**
+   * Reset all localStorage data (for development/testing)
+   */
+  resetLocalStorage: () => {
+    if (!isDevelopmentMode()) {
+      console.warn('devUtils.resetLocalStorage() is only available in development mode');
+      return;
+    }
+    
+    const keys = Object.keys(localStorage);
+    const appKeys = keys.filter(key => 
+      key.startsWith('now_then_') || 
+      key.includes('countdown') || 
+      key === 'guest_id' ||
+      key === 'dev_user_data'
+    );
+    
+    appKeys.forEach(key => localStorage.removeItem(key));
+    console.log('Reset localStorage keys:', appKeys);
+    
+    // Reload to reinitialize
+    window.location.reload();
+  },
+  
+  /**
+   * Switch to production mode (remove dev parameter and use real auth)
+   */
+  switchToProductionMode: () => {
+    if (!isDevelopmentMode()) {
+      console.warn('Already in production mode');
+      return;
+    }
+    
+    const url = new URL(window.location.href);
+    url.searchParams.delete('dev');
+    
+    // Clear dev data
+    localStorage.removeItem('dev_user_data');
+    
+    window.location.href = url.toString();
+  },
+  
+  /**
+   * Switch to development mode (add dev parameter)
+   */
+  switchToDevelopmentMode: () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('dev', '1');
+    window.location.href = url.toString();
+  },
+  
+  /**
+   * Get development mode URL for testing (useful for production testing)
+   */
+  getDevModeUrl: () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('dev', '1');
+    return url.toString();
+  },
+  
+  /**
+   * Copy development mode URL to clipboard
+   */
+  copyDevModeUrl: async () => {
+    const devUrl = devUtils.getDevModeUrl();
+    try {
+      await navigator.clipboard.writeText(devUrl);
+      console.log('✅ Development mode URL copied to clipboard:', devUrl);
+      return true;
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      console.log('Development mode URL:', devUrl);
+      return false;
+    }
+  },
+  
+  /**
+   * Get current mode info
+   */
+  getModeInfo: () => {
+    return {
+      isDevelopmentMode: isDevelopmentMode(),
+      nodeEnv: process.env.NODE_ENV,
+      hasDevParam: typeof window !== "undefined" && new URLSearchParams(window.location.search).get('dev') === '1',
+      userId: getOrCreateUserId(),
+      guestId: typeof window !== "undefined" ? localStorage.getItem('guest_id') : null
+    };
+  }
+};
+
+// Make devUtils globally available in development
+if (typeof window !== "undefined" && isDevelopmentMode()) {
+  (window as any).devUtils = devUtils;
 } 
