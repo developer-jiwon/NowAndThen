@@ -14,15 +14,27 @@ const DATA_IMPORTED_KEY = "now_then_data_imported";
 function isDevelopmentMode(): boolean {
   if (typeof window === "undefined") return process.env.NODE_ENV === 'development';
   
-  // Check URL parameter for forcing dev mode (works in production too)
+  // Check URL parameter for forcing dev mode (only in production)
   const urlParams = new URLSearchParams(window.location.search);
   const devMode = urlParams.get('dev');
   
-  const isDevMode = process.env.NODE_ENV === 'development' || devMode === '1' || devMode === 'true';
+  // 로컬 개발환경: 항상 개발 모드
+  // 배포된 사이트: ?dev=1이 있을 때만 개발 모드 (로그인된 사용자만)
+  let isDevMode = false;
+  
+  if (process.env.NODE_ENV === 'development') {
+    isDevMode = true;
+  } else if (process.env.NODE_ENV === 'production' && (devMode === '1' || devMode === 'true')) {
+    // 배포 후 테스트 모드는 로그인된 사용자만 접근 가능
+    // 여기서는 사용자 인증 상태를 확인할 수 없으므로 false
+    isDevMode = false;
+  }
   
   // Log dev mode status for debugging
   if (isDevMode && devMode === '1') {
-    console.log('🔧 Development mode forced via ?dev=1 parameter');
+    console.log('🔧 Development mode forced via ?dev=1 parameter (production only)');
+  } else if (isDevMode && process.env.NODE_ENV === 'development') {
+    console.log('🔧 Development mode active (local development)');
   }
   
   return isDevMode;

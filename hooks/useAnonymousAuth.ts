@@ -17,8 +17,18 @@ export function useAnonymousAuth() {
           // Check for dev mode via URL parameter or NODE_ENV
           const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
           const devParam = urlParams?.get('dev');
-          const isDev = process.env.NODE_ENV === 'development' || 
-            devParam === '1' || devParam === 'true';
+          
+          // 로컬 개발환경: 항상 개발 모드
+          // 배포된 사이트: ?dev=1이 있을 때만 개발 모드 (로그인된 사용자만)
+          let isDev = false;
+          
+          if (process.env.NODE_ENV === 'development') {
+            isDev = true;
+          } else if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
+            // 배포 후 테스트 모드는 로그인된 사용자만 접근 가능
+            // 여기서는 아직 로그인되지 않았으므로 false
+            isDev = false;
+          }
             
           if (isDev) {
             console.log('🔧 Development mode active - using mock user to avoid creating Supabase users');
