@@ -46,7 +46,7 @@ export function useAnonymousAuth() {
               // Create a mock user object for development
               const mockUser = {
                 id: devUserId,
-                email: null,
+                email: undefined,
                 user_metadata: { provider: 'anonymous' },
                 app_metadata: {},
                 aud: 'authenticated',
