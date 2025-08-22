@@ -19,22 +19,15 @@ export default function DevModeIndicator() {
     const devParam = urlParams.get('dev')
     
     // 로컬 개발환경: 항상 개발 모드
-    // 배포된 사이트: ?dev=1이 있을 때만 개발 모드 + 로그인 필수
+    // 배포된 사이트: ?dev=1이 있을 때는 개발 모드 비활성화 (admin 로그인 팝업 표시)
     let isDevMode = false
     
     if (process.env.NODE_ENV === 'development') {
       isDevMode = true
     } else if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
-      // 배포 후 테스트 모드는 로그인된 사용자만 접근 가능
-      if (user && user.email) {
-        isDevMode = true
-      } else {
-        console.log('🔒 Test mode requires login in production')
-        // URL에서 dev 파라미터 제거
-        const url = new URL(window.location.href)
-        url.searchParams.delete('dev')
-        window.history.replaceState({}, '', url.toString())
-      }
+      // 배포 후 ?dev=1이 있으면 개발 모드 비활성화하고 admin 로그인 팝업 표시
+      isDevMode = false
+      console.log('🔒 Test mode requires admin authentication in production')
     }
 
     setIsDev(isDevMode)
@@ -59,8 +52,8 @@ export default function DevModeIndicator() {
       setShowTestCredentials(false)
     }
 
-    // ?dev=1 파라미터가 있지만 로그인하지 않은 경우 admin 로그인 팝업 표시
-    if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true') && !user) {
+    // ?dev=1 파라미터가 있으면 모든 사용자에게 admin 로그인 팝업 표시 (로컬 개발환경 제외)
+    if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
       setShowAdminLoginPrompt(true)
     } else {
       setShowAdminLoginPrompt(false)
