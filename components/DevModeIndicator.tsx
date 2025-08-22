@@ -10,6 +10,7 @@ export default function DevModeIndicator() {
   const [isResetting, setIsResetting] = useState(false)
   const [isExiting, setIsExiting] = useState(false)
   const [showTestCredentials, setShowTestCredentials] = useState(false)
+  const [showAdminLoginPrompt, setShowAdminLoginPrompt] = useState(false)
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -58,6 +59,13 @@ export default function DevModeIndicator() {
       setShowTestCredentials(false)
     }
 
+    // ?dev=1 파라미터가 있지만 로그인하지 않은 경우 admin 로그인 팝업 표시
+    if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true') && !user) {
+      setShowAdminLoginPrompt(true)
+    } else {
+      setShowAdminLoginPrompt(false)
+    }
+
     return () => {
       // Clean up padding when component unmounts
       if (isDevMode) {
@@ -65,6 +73,50 @@ export default function DevModeIndicator() {
       }
     }
   }, [user])
+
+  // Admin 로그인 팝업 표시 (?dev=1 파라미터가 있지만 로그인하지 않은 경우)
+  if (showAdminLoginPrompt) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+          <div className="text-center mb-6">
+            <div className="text-2xl mb-2">🔒</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Admin Access Required</h3>
+            <p className="text-sm text-gray-600">
+              Test mode requires administrator login.
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="text-sm font-semibold text-gray-700 mb-2">Test Account:</div>
+            <div className="text-xs text-gray-600 space-y-1">
+              <div><span className="font-medium">Username:</span> Test</div>
+              <div><span className="font-medium">Password:</span> Tes_19tIs_94Impo_30rtan_04t</div>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('dev');
+                window.location.href = url.toString();
+              }}
+              className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition-colors"
+            >
+              Exit Test Mode
+            </button>
+            <button
+              onClick={() => setShowAdminLoginPrompt(false)}
+              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+            >
+              I'll Login
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // 테스트 계정 정보 표시 (ji04wonton30@gmail.com에게만, 일반 모드에서)
   if (showTestCredentials) {
