@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
-// VAPID 설정 (.env.local과 일치)
-const vapidKeys = {
-	publicKey: 'BAh0YkNpMzFaTleGijr-4mvzLp3TA7-3E_V225OS1L-JJHWMO_eYcFH8o3wD6SxHGnwobqXwSdta4zXTzQDro6s',
-	privateKey: 'YifvATCN0RY1vHfdbqh7nj4rWtrX3KVsc9ER4dw2uks'
-};
+function isAuthorized(req: NextRequest) {
+  if (process.env.NODE_ENV !== 'production') return true;
+  const token = req.headers.get('x-admin-token');
+  return !!token && token === process.env.ADMIN_API_TOKEN;
+}
 
-webpush.setVapidDetails(
-	'mailto:dev.jiwonnie@gmail.com',
-	vapidKeys.publicKey,
-	vapidKeys.privateKey
-);
+const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+if (vapidPublicKey && vapidPrivateKey) {
+  webpush.setVapidDetails('mailto:admin@localhost', vapidPublicKey, vapidPrivateKey);
+}
 
 export async function POST(request: NextRequest) {
 	try {
+		if (!isAuthorized(request)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 		process.env.NODE_ENV === 'development' && console.log('[API] 🚀 Delayed push request received');
 		const { subscription, id: incomingId } = await request.json();
 		if (!subscription) {
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
 				],
 				data: { url: '/', type: 'delayed-server', id, sentAt: Date.now(), shot: label, delayMs: 10000 }
 			};
+			if (!vapidPublicKey || !vapidPrivateKey) throw new Error('VAPID keys not configured');
 			const result = await webpush.sendNotification(
 				subscription,
 				JSON.stringify(payload),

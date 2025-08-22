@@ -229,7 +229,9 @@ class NotificationDiagnostics {
           this.results.webpush.hasSubscription = !!subscription;
           
           if (subscription) {
-            this.results.webpush.endpoint = subscription.endpoint;
+            // Mask endpoint and keys to avoid leaking sensitive data in console
+            const ep = subscription.endpoint || '';
+            this.results.webpush.endpoint = ep ? ep.slice(0, 24) + '…' : '';
             this.results.webpush.keys = {
               p256dh: !!subscription.getKey('p256dh'),
               auth: !!subscription.getKey('auth')
