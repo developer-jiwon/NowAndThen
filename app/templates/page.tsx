@@ -88,7 +88,7 @@ const templates: Template[] = [
     tips: [
       "Use memos for study schedules, key concepts, or progress notes",
       "Break large courses into chapter-by-chapter countdown timers",
-      "Duplicate successful study timers for consistent learning habits"
+      "Create recurring study sessions with consistent timing"
     ]
   },
   {

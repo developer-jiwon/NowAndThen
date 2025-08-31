@@ -39,7 +39,7 @@ export default function SupabaseCountdownGrid({
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
   // Sort controls, view mode, and grouping
-  const [sortMode, setSortMode] = useState<'lowest' | 'highest'>('lowest');
+  const [sortMode, setSortMode] = useState<'closest' | 'farthest'>('closest');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [groupMode, setGroupMode] = useState<'none' | 'time'>('none');
 
@@ -77,15 +77,17 @@ export default function SupabaseCountdownGrid({
 
   // Helper functions for grouping
   const getTimeGroup = (countdown: Countdown) => {
-    const dayMs = 24 * 60 * 60 * 1000;
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     
     const targetDate = new Date(countdown.date);
     targetDate.setHours(0, 0, 0, 0);
     
+    // Use the same calculation as getDays function for consistency
     const diffMs = targetDate.getTime() - todayStart.getTime();
-    const diffDays = Math.ceil(diffMs / dayMs);
+    const diffDays = Math.round(diffMs / (24 * 60 * 60 * 1000));
+    
+
     
     if (diffDays < 0) return 'overdue';
     if (diffDays === 0) return 'today';
@@ -138,17 +140,46 @@ export default function SupabaseCountdownGrid({
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     
-    // Then sort by days from today (not absolute - preserve +/- difference)
+    // Sort by D-day distance from today
     const aDays = getDays(a);
     const bDays = getDays(b);
     
-    if (sortMode === 'lowest') {
-      // Lowest: sort by actual days difference (negative = past, positive = future)
-      // This will put past dates first (most negative), then future dates (most positive)
-      return aDays - bDays;
+    if (sortMode === 'closest') {
+      // Closest: prioritize future dates (negative days = D-days left)
+      // For D-day concept: D-1 is tomorrow (closest future), D+1 is yesterday (recent past)
+      
+      const aIsFuture = aDays <= 0; // Today and future (D-day, D-1, D-2...)
+      const bIsFuture = bDays <= 0;
+      
+      // Future dates always come before past dates for "closest"
+      if (aIsFuture && !bIsFuture) return -1;
+      if (!aIsFuture && bIsFuture) return 1;
+      
+      if (aIsFuture && bIsFuture) {
+        // Both are future/today: sort by actual days (D-day=0, D-1=-1, D-2=-2...)
+        return bDays - aDays; // Closer to 0 (today) comes first
+      } else {
+        // Both are past: sort by recency (D+1=1, D+2=2...)
+        return aDays - bDays; // Smaller positive number (more recent) comes first
+      }
     } else {
-      // Highest: reverse the order
-      return bDays - aDays;
+      // Farthest: prioritize past dates (positive days = D+days ago)
+      // For D-day concept: D+365 is far past, D-365 is far future
+      
+      const aIsPast = aDays > 0;
+      const bIsPast = bDays > 0;
+      
+      // Past dates come before future dates for "farthest"
+      if (aIsPast && !bIsPast) return -1;
+      if (!aIsPast && bIsPast) return 1;
+      
+      if (aIsPast && bIsPast) {
+        // Both are past: sort by distance (larger positive = farther past)
+        return bDays - aDays;
+      } else {
+        // Both are future/today: sort by distance (more negative = farther future)
+        return aDays - bDays;
+      }
     }
   };
   const sortedCountdowns = baseArr.sort(compareByValue);
@@ -227,24 +258,7 @@ export default function SupabaseCountdownGrid({
     setEditingCountdownId(id);
   };
 
-  const handleDuplicate = async (id: string) => {
-    if (!user) return;
-    const originalCountdown = countdowns.find(c => c.id === id);
-    if (!originalCountdown) return;
-    
-    const duplicatedCountdown: Countdown = {
-      ...originalCountdown,
-      id: crypto.randomUUID(),
-      title: `${originalCountdown.title} (Copy)`,
-      pinned: false, // Don't pin the copy by default
-    };
-    
-    try {
-      await addCountdown(duplicatedCountdown, user.id);
-    } catch (error) {
-      console.error('Error duplicating countdown:', error);
-    }
-  };
+
 
   const handleSaveEdit = async (id: string, updatedData: Partial<Countdown>, newCategory?: string) => {
     if (!user) return;
@@ -307,16 +321,25 @@ export default function SupabaseCountdownGrid({
       hidden: false,
       pinned: false,
       originalCategory: (values.category === 'general' || values.category === 'personal') ? values.category : undefined,
+      memo: values.memo || "",
     };
     
     try {
       await addCountdown(newCountdown, user.id);
       setShowAddForm(false);
       
-      // Refresh custom tab immediately after adding to hide the newly created timer
-      if (category === 'custom') {
-        await loadCountdowns(user.id);
+      // Switch to the category tab where the timer was created
+      const targetCategory = newCountdown.originalCategory || 'general';
+      if (targetCategory !== activeTab) {
+        setActiveTab(targetCategory);
       }
+      
+      // Refresh countdowns to show the new timer
+      await loadCountdowns(user.id);
+      
+      // Scroll to top to see the new timer
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
     } catch (error) {
       console.error('Error adding countdown:', error);
     }
@@ -458,7 +481,7 @@ export default function SupabaseCountdownGrid({
               onToggleVisibility={() => {}} // 샘플에서는 비활성화
               onTogglePin={() => {}} // 샘플에서는 비활성화
               onEdit={() => handleSampleEdit(sample)}
-              onDuplicate={() => {}} // 샘플에서는 비활성화
+
               onUpdateMemo={() => {}} // 샘플에서는 비활성화
               category={sample.originalCategory || 'general'}
             />
@@ -669,7 +692,7 @@ export default function SupabaseCountdownGrid({
       <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="text-xs text-gray-500">
           {sortedCountdowns.length} timer{sortedCountdowns.length !== 1 ? 's' : ''}
-          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'lowest' ? 'Closest first' : 'Farthest first'}`}
+          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'closest' ? 'Closest first' : 'Farthest first'}`}
           {groupMode === 'time' && ` • Grouped by time`}
         </div>
         <div className="flex items-center gap-2">
@@ -707,13 +730,13 @@ export default function SupabaseCountdownGrid({
           {groupMode === 'none' && (
             <div className="flex border border-[#4E724C]/30 rounded-md overflow-hidden">
               <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='lowest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('lowest')}
-              >Lowest</button>
+                className={`px-2 py-1 text-[10px] ${sortMode==='closest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('closest')}
+              >Closest</button>
               <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='highest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('highest')}
-              >Highest</button>
+                className={`px-2 py-1 text-[10px] ${sortMode==='farthest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('farthest')}
+              >Farthest</button>
             </div>
           )}
         </div>
@@ -783,7 +806,7 @@ export default function SupabaseCountdownGrid({
                         onToggleVisibility={handleToggleVisibility}
                         onTogglePin={handleTogglePin}
                         onEdit={handleEdit}
-                        onDuplicate={handleDuplicate}
+
                         onUpdateMemo={handleUpdateMemo}
                         category={category}
                       />
@@ -799,7 +822,7 @@ export default function SupabaseCountdownGrid({
                         onToggleVisibility={handleToggleVisibility}
                         onTogglePin={handleTogglePin}
                         onEdit={handleEdit}
-                        onDuplicate={handleDuplicate}
+
                         onUpdateMemo={handleUpdateMemo}
                         category={category}
                       />

@@ -37,10 +37,7 @@ const faqItems: FAQItem[] = [
     question: "What happens when a timer expires?",
     answer: "It automatically switches to 'Days Passed' mode and counts upward, perfect for tracking anniversaries or how long since a deadline."
   },
-  {
-    question: "Can I duplicate timers?",
-    answer: "Yes, use the three-dot menu on any timer and select 'Duplicate'."
-  },
+
   {
     question: "Can I edit a timer after creating it?",
     answer: "Yes, click the timer to edit the title, date, or time. Changes save automatically."

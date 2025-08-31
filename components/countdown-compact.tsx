@@ -12,7 +12,6 @@ interface CountdownCompactProps {
   onToggleVisibility: (id: string) => void
   onTogglePin?: (id: string) => void
   onEdit?: (id: string) => void
-  onDuplicate?: (id: string) => void
   onUpdateMemo?: (id: string, memo: string) => void
   category: string
 }

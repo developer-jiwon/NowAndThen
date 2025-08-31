@@ -138,7 +138,6 @@ interface CountdownCardProps {
   onToggleVisibility: (id: string) => void
   onTogglePin?: (id: string) => void
   onEdit?: (id: string) => void
-  onDuplicate?: (id: string) => void
   onUpdateMemo?: (id: string, memo: string) => void
   category: string
 }
@@ -149,7 +148,6 @@ export default function CountdownCard({
   onToggleVisibility,
   onTogglePin,
   onEdit,
-  onDuplicate,
   onUpdateMemo,
   category,
 }: CountdownCardProps) {
@@ -371,16 +369,7 @@ export default function CountdownCard({
             <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
         )}
-        {onDuplicate && (
-          <div
-            className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
-            onClick={() => onDuplicate(countdown.id)}
-          >
-            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </div>
-        )}
+
         <div
           className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
           onClick={handleDeleteClick}

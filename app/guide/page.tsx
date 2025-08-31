@@ -191,7 +191,7 @@ export default function Guide() {
               <div>
                 <h3 className="font-semibold text-slate-900 mb-2">Context Menu</h3>
                 <p className="text-slate-700 text-sm leading-relaxed">
-                  Three dots beside each timer reveal pin, hide, edit, duplicate, and delete actions.
+                  Three dots beside each timer reveal pin, hide, edit, and delete actions.
                 </p>
               </div>
               
