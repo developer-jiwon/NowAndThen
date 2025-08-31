@@ -90,6 +90,10 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
               onSubmit={onSubmit} 
               submitButtonText="Save Changes" 
               onCancel={onCancel}
+              onReset={() => {
+                // Reset functionality - could trigger any additional reset logic if needed
+                // For now, just rely on the form's built-in reset
+              }}
             />
           </div>
         </CardContent>

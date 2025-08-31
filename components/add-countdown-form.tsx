@@ -80,9 +80,10 @@ interface CountdownFormProps {
   onSubmit: (values: CountdownFormValues) => void
   submitButtonText?: string
   onCancel: () => void
+  onReset?: () => void
 }
 
-export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Create Timer", onCancel }: CountdownFormProps) {
+export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Create Timer", onCancel, onReset }: CountdownFormProps) {
   const [dateChanged, setDateChanged] = useState(true)
   const [isCountUp, setIsCountUp] = useState(false)
 
@@ -106,7 +107,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
     }
   }, [form, defaultValues])
 
-  // Add a reset function that we can call after submission
+  // Add a reset function that we can call after submission or when reset button is clicked
   const resetForm = () => {
     form.reset({
       title: "",
@@ -114,6 +115,16 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
       category: "general",
       memo: "",
     });
+    setIsCountUp(false);
+    setDateChanged(true);
+  };
+
+  // Handle reset button click
+  const handleReset = () => {
+    resetForm();
+    if (onReset) {
+      onReset();
+    }
   };
 
   // Helper function to handle date input changes
@@ -333,8 +344,8 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           <Button type="submit" className="flex-1 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-9 text-sm font-medium rounded-md shadow-sm transition-all duration-200">
             {submitButtonText}
           </Button>
-          <Button type="button" onClick={onCancel} variant="outline" className="flex-1 h-9 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-md transition-all duration-200">
-            Cancel
+          <Button type="button" onClick={handleReset} variant="outline" className="flex-1 h-9 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-md transition-all duration-200">
+            Reset
           </Button>
         </div>
       </form>
