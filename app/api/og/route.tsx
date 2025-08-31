@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-// test
+
 export async function GET() {
   return new ImageResponse(
     (
