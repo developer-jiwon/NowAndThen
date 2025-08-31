@@ -21,7 +21,7 @@ export default function HomePage() {
   
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['pinned', 'general', 'personal', 'custom', 'hidden'].includes(hash)) {
+    if (hash && ['pinned', 'general', 'personal', 'holidays', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
     // const hasSeen = localStorage.getItem('nowandthen-v1.2');
@@ -93,8 +93,8 @@ export default function HomePage() {
             <TabsTrigger value="personal" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
               Personal
             </TabsTrigger>
-            <TabsTrigger value="custom" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
-              Custom
+            <TabsTrigger value="holidays" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+              Holidays
             </TabsTrigger>
             <TabsTrigger value="hidden" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
               Hidden
@@ -113,8 +113,8 @@ export default function HomePage() {
             <SupabaseCountdownGrid category="personal" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
 
-          <TabsContent value="custom" className="flex flex-col flex-1">
-            <SupabaseCountdownGrid category="custom" activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TabsContent value="holidays" className="flex flex-col flex-1">
+            <SupabaseCountdownGrid category="holidays" activeTab={activeTab} setActiveTab={setActiveTab} />
           </TabsContent>
           
           <TabsContent value="hidden" className="flex flex-col">

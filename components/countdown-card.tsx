@@ -197,8 +197,8 @@ export default function CountdownCard({
   });
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  // Default: show memo if there is one
-  const [showMemo, setShowMemo] = useState<boolean>(!!(countdown.memo && countdown.memo.trim() !== ""));
+  // Default: always show memo section
+  const [showMemo, setShowMemo] = useState<boolean>(true);
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoText, setMemoText] = useState(countdown.memo || "");
 
@@ -207,13 +207,6 @@ export default function CountdownCard({
     if (!isEditingMemo) {
       setMemoText(countdown.memo || "");
     }
-  }, [countdown.memo, isEditingMemo]);
-
-  // Keep memo section open by default when memo exists; close when cleared
-  useEffect(() => {
-    if (isEditingMemo) return;
-    const hasMemo = !!(countdown.memo && countdown.memo.trim() !== "");
-    setShowMemo(hasMemo);
   }, [countdown.memo, isEditingMemo]);
 
   // Update the time remaining every second
@@ -456,21 +449,21 @@ export default function CountdownCard({
                     </div>
                   </div>
                                 ) : (
-                  <div className="space-y-1">
+                  <div className="space-y-1 h-16 flex flex-col">
                     {memoText ? (
-                      <div className="text-[11px] sm:text-[12px] text-gray-700 bg-gray-50 p-2 rounded-md overflow-x-auto overflow-y-auto max-w-full max-h-20">
+                      <div className="text-[11px] sm:text-[12px] text-gray-700 bg-gray-50 p-2 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
                         <div className="whitespace-pre-wrap break-words">
                           {memoText}
                         </div>
                       </div>
                     ) : (
-                      <p className="text-[11px] sm:text-[12px] text-gray-500 italic">
+                      <p className="text-[11px] sm:text-[12px] text-gray-500 italic flex-1 flex items-start">
                         No memo
                       </p>
                     )}
                     <button
                       onClick={() => setIsEditingMemo(true)}
-                      className="text-[10px] sm:text-[11px] text-[#4E724C] hover:text-[#3A5A38] transition-colors"
+                      className="text-[10px] sm:text-[11px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
                     >
                       {memoText ? 'Edit' : 'Add memo'}
                     </button>

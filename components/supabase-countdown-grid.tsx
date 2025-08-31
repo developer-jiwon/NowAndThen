@@ -41,6 +41,9 @@ export default function SupabaseCountdownGrid({
   // View mode and grouping controls
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [groupMode, setGroupMode] = useState<'none' | 'time'>('none');
+  
+  // Country selection for holidays
+  const [selectedCountry, setSelectedCountry] = useState('KR');
 
   const gridRef = useRef<HTMLDivElement>(null);
   const { ref: inViewRef, inView } = useInView({
@@ -504,6 +507,471 @@ export default function SupabaseCountdownGrid({
     );
   }
 
+  // Countries and holidays data
+  const countries = [
+    { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+    { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+    { code: 'CN', name: 'China', flag: '🇨🇳' },
+    { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+    { code: 'US', name: 'United States', flag: '🇺🇸' },
+    { code: 'IN', name: 'India', flag: '🇮🇳' },
+  ];
+
+  const getHolidaysForCountry = (countryCode: string) => {
+    const currentYear = new Date().getFullYear();
+    const holidaysByCountry: Record<string, any[]> = {
+      'KR': [
+        {
+          id: `kr-newyear${currentYear}`,
+          title: 'New Year\'s Day',
+          date: `${currentYear}-01-01`,
+          memo: 'The first day of the year in the Gregorian calendar',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-seollal${currentYear}`,
+          title: 'Lunar New Year',
+          date: `${currentYear}-01-29`,
+          memo: 'Korean traditional New Year based on lunar calendar',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-independence${currentYear}`,
+          title: 'Independence Movement Day',
+          date: `${currentYear}-03-01`,
+          memo: 'Commemorates the March 1st Movement against Japanese rule',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-childrens${currentYear}`,
+          title: 'Children\'s Day',
+          date: `${currentYear}-05-05`,
+          memo: 'A day to celebrate children and promote their welfare',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-buddha${currentYear}`,
+          title: 'Buddha\'s Birthday',
+          date: `${currentYear}-05-12`,
+          memo: 'Celebrates the birth of Gautama Buddha',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-memorial${currentYear}`,
+          title: 'Memorial Day',
+          date: `${currentYear}-06-06`,
+          memo: 'Honors those who died in military service for Korea',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-liberation${currentYear}`,
+          title: 'Liberation Day',
+          date: `${currentYear}-08-15`,
+          memo: 'Commemorates liberation from Japanese colonial rule',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-chuseok${currentYear}`,
+          title: 'Chuseok',
+          date: `${currentYear}-10-06`,
+          memo: 'Korean harvest festival and time to honor ancestors',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-national${currentYear}`,
+          title: 'National Foundation Day',
+          date: `${currentYear}-10-03`,
+          memo: 'Celebrates the foundation of the Korean nation',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-hangeul${currentYear}`,
+          title: 'Hangeul Day',
+          date: `${currentYear}-10-09`,
+          memo: 'Celebrates the creation of the Korean alphabet',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `kr-christmas${currentYear}`,
+          title: 'Christmas Day',
+          date: `${currentYear}-12-25`,
+          memo: 'Celebrates the birth of Jesus Christ',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+      'JP': [
+        {
+          id: `jp-newyear${currentYear}`,
+          title: 'New Year\'s Day',
+          date: `${currentYear}-01-01`,
+          memo: 'The first day of the year celebrated nationwide',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-comingofage${currentYear}`,
+          title: 'Coming of Age Day',
+          date: `${currentYear}-01-08`,
+          memo: 'Celebrates people who have reached the age of majority',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-national${currentYear}`,
+          title: 'National Foundation Day',
+          date: `${currentYear}-02-11`,
+          memo: 'Commemorates the founding of Japan by Emperor Jimmu',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-vernal${currentYear}`,
+          title: 'Vernal Equinox Day',
+          date: `${currentYear}-03-20`,
+          memo: 'Day when day and night are of equal length',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-showa${currentYear}`,
+          title: 'Showa Day',
+          date: `${currentYear}-04-29`,
+          memo: 'Honors Emperor Showa and reflects on his reign',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-constitution${currentYear}`,
+          title: 'Constitution Memorial Day',
+          date: `${currentYear}-05-03`,
+          memo: 'Commemorates the adoption of Japan\'s constitution',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-greenery${currentYear}`,
+          title: 'Greenery Day',
+          date: `${currentYear}-05-04`,
+          memo: 'Celebrates nature and the environment',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `jp-childrens${currentYear}`,
+          title: 'Children\'s Day',
+          date: `${currentYear}-05-05`,
+          memo: 'Celebrates the happiness and well-being of children',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+      'CN': [
+        {
+          id: `cn-newyear${currentYear}`,
+          title: 'New Year\'s Day',
+          date: `${currentYear}-01-01`,
+          memo: '元旦',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `cn-springfestival${currentYear}`,
+          title: 'Spring Festival',
+          date: `${currentYear}-01-29`,
+          memo: '春节',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `cn-labour${currentYear}`,
+          title: 'Labour Day',
+          date: `${currentYear}-05-01`,
+          memo: '劳动节',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `cn-national${currentYear}`,
+          title: 'National Day',
+          date: `${currentYear}-10-01`,
+          memo: '国庆节',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+      'CA': [
+        {
+          id: `ca-newyear${currentYear}`,
+          title: 'New Year\'s Day',
+          date: `${currentYear}-01-01`,
+          memo: 'Happy New Year!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-familyday${currentYear}`,
+          title: 'Family Day',
+          date: `${currentYear}-02-17`,
+          memo: 'Family Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-goodfriday${currentYear}`,
+          title: 'Good Friday',
+          date: `${currentYear}-04-18`,
+          memo: 'Good Friday',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-canada${currentYear}`,
+          title: 'Canada Day',
+          date: `${currentYear}-07-01`,
+          memo: 'Canada Day!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-labour${currentYear}`,
+          title: 'Labour Day',
+          date: `${currentYear}-09-01`,
+          memo: 'Labour Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-thanksgiving${currentYear}`,
+          title: 'Thanksgiving',
+          date: `${currentYear}-10-13`,
+          memo: 'Canadian Thanksgiving',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `ca-christmas${currentYear}`,
+          title: 'Christmas Day',
+          date: `${currentYear}-12-25`,
+          memo: 'Merry Christmas!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+      'US': [
+        {
+          id: `us-newyear${currentYear}`,
+          title: 'New Year\'s Day',
+          date: `${currentYear}-01-01`,
+          memo: 'Happy New Year!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-mlk${currentYear}`,
+          title: 'Martin Luther King Jr. Day',
+          date: `${currentYear}-01-20`,
+          memo: 'MLK Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-presidents${currentYear}`,
+          title: 'Presidents\' Day',
+          date: `${currentYear}-02-17`,
+          memo: 'Presidents\' Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-memorial${currentYear}`,
+          title: 'Memorial Day',
+          date: `${currentYear}-05-26`,
+          memo: 'Memorial Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-independence${currentYear}`,
+          title: 'Independence Day',
+          date: `${currentYear}-07-04`,
+          memo: 'Fourth of July!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-labor${currentYear}`,
+          title: 'Labor Day',
+          date: `${currentYear}-09-01`,
+          memo: 'Labor Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-thanksgiving${currentYear}`,
+          title: 'Thanksgiving',
+          date: `${currentYear}-11-27`,
+          memo: 'Thanksgiving Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `us-christmas${currentYear}`,
+          title: 'Christmas Day',
+          date: `${currentYear}-12-25`,
+          memo: 'Merry Christmas!',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+      'IN': [
+        {
+          id: `in-republic${currentYear}`,
+          title: 'Republic Day',
+          date: `${currentYear}-01-26`,
+          memo: 'Republic Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `in-independence${currentYear}`,
+          title: 'Independence Day',
+          date: `${currentYear}-08-15`,
+          memo: 'Independence Day',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `in-gandhi${currentYear}`,
+          title: 'Gandhi Jayanti',
+          date: `${currentYear}-10-02`,
+          memo: 'Gandhi Jayanti',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+        {
+          id: `in-diwali${currentYear}`,
+          title: 'Diwali',
+          date: `${currentYear}-10-20`,
+          memo: 'Festival of Lights',
+          hidden: false,
+          pinned: false,
+          originalCategory: 'holidays' as const,
+        },
+      ],
+    };
+
+    return holidaysByCountry[countryCode] || [];
+  };
+
+  // Holidays tab rendering
+  if (category === 'holidays') {
+    const holidays = getHolidaysForCountry(selectedCountry);
+    
+    // Sort holidays by closest D-day first
+    const sortedHolidays = [...holidays].sort((a, b) => {
+      const aDDay = getDDay(a);
+      const bDDay = getDDay(b);
+      return aDDay - bDDay;
+    });
+
+    return (
+      <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
+        {/* Country Selection Dropdown */}
+        <div className="mb-4 flex items-center gap-2">
+          <span className="text-xs text-gray-600">Select Country:</span>
+          <select 
+            value={selectedCountry} 
+            onChange={(e) => setSelectedCountry(e.target.value)}
+            className="text-xs bg-white border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:ring-2 focus:ring-[#4E724C]/20 focus:border-[#4E724C] outline-none"
+          >
+            {countries.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.flag} {country.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-5 mt-0 text-[10px] text-gray-400">
+          Public holidays for {new Date().getFullYear()}
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 px-4 w-full max-w-4xl mb-0">
+          {sortedHolidays.map((holiday) => (
+            <CountdownCard
+              key={holiday.id}
+              countdown={holiday}
+              onRemove={() => {}} // 공휴일은 삭제 불가
+              onToggleVisibility={() => {}} // 공휴일은 숨기기 불가
+              onTogglePin={() => {}} // 공휴일은 핀 불가
+              onEdit={() => {}} // 공휴일은 편집 불가
+              onUpdateMemo={() => {}} // 공휴일은 메모 수정 불가
+              category="holidays"
+            />
+          ))}
+        </div>
+        
+        <div className="flex gap-2 mt-6 -mb-3 w-full justify-center">
+          <div className="text-[11px] text-gray-500 text-center">
+            Enjoy your holidays! These are read-only public holidays.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Custom 탭에서는 바로 폼 표시
   if (category === 'custom' && sortedCountdowns.length === 0 && !showAddForm) {
     return (
@@ -666,10 +1134,10 @@ export default function SupabaseCountdownGrid({
             </div>
           )}
           
-          {!showHidden && (
+          {!showHidden && category !== 'holidays' && (
             <div className="text-center">
               <Button 
-                onClick={() => setActiveTab('custom')}
+                onClick={() => setShowAddForm(true)}
                 className="bg-transparent border-0 shadow-none px-0 py-0 text-[11px] text-[#3A5A38] hover:text-[#2F4A2E] font-medium underline-offset-2 hover:underline"
               >
                 Create Timer
@@ -683,7 +1151,7 @@ export default function SupabaseCountdownGrid({
 
   return (
     <div className="w-full">
-      {/* View Mode, Group, and Sort controls */}
+      {/* View Mode, Group, Sort controls and Add Button */}
       <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="text-xs text-gray-500">
           {sortedCountdowns.length} timer{sortedCountdowns.length !== 1 ? 's' : ''}
@@ -691,6 +1159,31 @@ export default function SupabaseCountdownGrid({
           {groupMode === 'time' && ` • Grouped by time`}
         </div>
         <div className="flex items-center gap-2">
+          {/* Add Timer Button */}
+          {category !== 'holidays' && (
+            <button
+              className="w-7 h-7 bg-black text-white hover:bg-gray-800 flex items-center justify-center transition-colors rounded-md relative animate-pulse shadow-lg"
+              style={{
+                boxShadow: '0 0 10px rgba(134, 167, 137, 0.6), 0 0 20px rgba(134, 167, 137, 0.4), 0 0 30px rgba(134, 167, 137, 0.2)',
+                animation: 'neon-glow 2s ease-in-out infinite alternate'
+              }}
+              onClick={() => setShowAddForm(true)}
+              title="Create Timer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <style jsx>{`
+                @keyframes neon-glow {
+                  from {
+                    box-shadow: 0 0 5px rgba(134, 167, 137, 0.4), 0 0 10px rgba(134, 167, 137, 0.3), 0 0 15px rgba(134, 167, 137, 0.2);
+                  }
+                  to {
+                    box-shadow: 0 0 10px rgba(134, 167, 137, 0.8), 0 0 20px rgba(134, 167, 137, 0.6), 0 0 30px rgba(134, 167, 137, 0.4);
+                  }
+                }
+              `}</style>
+            </button>
+          )}
+          
           {/* Grouping Toggle */}
           <button
             className={`px-2 py-1 text-[10px] flex items-center gap-1 border border-[#4E724C]/30 rounded-md ${groupMode==='time'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
