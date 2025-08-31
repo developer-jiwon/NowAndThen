@@ -283,12 +283,12 @@ export default function CountdownCard({
     width: '100%',
     maxWidth: '280px',
     minWidth: '0',
-    minHeight: '120px',
+    minHeight: '100px',
     height: 'auto',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column' as 'column',
-    padding: '16px 12px',
+    padding: '12px 10px',
   };
 
   return (
@@ -449,21 +449,21 @@ export default function CountdownCard({
                     </div>
                   </div>
                                 ) : (
-                  <div className="space-y-1 h-16 flex flex-col">
+                  <div className="space-y-1 h-12 flex flex-col">
                     {memoText ? (
-                      <div className="text-[11px] sm:text-[12px] text-gray-700 bg-gray-50 p-2 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
+                      <div className="text-[10px] sm:text-[11px] text-gray-700 bg-gray-50 p-1.5 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
                         <div className="whitespace-pre-wrap break-words">
                           {memoText}
                         </div>
                       </div>
                     ) : (
-                      <p className="text-[11px] sm:text-[12px] text-gray-500 italic flex-1 flex items-start">
+                      <p className="text-[10px] sm:text-[11px] text-gray-500 italic flex-1 flex items-start">
                         No memo
                       </p>
                     )}
                     <button
                       onClick={() => setIsEditingMemo(true)}
-                      className="text-[10px] sm:text-[11px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
+                      className="text-[9px] sm:text-[10px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
                     >
                       {memoText ? 'Edit' : 'Add memo'}
                     </button>
@@ -474,10 +474,10 @@ export default function CountdownCard({
           )}
         </AnimatePresence>
         {/* Footer with date */}
-        <div className="w-full flex items-center justify-center mt-3">
-          <div className="flex items-center justify-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full">
-            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
-            <p className="text-[11px] sm:text-[12px] text-gray-600 whitespace-nowrap">
+        <div className="w-full flex items-center justify-center mt-2">
+          <div className="flex items-center justify-center gap-1 px-1.5 py-0.5 bg-gray-100 rounded-full">
+            <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gray-500 flex-shrink-0" />
+            <p className="text-[10px] sm:text-[11px] text-gray-600 whitespace-nowrap">
               {formatDateString(exactDate)}
             </p>
           </div>
