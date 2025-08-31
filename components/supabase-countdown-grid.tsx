@@ -6,7 +6,7 @@ import { useCountdowns } from "@/hooks/useCountdowns"
 import CountdownCard from "@/components/countdown-card"
 import CountdownCompact from "@/components/countdown-compact"
 import { Button } from "@/components/ui/button"
-import { Plus, Loader2, Trash2, Grid3X3, List, Layers3, AlertTriangle, Calendar, Clock, CalendarDays, CalendarRange, FileText } from "lucide-react"
+import { Plus, Loader2, Trash2, Grid3X3, List, Layers3, AlertTriangle, Calendar, Clock, CalendarDays, CalendarRange } from "lucide-react"
 import { CountdownForm } from "@/components/add-countdown-form"
 import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form"
@@ -38,8 +38,7 @@ export default function SupabaseCountdownGrid({
   } = useCountdowns(category);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
-  // Sort controls, view mode, and grouping
-  const [sortMode, setSortMode] = useState<'future' | 'past'>('future');
+  // View mode and grouping controls
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [groupMode, setGroupMode] = useState<'none' | 'time'>('none');
 
@@ -65,46 +64,52 @@ export default function SupabaseCountdownGrid({
   // No additional view filter; keep all visible items
   const modeFilteredCountdowns = filteredCountdowns;
 
-  // Helper: days distance from today (for sorting)
+  // Helper: D-day calculation in user's local timezone (no UTC parsing pitfalls)
   const dayMs = 24 * 60 * 60 * 1000;
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const getDays = (c: Countdown) => {
-    const d = new Date(c.date);
-    d.setHours(0, 0, 0, 0);
-    return Math.round((d.getTime() - todayStart.getTime()) / dayMs);
+  const getLocalMidnightFromString = (dateStr: string) => {
+    // If the string is plain YYYY-MM-DD, parse as local date to avoid UTC shift
+    const simple = /^\d{4}-\d{2}-\d{2}$/;
+    if (simple.test(dateStr)) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, (m as number) - 1, d as number, 0, 0, 0, 0);
+    }
+    // Otherwise, parse normally and normalize to local midnight
+    const dt = new Date(dateStr);
+    return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 0, 0, 0, 0);
+  };
+  const getTodayLocalMidnight = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  };
+  const getDDay = (c: Countdown) => {
+    const todayStart = getTodayLocalMidnight();
+    const targetStart = getLocalMidnightFromString(c.date);
+    // Positive when target is in the future by N days (in ms may be 23/25h at DST; round to days)
+    const diffDays = Math.round((targetStart.getTime() - todayStart.getTime()) / dayMs);
+    // D-day convention: future -> negative (D-1), past -> positive (D+1)
+    return -diffDays;
   };
 
   // Helper functions for grouping
   const getTimeGroup = (countdown: Countdown) => {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const dDay = getDDay(countdown);
     
-    const targetDate = new Date(countdown.date);
-    targetDate.setHours(0, 0, 0, 0);
-    
-    // Use the same calculation as getDays function for consistency
-    const diffMs = targetDate.getTime() - todayStart.getTime();
-    const diffDays = Math.round(diffMs / (24 * 60 * 60 * 1000));
-    
-
-    
-    if (diffDays < 0) return 'overdue';
-    if (diffDays === 0) return 'today';
-    if (diffDays === 1) return 'tomorrow';
-    if (diffDays <= 7) return 'thisWeek';
-    if (diffDays <= 30) return 'thisMonth';
-    return 'later';
+    if (dDay > 0) return 'overdue';    // D+1, D+2... (과거)
+    if (dDay === 0) return 'today';    // D-day (오늘)
+    if (dDay === -1) return 'tomorrow'; // D-1 (내일)
+    if (dDay >= -7) return 'thisWeek'; // D-2 to D-7 (이번 주)
+    if (dDay >= -30) return 'thisMonth'; // D-8 to D-30 (이번 달)
+    return 'later';                    // D-31... (먼 미래)
   };
 
   const getGroupLabel = (group: string) => {
     switch (group) {
-      case 'overdue': return 'Overdue';
+      case 'overdue': return 'Past Due';
       case 'today': return 'Today';
       case 'tomorrow': return 'Tomorrow';
       case 'thisWeek': return 'This Week';
       case 'thisMonth': return 'This Month';
-      case 'later': return 'Later';
+      case 'later': return 'Future';
       default: return '';
     }
   };
@@ -116,19 +121,20 @@ export default function SupabaseCountdownGrid({
       case 'tomorrow': return Clock;
       case 'thisWeek': return CalendarDays;
       case 'thisMonth': return CalendarRange;
-      case 'later': return FileText;
+      case 'later': return CalendarRange;
       default: return Calendar;
     }
   };
 
   const getGroupOrder = (group: string) => {
+    // Closest first: today -> tomorrow -> thisWeek -> thisMonth -> later -> overdue
     switch (group) {
-      case 'overdue': return 0;
-      case 'today': return 1;
-      case 'tomorrow': return 2;
-      case 'thisWeek': return 3;
-      case 'thisMonth': return 4;
-      case 'later': return 5;
+      case 'today': return 0;
+      case 'tomorrow': return 1;
+      case 'thisWeek': return 2;
+      case 'thisMonth': return 3;
+      case 'later': return 4;
+      case 'overdue': return 5;
       default: return 6;
     }
   };
@@ -136,52 +142,40 @@ export default function SupabaseCountdownGrid({
   // Sort all countdowns by value (lowest/highest), with pinned items getting priority
   const baseArr = [...modeFilteredCountdowns];
   const compareByValue = (a: Countdown, b: Countdown) => {
-    // First, pinned items always come first
+    // Sort by D-day (upcoming first): 0, -1, -2, ... then 1, 2, 3 ...
+    const aDDay = getDDay(a);
+    const bDDay = getDDay(b);
+    
+    // Explicitly prioritize today first
+    if (aDDay === 0 && bDDay !== 0) return -1;
+    if (bDDay === 0 && aDDay !== 0) return 1;
+
+    const aFuture = aDDay < 0; // future only (exclude today)
+    const bFuture = bDDay < 0;
+
+    // Future (including today already handled) before past
+    if (aFuture && !bFuture) return -1;
+    if (!aFuture && bFuture) return 1;
+
+    let diff: number;
+    if (aFuture && bFuture) {
+      // Both future: -1 before -47 (i.e., less negative first)
+      diff = bDDay - aDDay; // desc on negatives
+    } else if (!aFuture && !bFuture) {
+      // Both past: 1 before 27 (asc on positives)
+      diff = aDDay - bDDay;
+    } else {
+      // Should not reach here due to earlier branches
+      diff = 0;
+    }
+    if (diff !== 0) return diff;
+    
+    // Tie-breaker: pinned first within same D-day bucket
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     
-    // Sort by D-day distance from today
-    const aDays = getDays(a);
-    const bDays = getDays(b);
-    
-    if (sortMode === 'future') {
-      // Future: 미래 날짜 우선, 가까운 미래부터
-      // 오늘 > 내일 > 모레 > ... > 과거들
-      
-      const aIsFuture = aDays >= 0; // 오늘과 미래 (0, -1, -2...)
-      const bIsFuture = bDays >= 0;
-      
-      // 미래 날짜가 과거 날짜보다 우선
-      if (aIsFuture && !bIsFuture) return -1;
-      if (!aIsFuture && bIsFuture) return 1;
-      
-      if (aIsFuture && bIsFuture) {
-        // 둘 다 미래/오늘: 가까운 미래부터 (0 > -1 > -2...)
-        return bDays - aDays;
-      } else {
-        // 둘 다 과거: 최근 과거부터 (1 > 2 > 3...)
-        return aDays - bDays;
-      }
-      
-    } else {
-      // Past: 과거 날짜 우선, 최근 과거부터
-      // 어제 > 그저께 > ... > 미래들
-      
-      const aIsPast = aDays < 0; // 과거 (1, 2, 3...)
-      const bIsPast = bDays < 0;
-      
-      // 과거 날짜가 미래 날짜보다 우선
-      if (aIsPast && !bIsPast) return -1;
-      if (!aIsPast && bIsPast) return 1;
-      
-      if (aIsPast && bIsPast) {
-        // 둘 다 과거: 최근 과거부터 (1 > 2 > 3...)
-        return aDays - bDays;
-      } else {
-        // 둘 다 미래/오늘: 가까운 미래부터 (0 > -1 > -2...)
-        return bDays - aDays;
-      }
-    }
+    // Final tie-breaker: alphabetical by title for stability
+    return (a.title || '').localeCompare(b.title || '');
   };
   const sortedCountdowns = baseArr.sort(compareByValue);
 
@@ -200,8 +194,8 @@ export default function SupabaseCountdownGrid({
   useLayoutEffect(() => {
     if (!gridRef.current) return;
     const checkWidth = () => {
-      const width = gridRef.current?.offsetWidth || 0;
       // Width checking logic can be added here if needed
+      // Currently no width-based logic needed
     };
     checkWidth();
     window.addEventListener("resize", checkWidth);
@@ -693,7 +687,7 @@ export default function SupabaseCountdownGrid({
       <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="text-xs text-gray-500">
           {sortedCountdowns.length} timer{sortedCountdowns.length !== 1 ? 's' : ''}
-          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'future' ? 'Future first' : 'Past first'}`}
+          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • D-day order`}
           {groupMode === 'time' && ` • Grouped by time`}
         </div>
         <div className="flex items-center gap-2">
@@ -726,20 +720,6 @@ export default function SupabaseCountdownGrid({
               <span className="hidden sm:inline">List</span>
             </button>
           </div>
-          
-          {/* Sort Controls */}
-          {groupMode === 'none' && (
-            <div className="flex border border-[#4E724C]/30 rounded-md overflow-hidden">
-              <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='future'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('future')}
-              >Future</button>
-              <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='past'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('past')}
-              >Past</button>
-            </div>
-          )}
         </div>
       </div>
       
