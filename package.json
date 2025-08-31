@@ -64,6 +64,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "^3.6.0",
+    "date-holidays": "^3.25.2",
     "embla-carousel-react": "8.5.1",
     "firebase": "^12.1.0",
     "framer-motion": "^12.4.10",

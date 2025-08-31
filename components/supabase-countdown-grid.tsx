@@ -12,6 +12,7 @@ import type { Countdown } from "@/lib/types"
 import EditCountdownForm from "@/components/edit-countdown-form"
 import { useInView } from "react-intersection-observer"
 import AdSenseComponent from "@/components/AdSenseComponent"
+import Holidays from 'date-holidays'
 
 interface SupabaseCountdownGridProps {
   category: string;
@@ -518,401 +519,123 @@ export default function SupabaseCountdownGrid({
   ];
 
   const getHolidaysForCountry = (countryCode: string) => {
-    const currentYear = new Date().getFullYear();
-    const holidaysByCountry: Record<string, any[]> = {
-      'KR': [
-        {
-          id: `kr-newyear${currentYear}`,
-          title: 'New Year\'s Day',
-          date: `${currentYear}-01-01`,
-          memo: 'The first day of the year in the Gregorian calendar',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-seollal${currentYear}`,
-          title: 'Lunar New Year',
-          date: `${currentYear}-01-29`,
-          memo: 'Korean traditional New Year based on lunar calendar',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-independence${currentYear}`,
-          title: 'Independence Movement Day',
-          date: `${currentYear}-03-01`,
-          memo: 'Commemorates the March 1st Movement against Japanese rule',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-childrens${currentYear}`,
-          title: 'Children\'s Day',
-          date: `${currentYear}-05-05`,
-          memo: 'A day to celebrate children and promote their welfare',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-buddha${currentYear}`,
-          title: 'Buddha\'s Birthday',
-          date: `${currentYear}-05-12`,
-          memo: 'Celebrates the birth of Gautama Buddha',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-memorial${currentYear}`,
-          title: 'Memorial Day',
-          date: `${currentYear}-06-06`,
-          memo: 'Honors those who died in military service for Korea',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-liberation${currentYear}`,
-          title: 'Liberation Day',
-          date: `${currentYear}-08-15`,
-          memo: 'Commemorates liberation from Japanese colonial rule',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-chuseok${currentYear}`,
-          title: 'Chuseok',
-          date: `${currentYear}-10-06`,
-          memo: 'Korean harvest festival and time to honor ancestors',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-national${currentYear}`,
-          title: 'National Foundation Day',
-          date: `${currentYear}-10-03`,
-          memo: 'Celebrates the foundation of the Korean nation',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-hangeul${currentYear}`,
-          title: 'Hangeul Day',
-          date: `${currentYear}-10-09`,
-          memo: 'Celebrates the creation of the Korean alphabet',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `kr-christmas${currentYear}`,
-          title: 'Christmas Day',
-          date: `${currentYear}-12-25`,
-          memo: 'Celebrates the birth of Jesus Christ',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-      'JP': [
-        {
-          id: `jp-newyear${currentYear}`,
-          title: 'New Year\'s Day',
-          date: `${currentYear}-01-01`,
-          memo: 'The first day of the year celebrated nationwide',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-comingofage${currentYear}`,
-          title: 'Coming of Age Day',
-          date: `${currentYear}-01-08`,
-          memo: 'Celebrates people who have reached the age of majority',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-national${currentYear}`,
-          title: 'National Foundation Day',
-          date: `${currentYear}-02-11`,
-          memo: 'Commemorates the founding of Japan by Emperor Jimmu',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-vernal${currentYear}`,
-          title: 'Vernal Equinox Day',
-          date: `${currentYear}-03-20`,
-          memo: 'Day when day and night are of equal length',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-showa${currentYear}`,
-          title: 'Showa Day',
-          date: `${currentYear}-04-29`,
-          memo: 'Honors Emperor Showa and reflects on his reign',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-constitution${currentYear}`,
-          title: 'Constitution Memorial Day',
-          date: `${currentYear}-05-03`,
-          memo: 'Commemorates the adoption of Japan\'s constitution',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-greenery${currentYear}`,
-          title: 'Greenery Day',
-          date: `${currentYear}-05-04`,
-          memo: 'Celebrates nature and the environment',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `jp-childrens${currentYear}`,
-          title: 'Children\'s Day',
-          date: `${currentYear}-05-05`,
-          memo: 'Celebrates the happiness and well-being of children',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-      'CN': [
-        {
-          id: `cn-newyear${currentYear}`,
-          title: 'New Year\'s Day',
-          date: `${currentYear}-01-01`,
-          memo: '元旦',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `cn-springfestival${currentYear}`,
-          title: 'Spring Festival',
-          date: `${currentYear}-01-29`,
-          memo: '春节',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `cn-labour${currentYear}`,
-          title: 'Labour Day',
-          date: `${currentYear}-05-01`,
-          memo: '劳动节',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `cn-national${currentYear}`,
-          title: 'National Day',
-          date: `${currentYear}-10-01`,
-          memo: '国庆节',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-      'CA': [
-        {
-          id: `ca-newyear${currentYear}`,
-          title: 'New Year\'s Day',
-          date: `${currentYear}-01-01`,
-          memo: 'Happy New Year!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-familyday${currentYear}`,
-          title: 'Family Day',
-          date: `${currentYear}-02-17`,
-          memo: 'Family Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-goodfriday${currentYear}`,
-          title: 'Good Friday',
-          date: `${currentYear}-04-18`,
-          memo: 'Good Friday',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-canada${currentYear}`,
-          title: 'Canada Day',
-          date: `${currentYear}-07-01`,
-          memo: 'Canada Day!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-labour${currentYear}`,
-          title: 'Labour Day',
-          date: `${currentYear}-09-01`,
-          memo: 'Labour Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-thanksgiving${currentYear}`,
-          title: 'Thanksgiving',
-          date: `${currentYear}-10-13`,
-          memo: 'Canadian Thanksgiving',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `ca-christmas${currentYear}`,
-          title: 'Christmas Day',
-          date: `${currentYear}-12-25`,
-          memo: 'Merry Christmas!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-      'US': [
-        {
-          id: `us-newyear${currentYear}`,
-          title: 'New Year\'s Day',
-          date: `${currentYear}-01-01`,
-          memo: 'Happy New Year!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-mlk${currentYear}`,
-          title: 'Martin Luther King Jr. Day',
-          date: `${currentYear}-01-20`,
-          memo: 'MLK Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-presidents${currentYear}`,
-          title: 'Presidents\' Day',
-          date: `${currentYear}-02-17`,
-          memo: 'Presidents\' Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-memorial${currentYear}`,
-          title: 'Memorial Day',
-          date: `${currentYear}-05-26`,
-          memo: 'Memorial Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-independence${currentYear}`,
-          title: 'Independence Day',
-          date: `${currentYear}-07-04`,
-          memo: 'Fourth of July!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-labor${currentYear}`,
-          title: 'Labor Day',
-          date: `${currentYear}-09-01`,
-          memo: 'Labor Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-thanksgiving${currentYear}`,
-          title: 'Thanksgiving',
-          date: `${currentYear}-11-27`,
-          memo: 'Thanksgiving Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `us-christmas${currentYear}`,
-          title: 'Christmas Day',
-          date: `${currentYear}-12-25`,
-          memo: 'Merry Christmas!',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-      'IN': [
-        {
-          id: `in-republic${currentYear}`,
-          title: 'Republic Day',
-          date: `${currentYear}-01-26`,
-          memo: 'Republic Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `in-independence${currentYear}`,
-          title: 'Independence Day',
-          date: `${currentYear}-08-15`,
-          memo: 'Independence Day',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `in-gandhi${currentYear}`,
-          title: 'Gandhi Jayanti',
-          date: `${currentYear}-10-02`,
-          memo: 'Gandhi Jayanti',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-        {
-          id: `in-diwali${currentYear}`,
-          title: 'Diwali',
-          date: `${currentYear}-10-20`,
-          memo: 'Festival of Lights',
-          hidden: false,
-          pinned: false,
-          originalCategory: 'holidays' as const,
-        },
-      ],
-    };
-
-    return holidaysByCountry[countryCode] || [];
+    try {
+      const currentYear = new Date().getFullYear();
+      const hd = new Holidays();
+      
+      // Map country codes to date-holidays format with specific states/regions
+      const countryMapping: Record<string, { country: string, state?: string }> = {
+        'KR': { country: 'KR' },  // South Korea
+        'JP': { country: 'JP' },  // Japan  
+        'CN': { country: 'CN' },  // China
+        'CA': { country: 'CA', state: 'ON' },  // Canada (Ontario)
+        'US': { country: 'US', state: 'CA' },  // United States (California)
+        'IN': { country: 'IN' }   // India
+      };
+      
+      const mappedCountry = countryMapping[countryCode];
+      if (!mappedCountry) return [];
+      
+      // Initialize with country and optional state
+      if (mappedCountry.state) {
+        hd.init(mappedCountry.country, mappedCountry.state);
+      } else {
+        hd.init(mappedCountry.country);
+      }
+      
+      const holidays = hd.getHolidays(currentYear);
+      
+      // Remove duplicates by date
+      const uniqueHolidays = new Map();
+      
+      return holidays
+        .filter((holiday: any) => holiday.type === 'public') // Only public holidays
+        .map((holiday: any) => {
+          // Format date to YYYY-MM-DD
+          const date = new Date(holiday.date);
+          const formattedDate = date.toISOString().split('T')[0];
+          
+          // Always use English names for all countries
+          let translatedName = holiday.name;
+          
+          // Translate non-English names to English
+          const englishNames: Record<string, string> = {
+            // Korean holidays
+            '신정': "New Year's Day",
+            '설날': 'Lunar New Year',
+            '3·1절': 'Independence Movement Day',
+            '부처님오신날': "Buddha's Birthday",
+            '어린이날': "Children's Day",
+            '현충일': 'Memorial Day',
+            '광복절': 'Liberation Day',
+            '추석': 'Chuseok (Harvest Festival)',
+            '개천절': 'National Foundation Day',
+            '한글날': 'Hangeul Day',
+            '기독탄신일': 'Christmas Day',
+            '성탄절': 'Christmas Day',
+            // Chinese holidays
+            '春节': 'Spring Festival (Chinese New Year)',
+            '元旦': "New Year's Day",
+            '清明节': 'Qingming Festival',
+            '劳动节': 'Labour Day',
+            '端午节': 'Dragon Boat Festival',
+            '中秋节': 'Mid-Autumn Festival',
+            '国庆节': 'National Day',
+            // Japanese holidays
+            '元日': "New Year's Day",
+            '成人の日': 'Coming of Age Day',
+            '建国記念の日': 'National Foundation Day',
+            '春分の日': 'Vernal Equinox Day',
+            '昭和の日': 'Showa Day',
+            '憲法記念日': 'Constitution Memorial Day',
+            'みどりの日': 'Greenery Day',
+            'こどもの日': "Children's Day",
+            '海の日': 'Marine Day',
+            '山の日': 'Mountain Day',
+            '敬老の日': 'Respect for the Aged Day',
+            '秋分の日': 'Autumnal Equinox Day',
+            'スポーツの日': 'Sports Day',
+            '文化の日': 'Culture Day',
+            '勤労感謝の日': 'Labour Thanksgiving Day',
+            '天皇誕生日': "Emperor's Birthday",
+          };
+          
+          // Apply translation if exists, otherwise keep original
+          translatedName = englishNames[holiday.name] || holiday.name;
+          
+          // Use holiday.note from library or generate a simple memo
+          const countryName = countries.find(c => c.code === countryCode)?.name || countryCode;
+          const memo = holiday.note || `Public holiday in ${countryName}`;
+          
+          const holidayObj = {
+            id: `${countryCode.toLowerCase()}-${formattedDate}-${holiday.name.replace(/[\s\W]+/g, '').toLowerCase()}`,
+            title: translatedName,
+            date: formattedDate,
+            memo: memo,
+            hidden: false,
+            pinned: false,
+            originalCategory: undefined, // Holidays don't have a category
+          };
+          
+          // Store only first holiday per date to avoid duplicates
+          if (!uniqueHolidays.has(formattedDate)) {
+            uniqueHolidays.set(formattedDate, holidayObj);
+          }
+          
+          return holidayObj;
+        })
+        .filter((holiday: any) => {
+          // Return only unique holidays
+          return uniqueHolidays.get(holiday.date) === holiday;
+        })
+        .slice(0, 15) // Limit to 15 holidays per country to avoid overwhelming UI
+        .sort((a: any, b: any) => a.date.localeCompare(b.date)); // Sort by date
+        
+    } catch (error) {
+      console.error(`Error generating holidays for ${countryCode}:`, error);
+      // Fallback to empty array if library fails
+      return [];
+    }
   };
 
   // Holidays tab rendering

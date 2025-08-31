@@ -333,49 +333,51 @@ export default function CountdownCard({
         )}
       </AnimatePresence>
       
-      {/* Action buttons: keep inside top-left to avoid overlap with sticky controls */}
-      <div className="absolute top-0.5 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
-        style={{ minHeight: '20px' }}
-      >
-        <div
-          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
-          onClick={() => {
-            if (category === 'hidden') return;
-            if (onTogglePin) {
-              onTogglePin(countdown.id);
-            }
-          }}
+      {/* Action buttons: hidden for holidays tab */}
+      {category !== 'holidays' && (
+        <div className="absolute top-0.5 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
+          style={{ minHeight: '20px' }}
         >
-          <Pin className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
-        </div>
-        <div
-          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
-          onClick={() => onToggleVisibility(countdown.id)}
-        >
-          {category === "hidden" ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : (countdown.hidden ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" />)}
-        </div>
-        {onEdit && (
+          <div
+            className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0 ${category === 'hidden' ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+            onClick={() => {
+              if (category === 'hidden') return;
+              if (onTogglePin) {
+                onTogglePin(countdown.id);
+              }
+            }}
+          >
+            <Pin className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
+          </div>
+          <div
+            className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
+            onClick={() => onToggleVisibility(countdown.id)}
+          >
+            {category === "hidden" ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : (countdown.hidden ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" />)}
+          </div>
+          {onEdit && (
+            <div
+              className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
+              onClick={() => onEdit(countdown.id)}
+            >
+              <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            </div>
+          )}
+
           <div
             className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
-            onClick={() => onEdit(countdown.id)}
+            onClick={handleDeleteClick}
           >
-            <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
-        )}
-
-        <div
-          className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] text-white border border-[#4E724C] shadow-sm hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C] active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0"
-          onClick={handleDeleteClick}
-        >
-          <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+          <div
+            className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${memoText ? 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]' : 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]'} text-white border shadow-sm active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
+            onClick={() => setShowMemo(!showMemo)}
+          >
+            <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+          </div>
         </div>
-        <div
-          className={`w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full ${memoText ? 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]' : 'bg-gradient-to-br from-[#4E724C] to-[#3A5A38] border-[#4E724C] hover:from-[#5A7F58] hover:to-[#4A6A48] hover:border-[#4E724C]'} text-white border shadow-sm active:from-[#3A5A38] active:to-[#2A4A28] transition-all duration-150 p-0`}
-          onClick={() => setShowMemo(!showMemo)}
-        >
-          <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-        </div>
-      </div>
+      )}
       
       {/* Card with illustrative style */}
       <div 
@@ -412,67 +414,57 @@ export default function CountdownCard({
             {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
-        {/* Memo section */}
-        <AnimatePresence>
-          {showMemo && (
-            <motion.div 
-              className="w-full mt-2"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="border-t border-gray-100 pt-2">
-                {isEditingMemo ? (
-                  <div className="space-y-2">
-                    <textarea
-                      value={memoText}
-                      onChange={(e) => setMemoText(e.target.value)}
-                      placeholder="Enter your memo..."
-                      maxLength={300}
-                      className="w-full text-base p-2 border border-[#4E724C]/30 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
-                      rows={3}
-                    />
-                    <div className="flex gap-1">
-                      <button
-                        onClick={handleMemoSave}
-                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] text-white rounded-md hover:from-[#5A7F58] hover:to-[#4A6A48] transition-all duration-200"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={handleMemoCancel}
-                        className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-white text-[#4E724C] rounded-md hover:bg-[#4E724C]/5 border border-[#4E724C]/30 hover:border-[#4E724C] transition-all duration-200"
-                      >
-                        Cancel
-                      </button>
+        {/* Memo section - always visible */}
+        <div className="w-full mt-2">
+          <div className="border-t border-gray-100 pt-2">
+            {isEditingMemo ? (
+              <div className="space-y-2">
+                <textarea
+                  value={memoText}
+                  onChange={(e) => setMemoText(e.target.value)}
+                  placeholder="Enter your memo..."
+                  maxLength={300}
+                  className="w-full text-base p-2 border border-[#4E724C]/30 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
+                  rows={3}
+                />
+                <div className="flex gap-1">
+                  <button
+                    onClick={handleMemoSave}
+                    className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] text-white rounded-md hover:from-[#5A7F58] hover:to-[#4A6A48] transition-all duration-200"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleMemoCancel}
+                    className="flex-1 text-[10px] sm:text-[11px] py-1 px-2 bg-white text-[#4E724C] rounded-md hover:bg-[#4E724C]/5 border border-[#4E724C]/30 hover:border-[#4E724C] transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-1 h-12 flex flex-col">
+                {memoText ? (
+                  <div className="text-[10px] sm:text-[11px] text-gray-700 bg-gray-50 p-1.5 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
+                    <div className="whitespace-pre-wrap break-words">
+                      {memoText}
                     </div>
                   </div>
-                                ) : (
-                  <div className="space-y-1 h-12 flex flex-col">
-                    {memoText ? (
-                      <div className="text-[10px] sm:text-[11px] text-gray-700 bg-gray-50 p-1.5 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
-                        <div className="whitespace-pre-wrap break-words">
-                          {memoText}
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-[10px] sm:text-[11px] text-gray-500 italic flex-1 flex items-start">
-                        No memo
-                      </p>
-                    )}
-                    <button
-                      onClick={() => setIsEditingMemo(true)}
-                      className="text-[9px] sm:text-[10px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
-                    >
-                      {memoText ? 'Edit' : 'Add memo'}
-                    </button>
-                  </div>
+                ) : (
+                  <p className="text-[10px] sm:text-[11px] text-gray-500 italic flex-1 flex items-start">
+                    No memo
+                  </p>
                 )}
+                <button
+                  onClick={() => setIsEditingMemo(true)}
+                  className="text-[9px] sm:text-[10px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
+                >
+                  {memoText ? 'Edit' : 'Add memo'}
+                </button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </div>
+        </div>
         {/* Footer with date */}
         <div className="w-full flex items-center justify-center mt-2">
           <div className="flex items-center justify-center gap-1 px-1.5 py-0.5 bg-gray-100 rounded-full">
