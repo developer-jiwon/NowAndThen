@@ -713,8 +713,7 @@ export default function SupabaseCountdownGrid({
           // Return only unique holidays
           return uniqueHolidays.get(holiday.date) === holiday;
         })
-        .slice(0, 15) // Limit to 15 holidays per country to avoid overwhelming UI
-        .sort((a: any, b: any) => a.date.localeCompare(b.date)); // Sort by date
+        .slice(0, 15); // Limit to 15 holidays per country to avoid overwhelming UI
         
     } catch (error) {
       console.error(`Error generating holidays for ${countryCode}:`, error);
@@ -727,12 +726,8 @@ export default function SupabaseCountdownGrid({
   if (category === 'holidays') {
     const holidays = getHolidaysForCountry(selectedCountry);
     
-    // Sort holidays by closest D-day first
-    const sortedHolidays = [...holidays].sort((a, b) => {
-      const aDDay = getDDay(a);
-      const bDDay = getDDay(b);
-      return aDDay - bDDay;
-    });
+    // Sort holidays by closest D-day first using the same logic as other tabs
+    const sortedHolidays = [...holidays].sort(compareByValue);
 
     return (
       <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
