@@ -39,7 +39,7 @@ export default function SupabaseCountdownGrid({
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCountdownId, setEditingCountdownId] = useState<string | null>(null);
   // Sort controls, view mode, and grouping
-  const [sortMode, setSortMode] = useState<'closest' | 'farthest'>('closest');
+  const [sortMode, setSortMode] = useState<'future' | 'past'>('future');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [groupMode, setGroupMode] = useState<'none' | 'time'>('none');
 
@@ -144,41 +144,42 @@ export default function SupabaseCountdownGrid({
     const aDays = getDays(a);
     const bDays = getDays(b);
     
-    if (sortMode === 'closest') {
-      // Closest: prioritize future dates (negative days = D-days left)
-      // For D-day concept: D-1 is tomorrow (closest future), D+1 is yesterday (recent past)
+    if (sortMode === 'future') {
+      // Future: 미래 날짜 우선, 가까운 미래부터
+      // 오늘 > 내일 > 모레 > ... > 과거들
       
-      const aIsFuture = aDays <= 0; // Today and future (D-day, D-1, D-2...)
-      const bIsFuture = bDays <= 0;
+      const aIsFuture = aDays >= 0; // 오늘과 미래 (0, -1, -2...)
+      const bIsFuture = bDays >= 0;
       
-      // Future dates always come before past dates for "closest"
+      // 미래 날짜가 과거 날짜보다 우선
       if (aIsFuture && !bIsFuture) return -1;
       if (!aIsFuture && bIsFuture) return 1;
       
       if (aIsFuture && bIsFuture) {
-        // Both are future/today: sort by actual days (D-day=0, D-1=-1, D-2=-2...)
-        return bDays - aDays; // Closer to 0 (today) comes first
+        // 둘 다 미래/오늘: 가까운 미래부터 (0 > -1 > -2...)
+        return bDays - aDays;
       } else {
-        // Both are past: sort by recency (D+1=1, D+2=2...)
-        return aDays - bDays; // Smaller positive number (more recent) comes first
+        // 둘 다 과거: 최근 과거부터 (1 > 2 > 3...)
+        return aDays - bDays;
       }
+      
     } else {
-      // Farthest: prioritize past dates (positive days = D+days ago)
-      // For D-day concept: D+365 is far past, D-365 is far future
+      // Past: 과거 날짜 우선, 최근 과거부터
+      // 어제 > 그저께 > ... > 미래들
       
-      const aIsPast = aDays > 0;
-      const bIsPast = bDays > 0;
+      const aIsPast = aDays < 0; // 과거 (1, 2, 3...)
+      const bIsPast = bDays < 0;
       
-      // Past dates come before future dates for "farthest"
+      // 과거 날짜가 미래 날짜보다 우선
       if (aIsPast && !bIsPast) return -1;
       if (!aIsPast && bIsPast) return 1;
       
       if (aIsPast && bIsPast) {
-        // Both are past: sort by distance (larger positive = farther past)
-        return bDays - aDays;
-      } else {
-        // Both are future/today: sort by distance (more negative = farther future)
+        // 둘 다 과거: 최근 과거부터 (1 > 2 > 3...)
         return aDays - bDays;
+      } else {
+        // 둘 다 미래/오늘: 가까운 미래부터 (0 > -1 > -2...)
+        return bDays - aDays;
       }
     }
   };
@@ -692,7 +693,7 @@ export default function SupabaseCountdownGrid({
       <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="text-xs text-gray-500">
           {sortedCountdowns.length} timer{sortedCountdowns.length !== 1 ? 's' : ''}
-          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'closest' ? 'Closest first' : 'Farthest first'}`}
+          {sortedCountdowns.length > 1 && groupMode === 'none' && ` • ${sortMode === 'future' ? 'Future first' : 'Past first'}`}
           {groupMode === 'time' && ` • Grouped by time`}
         </div>
         <div className="flex items-center gap-2">
@@ -730,13 +731,13 @@ export default function SupabaseCountdownGrid({
           {groupMode === 'none' && (
             <div className="flex border border-[#4E724C]/30 rounded-md overflow-hidden">
               <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='closest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('closest')}
-              >Closest</button>
+                className={`px-2 py-1 text-[10px] ${sortMode==='future'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('future')}
+              >Future</button>
               <button
-                className={`px-2 py-1 text-[10px] ${sortMode==='farthest'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
-                onClick={() => setSortMode('farthest')}
-              >Farthest</button>
+                className={`px-2 py-1 text-[10px] ${sortMode==='past'?'bg-[#4E724C] text-white':'bg-white text-[#4E724C] hover:bg-[#4E724C]/5'} transition`}
+                onClick={() => setSortMode('past')}
+              >Past</button>
             </div>
           )}
         </div>

@@ -7,23 +7,28 @@ export function useAnonymousAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 로컬 개발환경에서는 고정된 dev user 사용 (기존 데이터 유지)
+    // 로컬 개발환경에서 ?mock=1 파라미터가 있을 때만 mock user 사용
     if (process.env.NODE_ENV === 'development') {
-      const devUserId = 'dev-user-local-fixed';
-      const mockUser = {
-        id: devUserId,
-        email: 'dev@localhost',
-        user_metadata: { provider: 'anonymous' },
-        app_metadata: {},
-        aud: 'authenticated',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      } as User;
+      const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const useMock = urlParams?.get('mock') === '1';
       
-      localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
-      setUser(mockUser);
-      setLoading(false);
-      return;
+      if (useMock) {
+        const devUserId = 'dev-user-local-fixed';
+        const mockUser = {
+          id: devUserId,
+          email: 'dev@localhost',
+          user_metadata: { provider: 'anonymous' },
+          app_metadata: {},
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        } as User;
+        
+        localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
+        setUser(mockUser);
+        setLoading(false);
+        return;
+      }
     }
 
     // Supabase 연결 시도 (로컬 + 배포 환경 모두)
