@@ -1,1 +1,0 @@
-ALTER TABLE countdowns ADD COLUMN memo TEXT;
