@@ -37,7 +37,7 @@ export class NotificationService {
    * Detect the best notification method available
    */
   private async detectBestMethod(): Promise<NotificationMethod> {
-    process.env.NODE_ENV === 'development' && console.log('[Notifications] 🔍 Starting method detection...');
+
     
     // Try web push first (more stable)
     try {

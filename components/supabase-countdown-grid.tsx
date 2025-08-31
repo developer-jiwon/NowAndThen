@@ -27,9 +27,6 @@ export default function SupabaseCountdownGrid({
   setActiveTab
 }: SupabaseCountdownGridProps) {
   const { user, loading: authLoading } = useAnonymousAuth();
-  
-  console.log('🔍 SupabaseCountdownGrid rendered - category:', category);
-  console.log('🔍 useAnonymousAuth result - user:', user, 'authLoading:', authLoading);
   const { 
     countdowns, 
     loading: dataLoading, 
@@ -346,17 +343,10 @@ export default function SupabaseCountdownGrid({
   }
 
   if (!user) {
-    console.log('🔍 SupabaseCountdownGrid - No user found!');
-    console.log('🔍 user:', user);
-    console.log('🔍 authLoading:', authLoading);
-    console.log('🔍 dataLoading:', dataLoading);
     return (
       <div className="w-full flex justify-center">
         <div className="text-center">
           <p className="text-gray-500">Connecting to your account...</p>
-          <p className="text-xs text-gray-400 mt-2">
-            Debug: user={user ? 'exists' : 'null'}, authLoading={authLoading ? 'true' : 'false'}
-          </p>
         </div>
       </div>
     );

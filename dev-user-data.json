@@ -1,0 +1,71 @@
+{
+  "countdowns": [
+    {
+      "id": "sample-1",
+      "user_id": "dev-user-local",
+      "title": "크리스마스",
+      "date": "2024-12-25",
+      "is_count_up": false,
+      "hidden": false,
+      "pinned": true,
+      "category": "personal",
+      "memo": "가족과 함께 보내는 특별한 날",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "sample-2", 
+      "user_id": "dev-user-local",
+      "title": "새해",
+      "date": "2025-01-01",
+      "is_count_up": false,
+      "hidden": false,
+      "pinned": true,
+      "category": "general",
+      "memo": "새로운 시작",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "sample-3",
+      "user_id": "dev-user-local", 
+      "title": "생일",
+      "date": "2024-04-30",
+      "is_count_up": false,
+      "hidden": false,
+      "pinned": false,
+      "category": "personal",
+      "memo": "내 생일",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "sample-4",
+      "user_id": "dev-user-local",
+      "title": "프로젝트 마감",
+      "date": "2024-03-15", 
+      "is_count_up": false,
+      "hidden": false,
+      "pinned": false,
+      "category": "work",
+      "memo": "중요한 프로젝트 마감일",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "sample-5",
+      "user_id": "dev-user-local",
+      "title": "휴가",
+      "date": "2024-08-15",
+      "is_count_up": false,
+      "hidden": false,
+      "pinned": false,
+      "category": "personal",
+      "memo": "여름 휴가",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "lastSync": "2024-01-31T12:00:00.000Z",
+  "source": "sample_data"
+}

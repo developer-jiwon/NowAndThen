@@ -34,7 +34,7 @@ function isDevelopmentMode(): boolean {
   if (isDevMode && devMode === '1') {
     console.log('🔧 Development mode forced via ?dev=1 parameter (production only)');
   } else if (isDevMode && process.env.NODE_ENV === 'development') {
-    console.log('🔧 Development mode active (local development)');
+
   }
   
   return isDevMode;

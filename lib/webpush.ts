@@ -30,7 +30,7 @@ export class WebPushManager {
     } else {
       // 환경 변수에서 직접 가져오기 시도
       this.vapidPublicKey = '';
-      process.env.NODE_ENV === 'development' && console.log('[WebPush] VAPID key not available in constructor, will set later');
+
       
       // 약간의 지연 후 다시 시도
       if (typeof window !== 'undefined') {
