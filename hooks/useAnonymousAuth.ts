@@ -11,39 +11,6 @@ export function useAnonymousAuth() {
     if (process.env.NODE_ENV === 'development') {
       const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
       const useMock = urlParams?.get('mock') === '1';
-      const loadData = urlParams?.get('loadData') === '1';
-      
-      // ?loadData=1이 있으면 dev-user-data.json에서 데이터 로드
-      if (loadData) {
-        const devUserId = 'dev-user-local';
-        const mockUser = {
-          id: devUserId,
-          email: 'dev@test.local',
-          user_metadata: { provider: 'dev', source: 'sample_data' },
-          app_metadata: {},
-          aud: 'authenticated',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        } as User;
-        
-        // Load countdown data from API
-        fetch('/api/load-dev-data')
-          .then(res => res.json())
-          .then(data => {
-            if (data.countdowns) {
-              // Store countdowns in localStorage for useCountdowns hook
-              localStorage.setItem(`countdowns_${devUserId}`, JSON.stringify(data.countdowns));
-              localStorage.setItem('dev_data_loaded', 'true');
-            }
-          })
-          .catch(error => console.error('Failed to load dev data:', error));
-        
-        localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
-        localStorage.setItem('guest_id', devUserId);
-        setUser(mockUser);
-        setLoading(false);
-        return;
-      }
       
       if (useMock) {
         const devUserId = 'dev-user-local';
