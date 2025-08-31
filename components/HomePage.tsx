@@ -24,20 +24,20 @@ export default function HomePage() {
     if (hash && ['pinned', 'general', 'personal', 'holidays', 'hidden'].includes(hash)) {
       setActiveTab(hash);
     }
-    // const hasSeen = localStorage.getItem('nowandthen-v1.2');
-    // const lastShown = localStorage.getItem('nowandthen-v1.2-last-shown');
-    // const now = Date.now();
+    const hasSeen = localStorage.getItem('nowandthen-v1.3');
+    const lastShown = localStorage.getItem('nowandthen-v1.3-last-shown');
+    const now = Date.now();
     
-    // // 한 번도 본 적이 없으면 표시 (7일 후 재표시 제거)
-    // if (!hasSeen) {
-    //   setTimeout(() => setShowUpdatePopup(true), 2000); // 2초 후 표시로 변경
-    // }
+    // 한 번도 본 적이 없으면 표시 (7일 후 재표시 제거)
+    if (!hasSeen) {
+      setTimeout(() => setShowUpdatePopup(true), 2000); // 2초 후 표시로 변경
+    }
   }, []);
   
   const handleCloseUpdatePopup = () => {
     setShowUpdatePopup(false);
-    localStorage.setItem('nowandthen-v1.2', 'true');
-    localStorage.setItem('nowandthen-v1.2-last-shown', Date.now().toString());
+    localStorage.setItem('nowandthen-v1.3', 'true');
+    localStorage.setItem('nowandthen-v1.3-last-shown', Date.now().toString());
   };
 
   return (
