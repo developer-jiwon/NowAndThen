@@ -32,7 +32,7 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
 
   const content = {
     en: {
-      title: 'Now & Then v1.2',
+      title: 'Now & Then v1.3',
       subtitle: 'New features for better organization.',
       listViewTitle: 'Compact List View',
       listViewDesc: 'Toggle between card and list layouts for your preference.',
@@ -41,10 +41,10 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
       memoTitle: 'Enhanced Memos',
       memoDesc: 'Full memo support in both card and list views.',
       confirm: 'Explore Now',
-      version: 'Version 1.2 • August 2025'
+      version: 'Version 1.3 • August 2025'
     },
     ko: {
-      title: 'Now & Then v1.2',
+      title: 'Now & Then v1.3',
       subtitle: '더 나은 정리를 위한 새로운 기능.',
       listViewTitle: '컴팩트 리스트 뷰',
       listViewDesc: '카드와 리스트 레이아웃을 선호에 맞게 전환하세요.',
@@ -53,7 +53,7 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
       memoTitle: '메모 기능 강화',
       memoDesc: '카드와 리스트 뷰 모두에서 완전한 메모 지원.',
       confirm: '살펴보기',
-      version: '버전 1.2 • 2025년 8월'
+      version: '버전 1.3 • 2025년 8월'
     }
   };
 

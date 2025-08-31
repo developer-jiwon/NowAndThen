@@ -603,9 +603,94 @@ export default function SupabaseCountdownGrid({
           // Apply translation if exists, otherwise keep original
           translatedName = englishNames[holiday.name] || holiday.name;
           
-          // Use holiday.note from library or generate a simple memo
+          // Generate specific descriptions for each country's holidays
           const countryName = countries.find(c => c.code === countryCode)?.name || countryCode;
-          const memo = holiday.note || `Public holiday in ${countryName}`;
+          const getHolidayDescription = (holidayName: string, country: string) => {
+            // Country-specific holiday descriptions
+            const descriptions: Record<string, Record<string, string>> = {
+              'KR': {
+                "New Year's Day": "The first day of the year - a time for family gatherings and fresh starts in Korea.",
+                'Lunar New Year': "Korean New Year (Seollal) - the most important traditional holiday for family reunions.",
+                'Independence Movement Day': "Commemorating the March 1st independence movement against Japanese rule in 1919.",
+                "Buddha's Birthday": "Celebrating the birth of Buddha with lantern festivals and temple visits.",
+                "Children's Day": "A special day dedicated to children's happiness and rights in Korea.",
+                'Memorial Day': "Honoring Korean patriots and veterans who sacrificed for the country.",
+                'Liberation Day': "Celebrating Korea's liberation from Japanese colonial rule on August 15, 1945.",
+                'Chuseok (Harvest Festival)': "Korean Thanksgiving - a major harvest festival for honoring ancestors.",
+                'National Foundation Day': "Celebrating the legendary founding of Korea by Dangun in 2333 BC.",
+                'Hangeul Day': "Commemorating the creation of the Korean alphabet by King Sejong the Great.",
+                'Christmas Day': "Celebrating the birth of Jesus Christ - a public holiday in Korea."
+              },
+              'JP': {
+                "New Year's Day": "The most important holiday in Japan - a time for family, reflection, and new beginnings.",
+                'Coming of Age Day': "Celebrating young people who turn 20 years old and reach adulthood in Japan.",
+                'National Foundation Day': "Commemorating the legendary founding of Japan by Emperor Jimmu.",
+                'Vernal Equinox Day': "Celebrating the spring equinox and honoring ancestors in Buddhist tradition.",
+                'Showa Day': "Remembering Emperor Showa's reign and reflecting on Japan's turbulent pre-war era.",
+                'Constitution Memorial Day': "Commemorating Japan's post-war constitution that came into effect in 1947.",
+                'Greenery Day': "A day to appreciate nature and be grateful for blessings from the environment.",
+                "Children's Day": "Celebrating children's happiness and growth with carp streamers (koinobori).",
+                'Marine Day': "Appreciating the ocean's bounty and Japan's maritime heritage.",
+                'Mountain Day': "A newer holiday to appreciate Japan's mountainous terrain and nature.",
+                'Respect for the Aged Day': "Honoring elderly citizens and their contributions to society.",
+                'Autumnal Equinox Day': "Celebrating the autumn equinox and remembering deceased family members.",
+                'Sports Day': "Promoting health and physical activity - originally commemorating Tokyo Olympics 1964.",
+                'Culture Day': "Celebrating arts, culture, academic endeavor, and the pursuit of freedom and peace.",
+                'Labour Thanksgiving Day': "Honoring workers and expressing gratitude for labor and production.",
+                "Emperor's Birthday": "Celebrating the current Emperor's birthday - Japan's national day."
+              },
+              'CN': {
+                'Spring Festival (Chinese New Year)': "China's most important traditional holiday - a time for family reunions and celebration.",
+                "New Year's Day": "The first day of the international calendar year celebrated in modern China.",
+                'Qingming Festival': "Tomb Sweeping Day - honoring ancestors by cleaning graves and making offerings.",
+                'Labour Day': "International Workers' Day celebrating the contributions of workers to society.",
+                'Dragon Boat Festival': "Commemorating poet Qu Yuan with dragon boat races and zongzi rice dumplings.",
+                'Mid-Autumn Festival': "A harvest festival celebrating family unity with moon cakes and moon viewing.",
+                'National Day': "Celebrating the founding of the People's Republic of China on October 1, 1949."
+              },
+              'CA': {
+                "New Year's Day": "The first day of the year celebrated with resolutions and fresh starts across Canada.",
+                'Family Day': "A day to spend quality time with family and loved ones (celebrated in most provinces).",
+                'Good Friday': "The Friday before Easter, commemorating the crucifixion of Jesus Christ.",
+                'Victoria Day': "Celebrating Queen Victoria's birthday and the official start of summer in Canada.",
+                'Canada Day': "Canada's national day commemorating Confederation on July 1, 1867.",
+                'Civic Holiday': "A day for community celebration and rest (varies by province).",
+                'Labour Day': "Honoring workers and their contributions to Canadian society and economy.",
+                'Thanksgiving Day': "A harvest festival for giving thanks for the year's blessings (second Monday in October).",
+                'Remembrance Day': "Honoring Canadian veterans and those who died in military service.",
+                'Christmas Day': "Celebrating the birth of Jesus Christ with family gatherings and gift-giving.",
+                'Boxing Day': "A Canadian tradition of giving to those less fortunate and spending time with family."
+              },
+              'US': {
+                "New Year's Day": "Celebrating the beginning of a new year with resolutions and fresh starts.",
+                "Martin Luther King Jr. Day": "Honoring the civil rights leader's legacy and fight for equality.",
+                "Presidents' Day": "Commemorating all U.S. presidents, especially Washington and Lincoln.",
+                'Memorial Day': "Honoring American military personnel who died while serving their country.",
+                'Independence Day': "Celebrating American independence with fireworks, barbecues, and patriotic displays.",
+                'Labor Day': "Honoring American workers and their contributions to the nation's economy.",
+                'Columbus Day': "Commemorating Christopher Columbus's arrival in the Americas (controversial).",
+                'Veterans Day': "Honoring all American military veterans who served in the U.S. Armed Forces.",
+                'Thanksgiving Day': "A harvest festival for giving thanks with family gatherings and traditional meals.",
+                'Christmas Day': "Celebrating the birth of Jesus Christ with family, gifts, and religious observances."
+              },
+              'IN': {
+                'Republic Day': "Commemorating India's constitution coming into force on January 26, 1950.",
+                'Independence Day': "Celebrating India's independence from British rule on August 15, 1947.",
+                'Gandhi Jayanti': "Honoring Mahatma Gandhi's birthday and his philosophy of non-violence.",
+                'Diwali': "The festival of lights celebrating the triumph of light over darkness.",
+                'Holi': "The festival of colors celebrating spring, love, and the victory of good over evil.",
+                'Dussehra': "Celebrating the victory of good over evil, commemorating Lord Rama's victory.",
+                'Eid al-Fitr': "Celebrating the end of Ramadan with feasts, prayers, and charity.",
+                'Eid al-Adha': "The festival of sacrifice commemorating Abraham's willingness to sacrifice his son.",
+                'Christmas Day': "Celebrating the birth of Jesus Christ in this diverse, multi-religious nation.",
+                'Good Friday': "Commemorating the crucifixion of Jesus Christ, observed by Indian Christians."
+              }
+            };
+            
+            return descriptions[country]?.[holidayName] || `Traditional public holiday celebrated in ${countryName}.`;
+          };
+          
+          const memo = getHolidayDescription(translatedName, countryCode);
           
           const holidayObj = {
             id: `${countryCode.toLowerCase()}-${formattedDate}-${holiday.name.replace(/[\s\W]+/g, '').toLowerCase()}`,

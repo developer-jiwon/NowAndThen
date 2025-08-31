@@ -423,9 +423,9 @@ export default function CountdownCard({
                   value={memoText}
                   onChange={(e) => setMemoText(e.target.value)}
                   placeholder="Enter your memo..."
-                  maxLength={300}
-                  className="w-full text-base p-2 border border-[#4E724C]/30 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
-                  rows={3}
+                  maxLength={500}
+                  className="w-full text-sm p-3 border border-[#4E724C]/30 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200 leading-relaxed"
+                  rows={4}
                 />
                 <div className="flex gap-1">
                   <button
@@ -443,23 +443,23 @@ export default function CountdownCard({
                 </div>
               </div>
             ) : (
-              <div className="space-y-1 h-12 flex flex-col">
+              <div className="space-y-2">
                 {memoText ? (
-                  <div className="text-[10px] sm:text-[11px] text-gray-700 bg-gray-50 p-1.5 rounded-md overflow-x-auto overflow-y-auto max-w-full flex-1">
-                    <div className="whitespace-pre-wrap break-words">
+                  <div className="text-xs sm:text-sm text-gray-700 bg-gray-50 p-3 rounded-md min-h-[60px] max-h-[120px] overflow-y-auto">
+                    <div className="whitespace-pre-wrap break-words leading-relaxed">
                       {memoText}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[10px] sm:text-[11px] text-gray-500 italic flex-1 flex items-start">
+                  <div className="text-xs sm:text-sm text-gray-500 italic bg-gray-50 p-3 rounded-md min-h-[40px] flex items-center justify-center">
                     No memo
-                  </p>
+                  </div>
                 )}
                 <button
                   onClick={() => setIsEditingMemo(true)}
-                  className="text-[9px] sm:text-[10px] text-[#4E724C] hover:text-[#3A5A38] transition-colors mt-auto"
+                  className="text-xs text-[#4E724C] hover:text-[#3A5A38] transition-colors font-medium"
                 >
-                  {memoText ? 'Edit' : 'Add memo'}
+                  {memoText ? 'Edit memo' : 'Add memo'}
                 </button>
               </div>
             )}

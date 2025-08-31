@@ -238,9 +238,9 @@ export default function CountdownCompact({
                     value={memoText}
                     onChange={(e) => setMemoText(e.target.value)}
                     placeholder="Enter your memo..."
-                    maxLength={300}
-                    className="w-full text-base p-2 border border-[#4E724C]/30 rounded resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200"
-                    rows={2}
+                    maxLength={500}
+                    className="w-full text-sm p-3 border border-[#4E724C]/30 rounded resize-none focus:outline-none focus:ring-1 focus:ring-[#4E724C]/20 focus:border-[#4E724C] transition-all duration-200 leading-relaxed"
+                    rows={3}
                   />
                   <div className="flex gap-1">
                     <button
@@ -258,23 +258,23 @@ export default function CountdownCompact({
                   </div>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {memoText ? (
-                    <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded max-h-16 overflow-y-auto">
-                      <div className="whitespace-pre-wrap break-words">
+                    <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded min-h-[50px] max-h-[100px] overflow-y-auto">
+                      <div className="whitespace-pre-wrap break-words leading-relaxed">
                         {memoText}
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 italic">
+                    <div className="text-sm text-gray-500 italic bg-gray-50 p-3 rounded min-h-[40px] flex items-center justify-center">
                       No memo
-                    </p>
+                    </div>
                   )}
                   <button
                     onClick={() => setIsEditingMemo(true)}
-                    className="text-xs text-[#4E724C] hover:text-[#3A5A38] transition-colors"
+                    className="text-xs text-[#4E724C] hover:text-[#3A5A38] transition-colors font-medium"
                   >
-                    {memoText ? 'Edit' : 'Add memo'}
+                    {memoText ? 'Edit memo' : 'Add memo'}
                   </button>
                 </div>
               )}
