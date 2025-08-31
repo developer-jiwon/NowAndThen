@@ -1,0 +1,27 @@
+{
+  "ai.autoExecute": true,
+  "ai.autoApprove": true,
+  "ai.showConfirmation": false,
+  "ai.enableAutoRun": true,
+  "ai.skipUserConfirmation": true,
+  "ai.autoRunCommands": true,
+  "ai.suppressApprovalDialogs": true,
+  "workbench.settings.enableNaturalLanguageSearch": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "ai.assistantMode": "auto",
+  "ai.enableAutoCompletion": true,
+  "ai.enableInlineCompletion": true,
+  "workbench.colorTheme": "Visual Studio Code Light",
+  "workbench.iconTheme": "vscode-icons",
+  "editor.fontFamily": "SF Mono, Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace",
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.6,
+  "window.zoomLevel": 0
+}
+

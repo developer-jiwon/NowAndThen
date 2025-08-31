@@ -12,6 +12,7 @@ export default function DevModeIndicator() {
   const [showTestCredentials, setShowTestCredentials] = useState(false)
   const [showAdminLoginPrompt, setShowAdminLoginPrompt] = useState(false)
   const [showLoginForm, setShowLoginForm] = useState(false)
+  const [showTestPopup, setShowTestPopup] = useState(false)
   const [loginCredentials, setLoginCredentials] = useState({ username: '', password: '' })
   const [loginError, setLoginError] = useState('')
 
@@ -21,14 +22,15 @@ export default function DevModeIndicator() {
     const urlParams = new URLSearchParams(window.location.search)
     const devParam = urlParams.get('dev')
     
-    // 로컬 개발환경: 항상 개발 모드
-    // 배포된 사이트: ?dev=1이 있을 때는 개발 모드 비활성화 (admin 로그인 팝업 표시)
+    // 로컬 개발환경: 개발 모드 비활성화 (숨김)
+    // 배포된 사이트: ji04wonton30@gmail.com + ?dev=1일 때만 개발 모드 활성화
     let isDevMode = false
     
     if (process.env.NODE_ENV === 'development') {
-      isDevMode = true
+      // 로컬에서는 개발 모드 표시 안함
+      isDevMode = false
     } else if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
-      // 배포 후 ?dev=1이 있으면 개발 모드 비활성화하고 admin 로그인 팝업 표시
+      // 배포 후 ?dev=1이 있으면 admin 로그인 팝업 표시
       isDevMode = false
       console.log('🔒 Test mode requires admin authentication in production')
     }
@@ -48,14 +50,14 @@ export default function DevModeIndicator() {
       document.body.style.paddingTop = '40px'
     }
 
-    // ji04wonton30@gmail.com에게만 테스트 계정 정보 표시 (일반 모드에서)
-    if (user && user.email === 'ji04wonton30@gmail.com' && !isDevMode) {
+    // ji04wonton30@gmail.com에게만 테스트 계정 정보 표시 (배포 환경에서만)
+    if (process.env.NODE_ENV === 'production' && user && user.email === 'ji04wonton30@gmail.com' && !isDevMode) {
       setShowTestCredentials(true)
     } else {
       setShowTestCredentials(false)
     }
 
-    // ?dev=1 파라미터가 있으면 모든 사용자에게 admin 로그인 팝업 표시 (로컬 개발환경 제외)
+    // ?dev=1 파라미터가 있으면 모든 사용자에게 admin 로그인 팝업 표시 (배포 환경에서만)
     if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
       setShowAdminLoginPrompt(true)
     } else {
@@ -123,11 +125,24 @@ export default function DevModeIndicator() {
   if (showLoginForm) {
     const handleLogin = () => {
       if (loginCredentials.username === 'Test' && loginCredentials.password === 'Tes_19tIs_94Impo_30rtan_04t') {
-        // 로그인 성공 - 개발 모드 활성화
-        setShowLoginForm(false)
-        setLoginError('')
-        // 개발 모드로 전환
-        window.location.reload()
+        // 로그인 성공 - ji04wonton30@gmail.com에게만 개발 모드 활성화
+        if (user && user.email === 'ji04wonton30@gmail.com') {
+          setShowLoginForm(false)
+          setLoginError('')
+          setIsDev(true) // 개발 모드 활성화
+          // 개발 정보 설정
+          setDevInfo({
+            nodeEnv: process.env.NODE_ENV,
+            hasDevParam: true,
+            userId: user.id,
+            guestId: localStorage.getItem('guest_id'),
+            devUserData: localStorage.getItem('dev_user_data')
+          })
+          // Add padding to body
+          document.body.style.paddingTop = '40px'
+        } else {
+          setLoginError('Access denied. Admin privileges required.')
+        }
       } else {
         setLoginError('Invalid credentials. Please try again.')
       }
@@ -196,38 +211,63 @@ export default function DevModeIndicator() {
   // 테스트 계정 정보 표시 (ji04wonton30@gmail.com에게만, 일반 모드에서)
   if (showTestCredentials) {
     return (
-      <div className="fixed top-0 left-0 right-0 z-50 bg-blue-500 text-white text-xs px-4 py-2 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-4">
-          <span className="font-bold">🧪 TEST ACCOUNT INFO</span>
-          <span>For development testing only</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-xs">
-            <span className="font-semibold">Username:</span> Test
-          </div>
-          <div className="text-xs">
-            <span className="font-semibold">Password:</span> Tes_19tIs_94Impo_30rtan_04t
-          </div>
+      <>
+        {/* 작은 테스트 아이콘 */}
+        <div className="fixed top-4 right-4 z-50">
           <button
-            onClick={() => {
-              const testUrl = `${window.location.origin}?dev=1`;
-              navigator.clipboard.writeText(testUrl);
-              alert('✅ Test server URL copied to clipboard!');
-            }}
-            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
-            title="Copy test server URL with ?dev=1 parameter"
+            onClick={() => setShowTestPopup(true)}
+            className="bg-blue-500 text-white p-2 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+            title="Test Mode - Click for credentials"
           >
-            Test Server Copy
-          </button>
-          <button
-            onClick={() => setShowTestCredentials(false)}
-            className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
-            title="Hide test account info"
-          >
-            Hide
+            🧪
           </button>
         </div>
-      </div>
+
+        {/* 테스트 정보 팝업 */}
+        {showTestPopup && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <div className="text-center mb-6">
+                <div className="text-2xl mb-2">🧪</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Test Account Info</h3>
+                <p className="text-sm text-gray-600">
+                  For development testing only
+                </p>
+              </div>
+              
+              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                <div className="space-y-2">
+                  <div className="text-sm text-blue-700">
+                    <span className="font-semibold">Username:</span> Test
+                  </div>
+                  <div className="text-sm text-blue-700">
+                    <span className="font-semibold">Password:</span> Tes_19tIs_94Impo_30rtan_04t
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowTestPopup(false)}
+                  className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    const testUrl = `${window.location.origin}?dev=1`;
+                    navigator.clipboard.writeText(testUrl);
+                    alert('✅ Test server URL copied to clipboard!');
+                  }}
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-700 transition-colors"
+                >
+                  Copy Test URL
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     )
   }
 

@@ -1,0 +1,12 @@
+{
+  "cursor.ai.autoExecute": true,
+  "cursor.ai.autoApprove": true,
+  "cursor.ai.showConfirmation": false,
+  "cursor.ai.enableAutoRun": true,
+  "cursor.ai.skipUserConfirmation": true,
+  "cursor.general.autoRun": true,
+  "cursor.experimental.autoRun": true,
+  "workbench.colorTheme": "Visual Studio Light",
+  "workbench.iconTheme": "vscode-icons"
+}
+

@@ -5,68 +5,97 @@ import { supabase } from '@/lib/supabase';
 export function useAnonymousAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  console.log('🔍 useAnonymousAuth hook initialized - user:', user, 'loading:', loading);
+  console.log('🔍 Current environment variables check:');
+  console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
+  console.log('🔍 NEXT_PUBLIC_SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('🔍 NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   useEffect(() => {
-    // Check session and perform anonymous login
+    // 로컬 개발환경에서는 무조건 테스트 유저 생성
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔧 LOCAL DEVELOPMENT - Creating test user immediately');
+      
+      const devUserId = 'dev-user-local';
+      const existingDevUser = localStorage.getItem('dev_user_data');
+      
+      if (existingDevUser) {
+        try {
+          const userData = JSON.parse(existingDevUser);
+          console.log('✅ Using existing local dev user:', devUserId);
+          setUser(userData);
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.log('🔧 Invalid dev user data, creating new one');
+          localStorage.removeItem('dev_user_data');
+        }
+      }
+      
+      // Create a mock user object for development
+      const mockUser = {
+        id: devUserId,
+        email: undefined,
+        user_metadata: { provider: 'anonymous' },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as User;
+      
+      localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
+      localStorage.setItem('guest_id', devUserId);
+      console.log('✅ Created new local dev user:', devUserId);
+      setUser(mockUser);
+      setLoading(false);
+      return;
+    }
+
+    // 배포 환경에서만 Supabase 연결 시도
     const checkSession = async () => {
+      console.log('🔍 PRODUCTION - checkSession started');
+      
+      const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const devParam = urlParams?.get('dev');
+      
+      // 개발 모드가 아니면 Supabase 세션 체크
       try {
+        console.log('🔍 Getting Supabase session...');
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔍 Supabase session result:', session);
         
         if (!session) {
-          // Development environment: Use a consistent fake user to avoid recreating sessions
-          // Check for dev mode via URL parameter or NODE_ENV
-          const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-          const devParam = urlParams?.get('dev');
-          
-          // 로컬 개발환경: 항상 개발 모드
-          // 배포된 사이트: ?dev=1이 있을 때만 개발 모드 (로그인된 사용자만)
-          let isDev = false;
-          
-          if (process.env.NODE_ENV === 'development') {
-            isDev = true;
-          } else if (process.env.NODE_ENV === 'production' && (devParam === '1' || devParam === 'true')) {
-            // 배포 후 테스트 모드는 로그인된 사용자만 접근 가능
-            // 여기서는 아직 로그인되지 않았으므로 false
-            isDev = false;
-          }
+          // Check if Supabase environment variables are missing
+          if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+            console.error('❌ Missing Supabase environment variables!');
+            console.error('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+            console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
             
-          if (isDev) {
-            console.log('🔧 Development mode active - using mock user to avoid creating Supabase users');
-            const devUserId = 'dev-user-local';
-            const existingDevUser = localStorage.getItem('dev_user_data');
+            // Create emergency mock user for missing env vars
+            const emergencyUser = {
+              id: 'emergency-user-' + Date.now(),
+              email: undefined,
+              user_metadata: { provider: 'anonymous' },
+              app_metadata: {},
+              aud: 'authenticated',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            } as User;
             
-            if (existingDevUser) {
-              // Use existing dev user data
-              const userData = JSON.parse(existingDevUser);
-              process.env.NODE_ENV === 'development' && console.log('Using existing dev user:', devUserId);
-              setUser(userData);
-              setLoading(false);
-              return;
-            } else {
-              // Create a mock user object for development
-              const mockUser = {
-                id: devUserId,
-                email: undefined,
-                user_metadata: { provider: 'anonymous' },
-                app_metadata: {},
-                aud: 'authenticated',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              } as User;
-              
-              localStorage.setItem('dev_user_data', JSON.stringify(mockUser));
-              localStorage.setItem('guest_id', devUserId);
-              process.env.NODE_ENV === 'development' && console.log('Created dev user:', devUserId);
-              setUser(mockUser);
-              setLoading(false);
-              return;
-            }
+            console.log('🚨 Using emergency mock user due to missing environment variables');
+            setUser(emergencyUser);
+            setLoading(false);
+            return;
           }
           
           // Production: Try to restore previous guest_id from localStorage
           const previousGuestId = localStorage.getItem('guest_id');
-          process.env.NODE_ENV === 'development' && console.log('No session found, signing in anonymously...');
+          console.log('🔍 No session found, attempting anonymous sign in...');
+          console.log('🔍 Previous guest ID:', previousGuestId);
+          
           const { data, error } = await supabase.auth.signInAnonymously();
+          console.log('🔍 Anonymous sign in result - data:', data, 'error:', error);
           
           if (error) {
             console.error('Error signing in anonymously:', error);
@@ -92,6 +121,8 @@ export function useAnonymousAuth() {
         }
       } catch (error) {
         console.error('Error in checkSession:', error);
+        console.error('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+        console.error('Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
       } finally {
         setLoading(false);
       }
