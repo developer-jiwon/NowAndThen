@@ -33,27 +33,27 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
   const content = {
     en: {
       title: 'Now & Then v1.3',
-      subtitle: 'New features for better organization.',
-      listViewTitle: 'Compact List View',
-      listViewDesc: 'Toggle between card and list layouts for your preference.',
-      groupingTitle: 'Smart Grouping',
-      groupingDesc: 'Auto-organize timers by Today, Tomorrow, This Week.',
-      memoTitle: 'Enhanced Memos',
-      memoDesc: 'Full memo support in both card and list views.',
+      subtitle: 'Enhanced experience and better readability.',
+      holidayTitle: 'Rich Holiday Descriptions',
+      holidayDesc: 'Each country\'s holidays now show cultural background and historical meaning.',
+      memoTitle: 'Expanded Memo Space',
+      memoDesc: 'Larger text areas, better readability, and 500-character limit.',
+      sortingTitle: 'Improved Holiday Sorting',
+      sortingDesc: 'Holidays now follow the same D-day priority as your personal timers.',
       confirm: 'Explore Now',
-      version: 'Version 1.3 • August 2025'
+      version: 'Version 1.3 • September 2025'
     },
     ko: {
       title: 'Now & Then v1.3',
-      subtitle: '더 나은 정리를 위한 새로운 기능.',
-      listViewTitle: '컴팩트 리스트 뷰',
-      listViewDesc: '카드와 리스트 레이아웃을 선호에 맞게 전환하세요.',
-      groupingTitle: '스마트 그룹핑',
-      groupingDesc: '오늘, 내일, 이번 주로 타이머를 자동 정리합니다.',
-      memoTitle: '메모 기능 강화',
-      memoDesc: '카드와 리스트 뷰 모두에서 완전한 메모 지원.',
+      subtitle: '향상된 경험과 더 나은 가독성.',
+      holidayTitle: '풍부한 휴일 설명',
+      holidayDesc: '각 나라 휴일마다 문화적 배경과 역사적 의미를 자세히 설명합니다.',
+      memoTitle: '확장된 메모 공간',
+      memoDesc: '더 큰 텍스트 영역, 향상된 가독성, 500자 제한으로 확대.',
+      sortingTitle: '개선된 휴일 정렬',
+      sortingDesc: '휴일도 개인 타이머와 동일한 D-day 우선순위로 정렬됩니다.',
       confirm: '살펴보기',
-      version: '버전 1.3 • 2025년 8월'
+      version: '버전 1.3 • 2025년 9월'
     }
   };
 
@@ -106,27 +106,13 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
               <div className="flex items-start gap-3">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.listViewTitle}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.holidayTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.listViewDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.groupingTitle}</h3>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {currentContent.groupingDesc}
+                    {currentContent.holidayDesc}
                   </p>
                 </div>
               </div>
@@ -139,6 +125,20 @@ export default function UpdatePopup({ isVisible, onClose }: UpdatePopupProps) {
                   <h3 className="font-semibold text-gray-900 text-sm">{currentContent.memoTitle}</h3>
                   <p className="text-xs text-gray-600 mt-1">
                     {currentContent.memoDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4E724C] to-[#3A5A38] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">{currentContent.sortingTitle}</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentContent.sortingDesc}
                   </p>
                 </div>
               </div>
