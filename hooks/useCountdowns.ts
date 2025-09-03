@@ -42,7 +42,7 @@ export function useCountdowns(category: string) {
     isCountUp: row.is_count_up,
     hidden: row.hidden,
     pinned: row.pinned,
-    memo: row.memo,
+    memo: row.memo || "",
     originalCategory: row.category as "custom" | "general" | "personal",
   }), []);
 
@@ -55,7 +55,7 @@ export function useCountdowns(category: string) {
     is_count_up: countdown.isCountUp,
     hidden: countdown.hidden,
     pinned: countdown.pinned,
-    memo: countdown.memo,
+    memo: countdown.memo || "",
     category: countdown.originalCategory,
   }), []);
 
@@ -343,6 +343,7 @@ export function useCountdowns(category: string) {
       }
 
       const updatedCountdown = transformCountdown(data);
+      
       // Optimistically merge just-updated fields to avoid race with realtime payload order
       setCountdowns(prev => prev.map(c => {
         if (c.id !== countdown.id) return c;

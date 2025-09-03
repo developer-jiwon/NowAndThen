@@ -347,6 +347,9 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           <Button type="button" onClick={handleReset} variant="outline" className="flex-1 h-9 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-md transition-all duration-200">
             Reset
           </Button>
+          <Button type="button" onClick={onCancel} variant="outline" className="flex-1 h-9 text-sm font-medium border-gray-300 hover:bg-gray-50 hover:border-gray-400 rounded-md transition-all duration-200">
+            Cancel
+          </Button>
         </div>
       </form>
     </Form>

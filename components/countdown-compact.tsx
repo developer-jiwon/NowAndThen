@@ -54,10 +54,8 @@ export default function CountdownCompact({
   const [memoText, setMemoText] = useState(countdown.memo || "");
 
   useEffect(() => {
-    if (!isEditingMemo) {
-      setMemoText(countdown.memo || "");
-    }
-  }, [countdown.memo, isEditingMemo]);
+    setMemoText(countdown.memo || "");
+  }, [countdown.memo]);
 
   useEffect(() => {
     if (isEditingMemo) return;
@@ -92,8 +90,18 @@ export default function CountdownCompact({
   };
 
   const handleMemoSave = async () => {
+    console.log('💾 Saving memo (compact):', { countdownId: countdown.id, memoText, onUpdateMemo: !!onUpdateMemo });
     if (onUpdateMemo) {
-      await onUpdateMemo(countdown.id, memoText);
+      try {
+        await onUpdateMemo(countdown.id, memoText);
+        console.log('💾 Memo save completed (compact)');
+      } catch (error) {
+        console.error('💾 Memo save failed (compact):', error);
+        // Reset to original memo on error
+        setMemoText(countdown.memo || "");
+      }
+    } else {
+      console.warn('💾 No onUpdateMemo function provided (compact)');
     }
     setIsEditingMemo(false);
   };

@@ -92,24 +92,18 @@ function getOrCreateUserId(): string {
 }
 
 /**
- * Creates a shareable URL that includes both the user ID and all countdown data
+ * Creates a shareable URL that includes countdown data
  * This URL can be opened on any device to access the same countdowns
- * For sharing purposes, we include the data parameter
  */
 export function createShareableUrl(): string {
   if (typeof window === "undefined") return "";
   
   try {
-    // Get the current user ID
-    const userId = getOrCreateUserId();
-    
     // Export all countdown data
     const dataString = exportCountdownsToShareableString();
     
-    // Create a URL with both the user ID and data
-    // Use absolute URL to ensure it works across different domains
+    // Create a URL with data parameter only
     const url = new URL(window.location.origin + window.location.pathname);
-    url.searchParams.set('uid', userId);
     
     // For sharing purposes, we include the data parameter
     if (dataString) {
@@ -125,7 +119,7 @@ export function createShareableUrl(): string {
 }
 
 /**
- * Checks for and processes URL parameters (uid and data)
+ * Checks for and processes URL parameters (data only)
  * This should be called once when the application loads
  */
 export function processUrlParameters(): void {
@@ -135,29 +129,21 @@ export function processUrlParameters(): void {
   
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
-  const urlUserId = urlParams.get('uid');
   const sharedData = urlParams.get('data');
   
-  process.env.NODE_ENV === 'development' && console.log("URL parameters:", { urlUserId, hasSharedData: !!sharedData });
+  process.env.NODE_ENV === 'development' && console.log("URL parameters:", { hasSharedData: !!sharedData });
   
-  // Process the user ID from URL if present
-  if (urlUserId) {
-    process.env.NODE_ENV === 'development' && console.log("Setting user ID from URL:", urlUserId);
+  // Process shared data if present
+  if (sharedData) {
+    const userId = getOrCreateUserId();
+    const hasLocalData = checkForLocalData(userId);
     
-    // Ensure the ID is not too long
-    const shortUrlUserId = urlUserId.length > 8 ? urlUserId.substring(0, 8) : urlUserId;
-    localStorage.setItem(USER_ID_KEY, shortUrlUserId);
-    
-    // Check if we already have data in localStorage for this user
-    const hasLocalData = checkForLocalData(shortUrlUserId);
-    
-    // Process shared data if present and we don't have local data
-    if (sharedData && !hasLocalData) {
+    if (!hasLocalData) {
       process.env.NODE_ENV === 'development' && console.log("Found shared data in URL and no local data, importing...");
       
       try {
         // Import the data
-        importCountdownsFromSharedData(sharedData, shortUrlUserId);
+        importCountdownsFromSharedData(sharedData, userId);
         
         process.env.NODE_ENV === 'development' && console.log("Data imported successfully from URL");
         
@@ -165,22 +151,22 @@ export function processUrlParameters(): void {
         localStorage.setItem(URL_DATA_PROCESSED_KEY, 'true');
         
         // Clean up the URL by removing the data parameter
-        updateUrlWithUserId(shortUrlUserId, false);
+        cleanUpUrl();
       } catch (error) {
         console.error("Error importing shared data from URL:", error);
       }
-    } else if (sharedData && hasLocalData) {
+    } else {
       process.env.NODE_ENV === 'development' && console.log("Found shared data in URL but local data exists, using local data");
       
       // Clean up the URL by removing the data parameter
-      updateUrlWithUserId(shortUrlUserId, false);
+      cleanUpUrl();
     }
   }
 }
 
 /**
- * Gets the current user's ID from URL query parameter, localStorage, or creates a new one
- * This allows each user to have their own set of countdowns and share them via URL
+ * Gets the current user's ID from localStorage or creates a new one
+ * This allows each user to have their own set of countdowns
  */
 export function getUserId(): string {
   // Check if we're in a browser environment
@@ -189,43 +175,34 @@ export function getUserId(): string {
     return "";
   }
 
-  // Process URL parameters if they exist
+  // Process URL parameters if they exist (for shared data only)
   processUrlParameters();
   
   // Get the user ID (either from localStorage or newly generated)
   const userId = getOrCreateUserId();
   
-  // Ensure the URL has the user ID
-  updateUrlWithUserId(userId);
-  
   return userId;
 }
 
 /**
- * Updates the URL with the user ID as a query parameter without reloading the page
- * No longer includes the data parameter to keep URLs shorter
+ * Cleans up the URL by removing parameters
  */
-export function updateUrlWithUserId(userId: string, includeData: boolean = false): void {
+export function cleanUpUrl(): void {
   if (typeof window === "undefined") return;
-  
-  process.env.NODE_ENV === 'development' && console.log("Updating URL with user ID:", userId);
   
   try {
     const url = new URL(window.location.href);
     
-    // Set the user ID parameter
-    url.searchParams.set('uid', userId);
-    
-    // Remove any existing data parameter to keep the URL clean
+    // Remove data parameter to keep the URL clean
     if (url.searchParams.has('data')) {
       url.searchParams.delete('data');
     }
     
     // Update the URL without reloading the page
     window.history.replaceState({}, '', url.toString());
-    process.env.NODE_ENV === 'development' && console.log("URL updated successfully with only user ID");
+    process.env.NODE_ENV === 'development' && console.log("URL cleaned up successfully");
   } catch (error) {
-    console.error("Error updating URL:", error);
+    console.error("Error cleaning up URL:", error);
   }
 }
 

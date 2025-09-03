@@ -292,20 +292,30 @@ export default function SupabaseCountdownGrid({
   };
 
   const handleUpdateMemo = async (id: string, memo: string) => {
-    if (!user) return;
+    if (!user) {
+      console.error('No user found for memo update');
+      return;
+    }
     const countdown = countdowns.find(c => c.id === id);
-    if (!countdown) return;
+    if (!countdown) {
+      console.error('Countdown not found:', id);
+      return;
+    }
     
     try {
-      process.env.NODE_ENV === 'development' && console.log('Updating memo for countdown:', id, 'memo:', memo);
+      console.log('🔍 Updating memo for countdown:', id, 'memo:', memo);
+      console.log('🔍 Current countdown:', countdown);
+      console.log('🔍 Updated countdown will be:', { ...countdown, memo });
+      
       await updateCountdown(
         { ...countdown, memo },
         user.id
       );
-      process.env.NODE_ENV === 'development' && console.log('Memo updated successfully');
-      // No forced reload; state already updated optimistically in hook
+      console.log('✅ Memo updated successfully');
+      // Reload to ensure UI reflects the change
+      await loadCountdowns(user.id);
     } catch (error) {
-      console.error('Error updating memo:', error);
+      console.error('❌ Error updating memo:', error);
     }
   };
 
@@ -471,7 +481,7 @@ export default function SupabaseCountdownGrid({
     return (
       <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
         <div className="mb-5 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 w-full max-w-5xl mb-0">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-3 px-4 w-full max-w-5xl mb-0">
           {sampleCountdowns.map((sample) => (
             <CountdownCard
               key={sample.id}
@@ -730,9 +740,9 @@ export default function SupabaseCountdownGrid({
     const sortedHolidays = [...holidays].sort(compareByValue);
 
     return (
-      <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
+      <div className="flex flex-col items-center justify-center w-full">
         {/* Country Selection Dropdown */}
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-2 flex items-center gap-2">
           <span className="text-xs text-gray-600">Select Country:</span>
           <select 
             value={selectedCountry} 
@@ -747,11 +757,11 @@ export default function SupabaseCountdownGrid({
           </select>
         </div>
 
-        <div className="mb-5 mt-0 text-[10px] text-gray-400">
+        <div className="mb-3 text-[10px] text-gray-400">
           Public holidays for {new Date().getFullYear()}
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 w-full max-w-5xl mb-0">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-3 px-4 w-full max-w-5xl mb-0">
           {sortedHolidays.map((holiday) => (
             <CountdownCard
               key={holiday.id}
@@ -815,7 +825,7 @@ export default function SupabaseCountdownGrid({
         showHidden ? 'pt-0 pb-0 -mb-0 -mt-6' :
         'pt-2 pb-0 -mb-8'
       }`}>
-        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-4 w-[280px] sm:w-[300px] inline-flex flex-col items-center justify-center mx-auto shrink-0">
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm p-4 w-full max-w-xs sm:max-w-[250px] flex flex-col items-center justify-center mx-auto">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4E724C]/10 to-[#3A5A38]/10 flex items-center justify-center mb-3">
             {showHidden ? (
               <svg className="w-6 h-6 text-[#4E724C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1090,7 +1100,7 @@ export default function SupabaseCountdownGrid({
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-2 px-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-4">
                     {(countdowns as Countdown[]).map((countdown) => (
                       <CountdownCompact
                         key={countdown.id}

@@ -202,12 +202,10 @@ export default function CountdownCard({
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoText, setMemoText] = useState(countdown.memo || "");
 
-  // Sync memoText with countdown.memo when it changes, but don't override while editing
+  // Sync memoText with countdown.memo when it changes or when entering edit mode
   useEffect(() => {
-    if (!isEditingMemo) {
-      setMemoText(countdown.memo || "");
-    }
-  }, [countdown.memo, isEditingMemo]);
+    setMemoText(countdown.memo || "");
+  }, [countdown.memo]);
 
   // Update the time remaining every second
   useEffect(() => {
@@ -250,12 +248,20 @@ export default function CountdownCard({
   };
 
   const handleMemoSave = async () => {
+    console.log('💾 Saving memo:', { countdownId: countdown.id, memoText, onUpdateMemo: !!onUpdateMemo });
     if (onUpdateMemo) {
-      await onUpdateMemo(countdown.id, memoText);
+      try {
+        await onUpdateMemo(countdown.id, memoText);
+        console.log('💾 Memo save completed');
+      } catch (error) {
+        console.error('💾 Memo save failed:', error);
+        // Reset to original memo on error
+        setMemoText(countdown.memo || "");
+      }
+    } else {
+      console.warn('💾 No onUpdateMemo function provided');
     }
     setIsEditingMemo(false);
-    // Keep showing the just-saved value locally to avoid flicker if server returns stale data briefly
-    setMemoText((prev) => prev);
   };
 
   const handleMemoCancel = () => {
@@ -293,7 +299,7 @@ export default function CountdownCard({
 
   return (
     <motion.div 
-      className="mb-2 mx-auto relative w-full max-w-xs sm:max-w-[350px]"
+      className="mb-2 mx-auto relative w-full max-w-xs sm:max-w-[250px]"
       initial="hidden"
       animate="visible"
       whileHover="hover"

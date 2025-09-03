@@ -175,6 +175,80 @@ export function calculateTimeRemaining(targetDateString: string, isCountUp = fal
 
 // Get default countdowns based on category
 export function getDefaultCountdowns(category: string): Countdown[] {
+  if (category === "personal") {
+    return [
+      {
+        id: "sample-job-interview",
+        title: "Dream Job Interview",
+        date: "2025-10-15",
+        isCountUp: false,
+        hidden: false,
+        pinned: false,
+        memo: "Senior Product Manager at Spotify. Resume polished, portfolio ready.",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-wedding",
+        title: "Wedding Day",
+        date: "2026-06-15",
+        isCountUp: false,
+        hidden: false,
+        pinned: false,
+        memo: "Beach ceremony at sunset. Venue booked, dress fitted.",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-new-job",
+        title: "First Day at New Job",
+        date: "2025-11-01",
+        isCountUp: false,
+        hidden: false,
+        pinned: false,
+        memo: "Starting as Senior Developer at Meta. Excited for new challenges!",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-vacation",
+        title: "Tokyo Trip",
+        date: "2026-03-15",
+        isCountUp: false,
+        hidden: false,
+        pinned: false,
+        memo: "Cherry blossom season! Flights booked, itinerary planned.",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-birthday",
+        title: "30th Birthday",
+        date: "2026-04-05",
+        isCountUp: false,
+        hidden: false,
+        pinned: false,
+        memo: "Big celebration planned. Guest list confirmed, venue reserved.",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-graduation-past",
+        title: "College Graduation",
+        date: "2024-12-20",
+        isCountUp: true,
+        hidden: false,
+        pinned: false,
+        memo: "Computer Science degree completed. Started new job last week.",
+        originalCategory: "personal"
+      },
+      {
+        id: "sample-marathon-past",
+        title: "First Marathon Completed",
+        date: "2024-11-10",
+        isCountUp: true,
+        hidden: false,
+        pinned: false,
+        memo: "Finished in 4:15! Training paid off, recovery going well.",
+        originalCategory: "personal"
+      }
+    ];
+  }
   return [];
 }
 

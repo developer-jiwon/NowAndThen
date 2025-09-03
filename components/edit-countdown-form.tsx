@@ -32,7 +32,8 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
     title: countdown.title.slice(0, 20),
     date: exactDate,
     category: validCategory,
-    isCountUp: countdown.isCountUp
+    isCountUp: countdown.isCountUp,
+    memo: countdown.memo || ""
   }
 
   function onSubmit(values: CountdownFormValues) {
@@ -47,6 +48,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
       title: values.title,
       date: exactDate,
       isCountUp: isCountUp,
+      memo: values.memo || "",
     }
 
     // Call the onSave callback with the updated countdown and new category if changed
@@ -88,7 +90,7 @@ export default function EditCountdownForm({ countdown, onSave, onCancel }: EditC
             <CountdownForm 
               defaultValues={defaultValues} 
               onSubmit={onSubmit} 
-              submitButtonText="Save Changes" 
+              submitButtonText="Save" 
               onCancel={onCancel}
               onReset={() => {
                 // Reset functionality - could trigger any additional reset logic if needed
