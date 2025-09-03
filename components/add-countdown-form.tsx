@@ -34,7 +34,7 @@ import {
 import type { Countdown } from "@/lib/types"
 import { Clock, Hourglass } from "lucide-react"
 import { isDateInPast } from "@/lib/countdown-utils"
-import { getUserStorageKey, updateUrlWithUserId } from "@/lib/user-utils"
+import { getUserStorageKey } from "@/lib/user-utils"
 import { format, addDays, isBefore, startOfDay, parseISO } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
