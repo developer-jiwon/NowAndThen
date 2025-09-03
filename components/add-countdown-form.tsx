@@ -390,11 +390,6 @@ export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
         detail: { category: values.category }
       }))
       
-      const userId = localStorage.getItem("now_then_user_id");
-      if (userId) {
-        updateUrlWithUserId(userId, false);
-      }
-      
       setShowSuccess(true)
       setTimeout(() => {
         setShowSuccess(false)
