@@ -1,7 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import Script from "next/script"
-import { Merriweather } from "next/font/google"
+import { Merriweather, Manrope } from "next/font/google"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
 import ConsentBanner from "@/components/ConsentBanner"
@@ -11,6 +11,12 @@ const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
   subsets: ["latin"],
   variable: "--font-merriweather",
+})
+
+const manrope = Manrope({
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  variable: "--font-manrope",
 })
 
 // Resolve site URL from environment to avoid hardcoding
@@ -214,7 +220,7 @@ export default function RootLayout({
           sameAs: [siteUrl]
         })}</Script>
       </head>
-      <body className={`${merriweather.variable} flex flex-col`}> 
+      <body className={`${merriweather.variable} ${manrope.variable} flex flex-col`}> 
         <SupabaseProvider>
           <DevModeIndicator />
           <ConsentBanner />

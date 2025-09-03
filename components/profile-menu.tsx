@@ -67,20 +67,23 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
   };
 
   // Size classes
-  const btnSize = size === 'sm' ? 'w-5 h-5 ml-0.5' : 'w-7 h-7 ml-2';
-  const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
+  const btnSize = size === 'sm' ? 'w-6 h-6 ml-0.5' : 'w-8 h-8 ml-2';
+  const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4.5 h-4.5';
 
   return (
     <>
       <span
-        className={`rounded-full border border-gray-200 ${isAnonymous ? 'bg-[#4E724C] shadow-sm' : 'bg-black'} flex items-center justify-center cursor-pointer ${btnSize} relative`}
+        className={`rounded-full ${isAnonymous ? 'border-2 border-[#F5E6B8] bg-[#4E724C] shadow-lg shadow-[#F5E6B8]/30' : 'border border-gray-200 bg-black'} flex items-center justify-center cursor-pointer ${btnSize} relative`}
         onClick={() => setOpen(isAnonymous ? 'signin' : 'main')}
         data-signin-trigger={isAnonymous ? "true" : undefined}
+        style={isAnonymous ? {
+          boxShadow: '0 0 8px rgba(245, 230, 184, 0.6), 0 0 16px rgba(245, 230, 184, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1)'
+        } : undefined}
       >
         <User className={`${iconSize} text-white`} />
         {isAnonymous && (
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white animate-pulse shadow-lg">
-            <span className="absolute inset-0 w-2 h-2 bg-orange-400 rounded-full animate-ping"></span>
+          <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500/80 rounded-full border border-white/90 animate-pulse shadow-lg">
+            <span className="absolute inset-0 w-2 h-2 bg-orange-400/70 rounded-full animate-ping"></span>
           </span>
         )}
       </span>

@@ -88,6 +88,10 @@
   font-family: var(--font-merriweather), serif;
 }
 
+.font-manrope {
+  font-family: var(--font-manrope), sans-serif;
+}
+
 /* Custom animations */
 @keyframes pulse {
   0%, 100% {

@@ -105,7 +105,7 @@ export default function CountdownCompact({
 
   return (
     <motion.div 
-      className="w-full border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-all duration-200 relative cursor-pointer"
+      className="font-manrope w-full border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-all duration-200 relative cursor-pointer"
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ x: 2 }}

@@ -471,7 +471,7 @@ export default function SupabaseCountdownGrid({
     return (
       <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
         <div className="mb-5 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 px-4 w-full max-w-4xl mb-0">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 w-full max-w-5xl mb-0">
           {sampleCountdowns.map((sample) => (
             <CountdownCard
               key={sample.id}
@@ -751,7 +751,7 @@ export default function SupabaseCountdownGrid({
           Public holidays for {new Date().getFullYear()}
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 px-4 w-full max-w-4xl mb-0">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 w-full max-w-5xl mb-0">
           {sortedHolidays.map((holiday) => (
             <CountdownCard
               key={holiday.id}
@@ -953,7 +953,7 @@ export default function SupabaseCountdownGrid({
   }
 
   return (
-    <div className="w-full">
+    <div className="font-manrope w-full">
       {/* View Mode, Group, Sort controls and Add Button */}
       <div className="flex items-center justify-between px-4 mb-3 -mt-2 sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="text-xs text-gray-500">
@@ -1074,7 +1074,7 @@ export default function SupabaseCountdownGrid({
               {/* Group Content */}
               <div className="grid gap-3 md:gap-4">
                 {viewMode === 'card' ? (
-                  <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
+                  <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
                     {(countdowns as Countdown[]).map((countdown) => (
                       <CountdownCard
                         key={countdown.id}
