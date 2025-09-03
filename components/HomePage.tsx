@@ -52,31 +52,41 @@ export default function HomePage() {
             <Clock size="sm" />
           </div>
           
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <ProfileMenu size="sm" />
             {isAnonymous ? (
-              <span className="text-gray-600 text-xs text-center">
+              <button 
+                onClick={() => (document.querySelector('[data-signin-trigger]') as HTMLElement)?.click()}
+                className="inline-flex items-center gap-1 px-2 py-1 text-[10px] bg-[#4E724C] text-white rounded-md hover:bg-[#3A5A38] transition-colors"
+              >
+                Sign in
+              </button>
+            ) : null}
+            <a href="/whats-new" className="inline-flex items-center gap-1 text-[11px] text-[#4E724C] hover:underline">
+              <CalendarIcon className="w-3 h-3" />
+              <span>Updates</span>
+            </a>
+          </div>
+          {isAnonymous ? (
+            <div className="text-center mb-2">
+              <span className="text-gray-600 text-xs">
                 Sign in to sync your timers across devices.<br />
                 <span className="text-[10px] text-gray-400">Local data may be lost when clearing browser.</span>
               </span>
-            ) : (
-              <span className="text-gray-600 text-sm text-center">
+            </div>
+          ) : (
+            <div className="text-center mb-2">
+              <span className="text-gray-600 text-sm">
                 Your data is synced and secure.
               </span>
-            )}
-          </div>
+            </div>
+          )}
           <div className="flex items-center gap-2 mb-2">
             <LoginButton />
             {/* Notification manager without Settings UI */}
             <div className="notification-manager-wrapper">
               <NotificationManager />
             </div>
-          </div>
-          <div className="text-center mt-2">
-            <a href="/whats-new" className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#4E724C] hover:underline">
-              <CalendarIcon className="w-3.5 h-3.5" />
-              <span>Change history</span>
-            </a>
           </div>
         </div>
         

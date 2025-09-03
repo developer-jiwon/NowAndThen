@@ -219,6 +219,11 @@ export default function RootLayout({
           <DevModeIndicator />
           <ConsentBanner />
           <Script id="sw-register" strategy="afterInteractive">{`
+            // Remove Google vignette hash from URL
+            if (window.location.hash === '#google_vignette') {
+              history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+
             if ('serviceWorker' in navigator) {
               (async () => {
                 try {

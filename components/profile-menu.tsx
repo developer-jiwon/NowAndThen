@@ -73,10 +73,16 @@ export default function ProfileMenu({ size }: ProfileMenuProps) {
   return (
     <>
       <span
-        className={`rounded-full border border-gray-200 bg-black flex items-center justify-center cursor-pointer ${btnSize}`}
+        className={`rounded-full border border-gray-200 ${isAnonymous ? 'bg-[#4E724C] shadow-sm' : 'bg-black'} flex items-center justify-center cursor-pointer ${btnSize} relative`}
         onClick={() => setOpen(isAnonymous ? 'signin' : 'main')}
+        data-signin-trigger={isAnonymous ? "true" : undefined}
       >
         <User className={`${iconSize} text-white`} />
+        {isAnonymous && (
+          <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white animate-pulse shadow-lg">
+            <span className="absolute inset-0 w-2 h-2 bg-orange-400 rounded-full animate-ping"></span>
+          </span>
+        )}
       </span>
       {open === 'main' && !isAnonymous && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
