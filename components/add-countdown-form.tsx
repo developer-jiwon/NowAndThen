@@ -364,7 +364,7 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
         />
 
         <div className="w-full max-w-sm sm:max-w-md mx-auto flex gap-2 pt-3">
-          <Button type="submit" className="flex-1 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-9 text-sm font-medium rounded-md shadow-sm transition-all duration-200">
+          <Button type="submit" className="flex-1 bg-gradient-to-r from-[#16a34a] to-[#15803d] hover:from-[#22c55e] hover:to-[#16a34a] text-white border-0 h-9 text-sm font-medium rounded-md shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-200 transform hover:scale-105">
             {submitButtonText}
           </Button>
           <Button type="button" onClick={handleReset} variant="outline" className="flex-1 h-9 text-sm font-medium border-[#4E724C]/30 hover:bg-[#4E724C]/5 hover:border-[#4E724C] rounded-md transition-all duration-200">

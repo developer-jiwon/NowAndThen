@@ -976,7 +976,7 @@ export default function SupabaseCountdownGrid({
           {/* Add Timer Button */}
           {category !== 'holidays' && (
             <button
-              className="w-7 h-7 bg-black text-white hover:bg-gray-800 flex items-center justify-center transition-colors rounded-md relative animate-pulse shadow-lg"
+              className="w-7 h-7 bg-[#4E724C] text-white hover:bg-[#5A7F58] flex items-center justify-center transition-all duration-200 rounded-md relative animate-pulse shadow-lg hover:shadow-xl"
               style={{
                 boxShadow: '0 0 10px rgba(134, 167, 137, 0.6), 0 0 20px rgba(134, 167, 137, 0.4), 0 0 30px rgba(134, 167, 137, 0.2)',
                 animation: 'neon-glow 2s ease-in-out infinite alternate'
