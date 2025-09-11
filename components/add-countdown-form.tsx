@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -71,6 +72,7 @@ export const formSchema = z.object({
     message: "Memo cannot exceed 300 characters"
   }).optional(),
   isCountUp: z.boolean().optional(),
+  pinned: z.boolean().optional(),
 })
 
 export type CountdownFormValues = z.infer<typeof formSchema>
@@ -340,6 +342,27 @@ export function CountdownForm({ defaultValues, onSubmit, submitButtonText = "Cre
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="pinned"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className="border-[#4E724C]/30 data-[state=checked]:bg-[#4E724C] data-[state=checked]:border-[#4E724C]"
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="text-xs font-medium text-[#4A2C3A]">
+                  Pin to top
+                </FormLabel>
+              </div>
+            </FormItem>
+          )}
+        />
+
         <div className="w-full max-w-sm sm:max-w-md mx-auto flex gap-2 pt-3">
           <Button type="submit" className="flex-1 bg-gradient-to-r from-[#4E724C] to-[#3A5A38] hover:from-[#5A7F58] hover:to-[#4A6A48] text-white border-0 h-9 text-sm font-medium rounded-md shadow-sm transition-all duration-200">
             {submitButtonText}
@@ -373,7 +396,7 @@ export default function AddCountdownForm({ onCancel }: AddCountdownFormProps) {
       date: exactDate,
       isCountUp: isPastDate,
       hidden: false,
-      pinned: false,
+      pinned: values.pinned || false,
       originalCategory: values.category,
       memo: values.memo || "",
     }

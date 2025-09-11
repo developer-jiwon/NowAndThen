@@ -328,7 +328,7 @@ export default function SupabaseCountdownGrid({
       date: values.date,
       isCountUp: values.isCountUp || false,
       hidden: false,
-      pinned: false,
+      pinned: values.pinned || false,
       originalCategory: (values.category === 'general' || values.category === 'personal') ? values.category : undefined,
       memo: values.memo || "",
     };
@@ -402,6 +402,7 @@ export default function SupabaseCountdownGrid({
     }
   }
 
+  // Show samples only when user has no pinned items
   if (sortedCountdowns.length === 0 && !showAddForm && showSamples && category === 'pinned') {
     // 샘플 타이머 데이터 (Countdown 타입에 맞게)
     const sampleCountdowns = [
