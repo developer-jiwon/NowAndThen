@@ -387,12 +387,12 @@ export default function CountdownCard({
       
       {/* Card with illustrative style */}
       <div 
-        className="font-manrope flex flex-col h-[280px] p-0 mt-4" 
-        style={borderStyle}
+        className="font-pretendard flex flex-col h-[280px] p-0 mt-4" 
+        style={{...borderStyle, fontFamily: 'var(--font-pretendard)'}}
       >
         {/* Title section */}
         <div className="w-full mb-1 min-h-[22px] flex items-center justify-center">
-          <h3 className="text-xs sm:text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2">
+          <h3 className="text-xs sm:text-base font-semibold text-gray-800 text-center break-words text-wrap max-h-10 overflow-hidden leading-tight line-clamp-2" style={{fontFamily: 'var(--font-pretendard)'}}>
             {headerTitle}
           </h3>
         </div>
@@ -416,7 +416,7 @@ export default function CountdownCard({
               </span>
             </motion.div>
           </AnimatePresence>
-          <span className="text-[10px] sm:text-[11px] uppercase mt-1 font-medium tracking-wide text-gray-600 text-center">
+          <span className="text-[10px] sm:text-[11px] uppercase mt-1 font-medium tracking-wide text-gray-600 text-center" style={{fontFamily: 'var(--font-pretendard)'}}>
             {timeRemaining.isCountUp ? "Days Passed" : "Days Remaining"}
           </span>
         </div>
@@ -451,18 +451,19 @@ export default function CountdownCard({
               <div className="flex flex-col">
                 {memoText ? (
                   <div className="text-xs sm:text-sm text-gray-700 bg-gray-50 p-3 rounded-md h-[60px] overflow-y-auto">
-                    <div className="whitespace-pre-wrap break-words leading-relaxed">
+                    <div className="whitespace-pre-wrap break-words leading-relaxed" style={{fontFamily: 'var(--font-pretendard)'}}>
                       {memoText}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs sm:text-sm text-gray-500 italic bg-gray-50 p-3 rounded-md h-[60px] flex items-center justify-center">
+                  <div className="text-xs sm:text-sm text-gray-500 italic bg-gray-50 p-3 rounded-md h-[60px] flex items-center justify-center" style={{fontFamily: 'var(--font-pretendard)'}}>
                     No memo
                   </div>
                 )}
                 <button
                   onClick={() => setIsEditingMemo(true)}
                   className="text-xs text-[#4E724C] hover:text-[#3A5A38] transition-colors font-medium mt-2"
+                  style={{fontFamily: 'var(--font-pretendard)'}}
                 >
                   {memoText ? 'Edit memo' : 'Add memo'}
                 </button>
@@ -474,7 +475,7 @@ export default function CountdownCard({
         <div className="w-full flex items-center justify-center mt-2">
           <div className="flex items-center justify-center gap-1 px-1.5 py-0.5 bg-gray-100 rounded-full">
             <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gray-500 flex-shrink-0" />
-            <p className="text-[10px] sm:text-[11px] text-gray-600 whitespace-nowrap">
+            <p className="text-[10px] sm:text-[11px] text-gray-600 whitespace-nowrap" style={{fontFamily: 'var(--font-pretendard)'}}>
               {formatDateString(exactDate)}
             </p>
           </div>

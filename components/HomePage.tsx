@@ -94,19 +94,19 @@ export default function HomePage() {
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex w-full max-w-sm mx-auto justify-center space-x-4 mb-4 bg-transparent border-b border-gray-200 focus-visible:ring-0 focus-visible:ring-offset-0">
-            <TabsTrigger value="pinned" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+            <TabsTrigger value="pinned" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" style={{fontFamily: 'var(--font-pretendard)'}}>
               Pinned
             </TabsTrigger>
-            <TabsTrigger value="general" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+            <TabsTrigger value="general" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" style={{fontFamily: 'var(--font-pretendard)'}}>
               General
             </TabsTrigger>
-            <TabsTrigger value="personal" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+            <TabsTrigger value="personal" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" style={{fontFamily: 'var(--font-pretendard)'}}>
               Personal
             </TabsTrigger>
-            <TabsTrigger value="holidays" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+            <TabsTrigger value="holidays" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" style={{fontFamily: 'var(--font-pretendard)'}}>
               Holidays
             </TabsTrigger>
-            <TabsTrigger value="hidden" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none">
+            <TabsTrigger value="hidden" className="text-xs font-medium text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:bg-gray-100 rounded-md pb-1 px-2 bg-transparent hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" style={{fontFamily: 'var(--font-pretendard)'}}>
               Hidden
             </TabsTrigger>
           </TabsList>

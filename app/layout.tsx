@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import Script from "next/script"
 import { Merriweather, Manrope } from "next/font/google"
+import localFont from "next/font/local"
 import "./globals.css"
 import SupabaseProvider from "@/components/SupabaseProvider"
 import ConsentBanner from "@/components/ConsentBanner"
@@ -17,6 +18,17 @@ const manrope = Manrope({
   weight: ["200", "300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-manrope",
+})
+
+const pretendard = localFont({
+  src: [
+    {
+      path: "../public/fonts/PretendardVariable.woff2",
+      weight: "45 920",
+    },
+  ],
+  variable: "--font-pretendard",
+  display: "swap",
 })
 
 // Resolve site URL from environment to avoid hardcoding
@@ -220,7 +232,7 @@ export default function RootLayout({
           sameAs: [siteUrl]
         })}</Script>
       </head>
-      <body className={`${merriweather.variable} ${manrope.variable} flex flex-col`}> 
+      <body className={`${merriweather.variable} ${manrope.variable} ${pretendard.variable} flex flex-col`}> 
         <SupabaseProvider>
           <DevModeIndicator />
           <ConsentBanner />
