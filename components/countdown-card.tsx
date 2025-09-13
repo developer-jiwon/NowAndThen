@@ -340,7 +340,7 @@ export default function CountdownCard({
       
       {/* Action buttons: hidden for holidays tab */}
       {category !== 'holidays' && (
-        <div className="absolute top-0.5 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
+        <div className="absolute -top-2 left-1 z-20 flex flex-row gap-1.5 bg-white/95 rounded-2xl shadow-lg px-2 py-0.5 border border-gray-100"
           style={{ minHeight: '20px' }}
         >
           <div
