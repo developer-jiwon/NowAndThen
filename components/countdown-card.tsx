@@ -287,7 +287,6 @@ export default function CountdownCard({
     background: '#ffffff',
     position: 'relative' as 'relative',
     width: '100%',
-    maxWidth: '280px',
     minWidth: '0',
     minHeight: '100px',
     height: 'auto',
@@ -298,8 +297,8 @@ export default function CountdownCard({
   };
 
   return (
-    <motion.div 
-      className="mb-2 mx-auto relative w-full max-w-xs sm:max-w-[250px]"
+    <motion.div
+      className="mb-2 mx-auto relative w-full"
       initial="hidden"
       animate="visible"
       whileHover="hover"

@@ -480,9 +480,9 @@ export default function SupabaseCountdownGrid({
     };
 
     return (
-      <div className="flex flex-col items-center justify-center pt-1 pb-0 w-full">
-        <div className="mb-5 mt-0 text-[10px] text-gray-400">Sample timers. Click edit to convert, or clear all.</div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-3 px-4 w-full max-w-5xl mb-0">
+      <div className="w-full">
+        <div className="mb-5 mt-0 text-[10px] text-gray-400 text-center">Sample timers. Click edit to convert, or clear all.</div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
           {sampleCountdowns.map((sample) => (
             <CountdownCard
               key={sample.id}
@@ -532,6 +532,53 @@ export default function SupabaseCountdownGrid({
   const getHolidaysForCountry = (countryCode: string) => {
     try {
       const currentYear = new Date().getFullYear();
+      
+      // Manual India holidays since date-holidays doesn't support IN
+      if (countryCode === 'IN') {
+        const indiaHolidays = [
+          { date: `${currentYear}-01-26`, name: 'Republic Day', type: 'public' },
+          { date: `${currentYear}-03-29`, name: 'Holi', type: 'public' },
+          { date: `${currentYear}-04-14`, name: 'Good Friday', type: 'public' },
+          { date: `${currentYear}-05-01`, name: 'Eid al-Fitr', type: 'public' },
+          { date: `${currentYear}-08-15`, name: 'Independence Day', type: 'public' },
+          { date: `${currentYear}-10-02`, name: 'Gandhi Jayanti', type: 'public' },
+          { date: `${currentYear}-10-24`, name: 'Dussehra', type: 'public' },
+          { date: `${currentYear}-11-12`, name: 'Diwali', type: 'public' },
+          { date: `${currentYear}-11-27`, name: 'Guru Nanak Jayanti', type: 'public' },
+          { date: `${currentYear}-12-25`, name: 'Christmas Day', type: 'public' }
+        ];
+        
+        return indiaHolidays.map(holiday => {
+          const formattedDate = holiday.date;
+          const countryName = countries.find(c => c.code === countryCode)?.name || countryCode;
+          const getHolidayDescription = (holidayName: string) => {
+            const descriptions: Record<string, string> = {
+              'Republic Day': "Commemorating India's constitution coming into force on January 26, 1950.",
+              'Independence Day': "Celebrating India's independence from British rule on August 15, 1947.",
+              'Gandhi Jayanti': "Honoring Mahatma Gandhi's birthday and his philosophy of non-violence.",
+              'Diwali': "The festival of lights celebrating the triumph of light over darkness.",
+              'Holi': "The festival of colors celebrating spring, love, and the victory of good over evil.",
+              'Dussehra': "Celebrating the victory of good over evil, commemorating Lord Rama's victory.",
+              'Eid al-Fitr': "Celebrating the end of Ramadan with feasts, prayers, and charity.",
+              'Guru Nanak Jayanti': "Celebrating the birth of Guru Nanak, the founder of Sikhism.",
+              'Christmas Day': "Celebrating the birth of Jesus Christ in this diverse, multi-religious nation.",
+              'Good Friday': "Commemorating the crucifixion of Jesus Christ, observed by Indian Christians."
+            };
+            return descriptions[holidayName] || `Traditional public holiday celebrated in India.`;
+          };
+          
+          return {
+            id: `in-${formattedDate}-${holiday.name.replace(/[\s\W]+/g, '').toLowerCase()}`,
+            title: holiday.name,
+            date: formattedDate,
+            memo: getHolidayDescription(holiday.name),
+            hidden: false,
+            pinned: false,
+            originalCategory: undefined,
+          };
+        }).slice(0, 15);
+      }
+      
       const hd = new Holidays();
       
       // Map country codes to date-holidays format with specific states/regions
@@ -541,7 +588,6 @@ export default function SupabaseCountdownGrid({
         'CN': { country: 'CN' },  // China
         'CA': { country: 'CA', state: 'ON' },  // Canada (Ontario)
         'US': { country: 'US', state: 'CA' },  // United States (California)
-        'IN': { country: 'IN' }   // India
       };
       
       const mappedCountry = countryMapping[countryCode];
@@ -761,8 +807,8 @@ export default function SupabaseCountdownGrid({
         <div className="mb-3 text-[10px] text-gray-400">
           Public holidays for {new Date().getFullYear()}
         </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-3 px-4 w-full max-w-5xl mb-0">
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 px-4 sm:gap-5 sm:px-6">
           {sortedHolidays.map((holiday) => (
             <CountdownCard
               key={holiday.id}
