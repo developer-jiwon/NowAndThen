@@ -193,9 +193,12 @@ export function cleanUpUrl(): void {
   try {
     const url = new URL(window.location.href);
     
-    // Remove data parameter to keep the URL clean
+    // Remove data and uid parameters to keep the URL clean
     if (url.searchParams.has('data')) {
       url.searchParams.delete('data');
+    }
+    if (url.searchParams.has('uid')) {
+      url.searchParams.delete('uid');
     }
     
     // Update the URL without reloading the page
