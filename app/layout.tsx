@@ -43,9 +43,10 @@ export const metadata: Metadata = {
   creator: "Now & Then",
   publisher: "Now & Then",
   metadataBase: new URL(siteUrl),
-  alternates: {
-    canonical: siteUrl,
-  },
+  // Canonical tags are set per-page, not in root layout
+  // alternates: {
+  //   canonical: siteUrl,
+  // },
   robots: {
     index: true,
     follow: true,
@@ -113,7 +114,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href={siteUrl} />
+        {/* Canonical tags are set per-page via metadata objects, not here */}
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="theme-color" content="#FFFFFF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
